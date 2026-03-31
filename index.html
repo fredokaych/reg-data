@@ -81,478 +81,63 @@
             --inv-txt: #b45309;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box
-        }
-
-        body {
-            font-family: Maiandra, 'Maiandra GD', sans-serif;
-            background: var(--bg);
-            color: var(--txt);
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background .35s, color .35s;
-            -webkit-text-size-adjust: 100%
-        }
-
-        .bg-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(90px);
-            opacity: var(--orb);
-            pointer-events: none;
-            z-index: 0;
-            transition: opacity .35s
-        }
-
-        .bg-orb-1 {
-            width: 520px;
-            height: 520px;
-            background: #10b981;
-            top: -120px;
-            left: -80px;
-            animation: f1 22s ease-in-out infinite
-        }
-
-        .bg-orb-2 {
-            width: 420px;
-            height: 420px;
-            background: #f59e0b;
-            bottom: -80px;
-            right: -60px;
-            animation: f2 26s ease-in-out infinite
-        }
-
-        .bg-orb-3 {
-            width: 280px;
-            height: 280px;
-            background: #10b981;
-            top: 55%;
-            right: 18%;
-            animation: f3 19s ease-in-out infinite
-        }
-
-        @keyframes f1 {
-
-            0%,
-            100% {
-                transform: translate(0, 0)
-            }
-
-            33% {
-                transform: translate(90px, 70px)
-            }
-
-            66% {
-                transform: translate(-40px, 110px)
-            }
-        }
-
-        @keyframes f2 {
-
-            0%,
-            100% {
-                transform: translate(0, 0)
-            }
-
-            33% {
-                transform: translate(-70px, -50px)
-            }
-
-            66% {
-                transform: translate(50px, -90px)
-            }
-        }
-
-        @keyframes f3 {
-
-            0%,
-            100% {
-                transform: translate(0, 0)
-            }
-
-            50% {
-                transform: translate(-100px, -70px)
-            }
-        }
-
-        .bg-grid {
-            position: fixed;
-            inset: 0;
-            background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-            background-size: 64px 64px;
-            pointer-events: none;
-            z-index: 0
-        }
-
-        .gc {
-            background: var(--card);
-            backdrop-filter: blur(14px);
-            border: 1px solid var(--brd);
-            border-radius: 16px;
-            transition: border-color .3s, box-shadow .3s, background .35s
-        }
-
-        .gc:hover {
-            border-color: var(--brd-h);
-            box-shadow: var(--shadow)
-        }
-
-        .ptk {
-            height: 7px;
-            background: rgba(16, 185, 129, .08);
-            border-radius: 4px;
-            overflow: hidden
-        }
-
-        [data-theme="light"] .ptk {
-            background: rgba(16, 185, 129, .1)
-        }
-
-        .pfl {
-            height: 100%;
-            background: linear-gradient(90deg, #10b981, #34d399);
-            border-radius: 4px;
-            transition: width .9s cubic-bezier(.4, 0, .2, 1)
-        }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px
-        }
-
-        ::-webkit-scrollbar-track {
-            background: transparent
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(16, 185, 129, .18);
-            border-radius: 3px
-        }
-
-        .ti {
-            animation: tI .32s ease-out forwards
-        }
-
-        .to {
-            animation: tO .28s ease-in forwards
-        }
-
-        @keyframes tI {
-            from {
-                transform: translateX(110%);
-                opacity: 0
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1
-            }
-        }
-
-        @keyframes tO {
-            from {
-                transform: translateX(0);
-                opacity: 1
-            }
-
-            to {
-                transform: translateX(110%);
-                opacity: 0
-            }
-        }
-
-        .dth {
-            position: sticky;
-            top: 0;
-            background: var(--thbg);
-            z-index: 10;
-            transition: background .35s
-        }
-
-        .dz {
-            border: 2px dashed rgba(16, 185, 129, .25);
-            transition: all .25s
-        }
-
-        .dz.dov {
-            border-color: #10b981;
-            background: rgba(16, 185, 129, .04)
-        }
-
-        .pd {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pd 2s ease-in-out infinite
-        }
-
-        @keyframes pd {
-
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1)
-            }
-
-            50% {
-                opacity: .4;
-                transform: scale(1.6)
-            }
-        }
-
-        .inp {
-            background: var(--input);
-            border: 1px solid var(--brd);
-            border-radius: 10px;
-            padding: 10px 14px;
-            color: var(--txt);
-            font-family: Maiandra, 'Maiandra GD', sans-serif;
-            font-size: 16px;
-            transition: border-color .2s, box-shadow .2s, background .35s;
-            outline: none;
-            width: 100%;
-            min-height: 46px
-        }
-
-        .inp:focus {
-            border-color: var(--brd-f);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, .08)
-        }
-
-        .inp::placeholder {
-            color: var(--txt4)
-        }
-
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(.65);
-            cursor: pointer
-        }
-
-        [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: none
-        }
-
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0
-        }
-
-        input[type="number"] {
-            -moz-appearance: textfield
-        }
-
-        .bp {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: #fff;
-            font-weight: 700;
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            font-family: Maiandra, 'Maiandra GD', sans-serif;
-            font-size: 15px;
-            transition: transform .15s, box-shadow .15s;
-            min-height: 46px
-        }
-
-        .bp:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, .25)
-        }
-
-        .bp:active {
-            transform: translateY(0)
-        }
-
-        .bs {
-            background: rgba(16, 185, 129, .08);
-            color: #10b981;
-            font-weight: 700;
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(16, 185, 129, .18);
-            cursor: pointer;
-            font-family: Maiandra, 'Maiandra GD', sans-serif;
-            font-size: 15px;
-            transition: background .15s;
-            min-height: 46px
-        }
-
-        .bs:hover {
-            background: rgba(16, 185, 129, .13)
-        }
-
-        .bdd {
-            background: rgba(244, 63, 94, .08);
-            color: #f43f5e;
-            font-weight: 700;
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(244, 63, 94, .18);
-            cursor: pointer;
-            font-family: Maiandra, 'Maiandra GD', sans-serif;
-            font-size: 15px;
-            transition: background .15s;
-            min-height: 46px
-        }
-
-        .bdd:hover {
-            background: rgba(244, 63, 94, .13)
-        }
-
-        .tb {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all .2s;
-            border: none;
-            font-family: Maiandra, 'Maiandra GD', sans-serif;
-            min-height: 40px
-        }
-
-        .ta {
-            background: rgba(16, 185, 129, .13);
-            color: #10b981
-        }
-
-        .tn {
-            background: transparent;
-            color: var(--txt3)
-        }
-
-        .tn:hover {
-            color: var(--txt2)
-        }
-
-        .fi {
-            animation: fi .5s ease-out both
-        }
-
-        @keyframes fi {
-            from {
-                opacity: 0;
-                transform: translateY(12px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0)
-            }
-        }
-
-        .mov {
-            position: fixed;
-            inset: 0;
-            background: var(--mover);
-            backdrop-filter: blur(4px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 16px
-        }
-
-        .mbx {
-            background: var(--card-s);
-            border: 1px solid var(--brd);
-            border-radius: 16px;
-            padding: 28px;
-            max-width: 540px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            transition: background .35s
-        }
-
-        .tw {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch
-        }
-
-        .ib {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: 1px solid var(--brd);
-            background: var(--card);
-            transition: all .2s;
-            color: var(--txt2);
-            font-size: 16px;
-            flex-shrink: 0
-        }
-
-        .ib:hover {
-            border-color: var(--brd-h);
-            color: var(--txt)
-        }
-
-        .cblk {
-            background: var(--elevated);
-            border: 1px solid var(--brd);
-            border-radius: 8px;
-            padding: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-            color: var(--txt2);
-            white-space: pre-wrap;
-            word-break: break-all;
-            line-height: 1.6;
-            max-height: 120px;
-            overflow-y: auto;
-            transition: background .35s
-        }
-
-        .sn {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: rgba(16, 185, 129, .12);
-            color: #10b981;
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0
-        }
-
-        @media(max-width:480px) {
-            .mbx {
-                padding: 20px;
-                border-radius: 14px
-            }
-
-            .inp {
-                font-size: 16px
-            }
-        }
-
-        @media(prefers-reduced-motion:reduce) {
-
-            *,
-            *::before,
-            *::after {
-                animation-duration: .01ms !important;
-                transition-duration: .01ms !important
-            }
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg)
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box }
+        body { font-family: Maiandra, 'Maiandra GD', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; overflow-x: hidden; transition: background .35s, color .35s; -webkit-text-size-adjust: 100% }
+        .bg-orb { position: fixed; border-radius: 50%; filter: blur(90px); opacity: var(--orb); pointer-events: none; z-index: 0; transition: opacity .35s }
+        .bg-orb-1 { width: 520px; height: 520px; background: #10b981; top: -120px; left: -80px; animation: f1 22s ease-in-out infinite }
+        .bg-orb-2 { width: 420px; height: 420px; background: #f59e0b; bottom: -80px; right: -60px; animation: f2 26s ease-in-out infinite }
+        .bg-orb-3 { width: 280px; height: 280px; background: #10b981; top: 55%; right: 18%; animation: f3 19s ease-in-out infinite }
+        @keyframes f1 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(90px,70px)} 66%{transform:translate(-40px,110px)} }
+        @keyframes f2 { 0%,100%{transform:translate(0,0)} 33%{transform:translate(-70px,-50px)} 66%{transform:translate(50px,-90px)} }
+        @keyframes f3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-100px,-70px)} }
+        .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size: 64px 64px; pointer-events: none; z-index: 0 }
+        .gc { background: var(--card); backdrop-filter: blur(14px); border: 1px solid var(--brd); border-radius: 16px; transition: border-color .3s, box-shadow .3s, background .35s }
+        .gc:hover { border-color: var(--brd-h); box-shadow: var(--shadow) }
+        .ptk { height: 7px; background: rgba(16,185,129,.08); border-radius: 4px; overflow: hidden }
+        [data-theme="light"] .ptk { background: rgba(16,185,129,.1) }
+        .pfl { height: 100%; background: linear-gradient(90deg,#10b981,#34d399); border-radius: 4px; transition: width .9s cubic-bezier(.4,0,.2,1) }
+        ::-webkit-scrollbar { width: 5px; height: 5px }
+        ::-webkit-scrollbar-track { background: transparent }
+        ::-webkit-scrollbar-thumb { background: rgba(16,185,129,.18); border-radius: 3px }
+        .ti { animation: tI .32s ease-out forwards }
+        .to { animation: tO .28s ease-in forwards }
+        @keyframes tI { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
+        @keyframes tO { from{transform:translateX(0);opacity:1} to{transform:translateX(110%);opacity:0} }
+        .dth { position: sticky; top: 0; background: var(--thbg); z-index: 10; transition: background .35s }
+        .dz { border: 2px dashed rgba(16,185,129,.25); transition: all .25s }
+        .dz.dov { border-color: #10b981; background: rgba(16,185,129,.04) }
+        .pd { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pd 2s ease-in-out infinite }
+        @keyframes pd { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.6)} }
+        .inp { background: var(--input); border: 1px solid var(--brd); border-radius: 10px; padding: 10px 14px; color: var(--txt); font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 16px; transition: border-color .2s,box-shadow .2s,background .35s; outline: none; width: 100%; min-height: 46px }
+        .inp:focus { border-color: var(--brd-f); box-shadow: 0 0 0 3px rgba(16,185,129,.08) }
+        .inp::placeholder { color: var(--txt4) }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.65); cursor: pointer }
+        [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator { filter: none }
+        input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0 }
+        input[type="number"] { -moz-appearance: textfield }
+        .bp { background: linear-gradient(135deg,#10b981,#059669); color: #fff; font-weight: 700; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 15px; transition: transform .15s,box-shadow .15s; min-height: 46px }
+        .bp:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,.25) }
+        .bp:active { transform: translateY(0) }
+        .bs { background: rgba(16,185,129,.08); color: #10b981; font-weight: 700; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(16,185,129,.18); cursor: pointer; font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 15px; transition: background .15s; min-height: 46px }
+        .bs:hover { background: rgba(16,185,129,.13) }
+        .bdd { background: rgba(244,63,94,.08); color: #f43f5e; font-weight: 700; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(244,63,94,.18); cursor: pointer; font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 15px; transition: background .15s; min-height: 46px }
+        .bdd:hover { background: rgba(244,63,94,.13) }
+        .tb { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; border: none; font-family: Maiandra, 'Maiandra GD', sans-serif; min-height: 40px }
+        .ta { background: rgba(16,185,129,.13); color: #10b981 }
+        .tn { background: transparent; color: var(--txt3) }
+        .tn:hover { color: var(--txt2) }
+        .fi { animation: fi .5s ease-out both }
+        @keyframes fi { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        .mov { position: fixed; inset: 0; background: var(--mover); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px }
+        .mbx { background: var(--card-s); border: 1px solid var(--brd); border-radius: 16px; padding: 28px; max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto; transition: background .35s }
+        .tw { overflow-x: auto; -webkit-overflow-scrolling: touch }
+        .ib { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--brd); background: var(--card); transition: all .2s; color: var(--txt2); font-size: 16px; flex-shrink: 0 }
+        .ib:hover { border-color: var(--brd-h); color: var(--txt) }
+        .cblk { background: var(--elevated); border: 1px solid var(--brd); border-radius: 8px; padding: 12px; font-family: 'Courier New',monospace; font-size: 11px; color: var(--txt2); white-space: pre-wrap; word-break: break-all; line-height: 1.6; max-height: 120px; overflow-y: auto; transition: background .35s }
+        .sn { width: 22px; height: 22px; border-radius: 50%; background: rgba(16,185,129,.12); color: #10b981; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0 }
+        @media(max-width:480px){ .mbx { padding: 20px; border-radius: 14px } .inp { font-size: 16px } }
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+        @keyframes spin { to{transform:rotate(360deg)} }
     </style>
 </head>
 
@@ -578,18 +163,18 @@
         const KC = ['#10b981', '#f59e0b', '#f43f5e'], KCL = ['rgba(16,185,129,.72)', 'rgba(245,158,11,.72)', 'rgba(244,63,94,.72)'];
         const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-        const fmtD = d => { const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0'); return y + '-' + m + '-' + day };
+        const fmtD = d => { const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+day };
         const fmtS = d => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         const fmtF = d => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
         const empty = () => { const o = {}; DATES.forEach(d => o[fmtD(d)] = { kit1: null, kit2: null, kit3: null }); return o };
         const sbToLocal = rows => { const d = empty(); if (!rows) return d; rows.forEach(r => { if (d.hasOwnProperty(r.date)) d[r.date] = { kit1: r.kit1, kit2: r.kit2, kit3: r.kit3 } }); return d };
         const sampleCSV = () => { let c = 'Date,Kit 1,Kit 2,Kit 3\n'; DATES.forEach(d => c += fmtD(d) + ',,\n'); return c };
-        const exportCSV = data => { let c = 'Date,Day,Kit 1,Kit 2,Kit 3,Total\n'; DATES.forEach(d => { const k = fmtD(d), e = data[k] || {}; const t = [e.kit1, e.kit2, e.kit3].reduce((a, b) => (a || 0) + (b || 0), 0); c += k + ',' + DAYS[d.getDay()] + ',' + (e.kit1 ?? '') + ',' + (e.kit2 ?? '') + ',' + (e.kit3 ?? '') + ',' + (t || '') + '\n' }); return c };
+        const exportCSV = data => { let c = 'Date,Day,Kit 1,Kit 2,Kit 3,Total\n'; DATES.forEach(d => { const k = fmtD(d), e = data[k] || {}; const t = [e.kit1, e.kit2, e.kit3].reduce((a,b) => (a||0)+(b||0), 0); c += k+','+DAYS[d.getDay()]+','+(e.kit1 ?? '')+','+(e.kit2 ?? '')+','+(e.kit3 ?? '')+','+(t||'')+'\n' }); return c };
 
         const DB = {
             client: null, ready: false,
-            init(url, ak, onAuth) { try { if (typeof supabase === 'undefined') return false; this.client = supabase.createClient(url, ak); this.ready = true; this.client.auth.onAuthStateChange(function (_ev, session) { if (onAuth) onAuth(!!session); }); return true } catch (e) { return false } },
+            init(url, ak, onAuth) { try { if (typeof supabase === 'undefined') return false; this.client = supabase.createClient(url, ak); this.ready = true; this.client.auth.onAuthStateChange(function(_ev, session) { if (onAuth) onAuth(!!session); }); return true } catch(e) { return false } },
             async fetchAll() { if (!this.client || !this.ready) return null; const res = await this.client.from('registrations').select('*').order('date', { ascending: true }); if (res.error) return { error: res.error.message }; return res.data },
             async upsert(date, kit1, kit2, kit3) { if (!this.client || !this.ready) return { error: 'Not connected' }; const res = await this.client.from('registrations').upsert({ date, kit1, kit2, kit3 }, { onConflict: 'date' }); if (res.error) return { error: res.error.message }; return {} },
             async deleteAll() { if (!this.client || !this.ready) return { error: 'Not connected' }; const res = await this.client.from('registrations').delete().gte('date', '2026-01-01'); if (res.error) return { error: res.error.message }; return {} },
@@ -599,17 +184,17 @@
         };
 
         Chart.register({
-            id: 'ct', afterDraw: function (chart) {
+            id: 'ct', afterDraw: function(chart) {
                 if (chart.config.type !== 'doughnut') return;
                 if (!chart.chartArea) return;
-                const ca = chart.chartArea, cx = (ca.left + ca.right) / 2, cy = (ca.top + ca.bottom) / 2;
+                const ca = chart.chartArea, cx = (ca.left+ca.right)/2, cy = (ca.top+ca.bottom)/2;
                 const v = chart.data.datasets[0].data, ph = v.length === 3 && v.every(x => x < 1);
                 const cs = getComputedStyle(document.documentElement);
                 const tc = cs.getPropertyValue('--txt').trim() || '#fff';
                 const tc3 = cs.getPropertyValue('--txt3').trim() || 'rgba(226,232,240,.3)';
                 const ctx = chart.ctx; ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                if (ph) { ctx.font = FW + ' 14px ' + FF; ctx.fillStyle = tc3; ctx.fillText('No data yet', cx, cy) }
-                else { const t = v.reduce((a, b) => a + b, 0); ctx.font = '900 28px ' + FF; ctx.fillStyle = tc; ctx.fillText(t.toLocaleString(), cx, cy - 8); ctx.font = FW + ' 12px ' + FF; ctx.fillStyle = tc3; ctx.fillText('Total', cx, cy + 14) }
+                if (ph) { ctx.font = FW+' 14px '+FF; ctx.fillStyle = tc3; ctx.fillText('No data yet', cx, cy) }
+                else { const t = v.reduce((a,b) => a+b, 0); ctx.font = '900 28px '+FF; ctx.fillStyle = tc; ctx.fillText(t.toLocaleString(), cx, cy-8); ctx.font = FW+' 12px '+FF; ctx.fillStyle = tc3; ctx.fillText('Total', cx, cy+14) }
                 ctx.restore();
             }
         });
@@ -629,13 +214,13 @@
 
         var _tid = 0;
         function Toasts({ list }) {
-            return React.createElement('div', { style: { position: 'fixed', top: 20, right: 20, zIndex: 200, display: 'flex', flexDirection: 'column', gap: 8, maxWidth: 'calc(100vw - 40px)' } },
+            return React.createElement('div', { style: { position:'fixed', top:20, right:20, zIndex:200, display:'flex', flexDirection:'column', gap:8, maxWidth:'calc(100vw - 40px)' } },
                 list.map(t => {
-                    const bc = t.type === 'success' ? '#10b981' : t.type === 'error' ? '#f43f5e' : '#f59e0b';
-                    const ic = t.type === 'success' ? 'fa-circle-check' : t.type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info';
-                    return React.createElement('div', { key: t.id, className: 'gc ' + (t.out ? 'to' : 'ti'), style: { padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10, minWidth: 220, maxWidth: 360, borderLeft: '3px solid ' + bc } },
-                        React.createElement('i', { className: 'fas ' + ic, style: { color: bc, fontSize: 14, flexShrink: 0 } }),
-                        React.createElement('span', { style: { fontSize: 13, fontWeight: 600, color: 'var(--txt)', lineHeight: 1.4 } }, t.msg)
+                    const bc = t.type==='success' ? '#10b981' : t.type==='error' ? '#f43f5e' : '#f59e0b';
+                    const ic = t.type==='success' ? 'fa-circle-check' : t.type==='error' ? 'fa-circle-exclamation' : 'fa-circle-info';
+                    return React.createElement('div', { key:t.id, className:'gc '+(t.out?'to':'ti'), style:{ padding:'12px 16px', display:'flex', alignItems:'center', gap:10, minWidth:220, maxWidth:360, borderLeft:'3px solid '+bc } },
+                        React.createElement('i', { className:'fas '+ic, style:{ color:bc, fontSize:14, flexShrink:0 } }),
+                        React.createElement('span', { style:{ fontSize:13, fontWeight:600, color:'var(--txt)', lineHeight:1.4 } }, t.msg)
                     );
                 })
             );
@@ -643,61 +228,61 @@
 
         function ANum({ value, dur }) {
             dur = dur || 700;
-            const s = useRef({ v: 0, prev: 0 });
+            const s = useRef({ v:0, prev:0 });
             const [disp, setDisp] = useState(0);
             s.current.prev = s.current.v; s.current.v = value;
-            useEffect(() => { let start = s.current.prev, end = s.current.v; if (start === end) return; let t0 = performance.now(); function run(now) { let p = Math.min((now - t0) / dur, 1); let ease = 1 - Math.pow(1 - p, 3); setDisp(Math.round(start + (end - start) * ease)); if (p < 1) requestAnimationFrame(run) } requestAnimationFrame(run); }, [value, dur]);
+            useEffect(() => { let start = s.current.prev, end = s.current.v; if (start === end) return; let t0 = performance.now(); function run(now) { let p = Math.min((now-t0)/dur,1); let ease = 1-Math.pow(1-p,3); setDisp(Math.round(start+(end-start)*ease)); if (p<1) requestAnimationFrame(run) } requestAnimationFrame(run); }, [value, dur]);
             return React.createElement('span', null, disp.toLocaleString());
         }
 
         function SetupModal({ onClose }) {
             const currentConfigured = SB_URL && !SB_URL.includes('PASTE');
-            return React.createElement('div', { className: 'mov', onClick: onClose },
-                React.createElement('div', { className: 'mbx', onClick: e => e.stopPropagation(), style: { maxWidth: 480 } },
-                    React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 } },
-                        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10 } },
-                            React.createElement('div', { style: { width: 40, height: 40, borderRadius: 10, background: 'rgba(16,185,129,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
-                                React.createElement('i', { className: 'fas fa-gear', style: { color: '#10b981', fontSize: 16 } })
+            return React.createElement('div', { className:'mov', onClick:onClose },
+                React.createElement('div', { className:'mbx', onClick:e => e.stopPropagation(), style:{ maxWidth:480 } },
+                    React.createElement('div', { style:{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 } },
+                        React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:10 } },
+                            React.createElement('div', { style:{ width:40, height:40, borderRadius:10, background:'rgba(16,185,129,.1)', display:'flex', alignItems:'center', justifyContent:'center' } },
+                                React.createElement('i', { className:'fas fa-gear', style:{ color:'#10b981', fontSize:16 } })
                             ),
                             React.createElement('div', null,
-                                React.createElement('h3', { style: { fontSize: 17, fontWeight: 800, color: 'var(--txt)' } }, 'Connection Info'),
-                                React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt3)' } }, 'Supabase credentials are embedded in the HTML')
+                                React.createElement('h3', { style:{ fontSize:17, fontWeight:800, color:'var(--txt)' } }, 'Connection Info'),
+                                React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt3)' } }, 'Supabase credentials are embedded in the HTML')
                             )
                         ),
-                        React.createElement('button', { className: 'ib', onClick: onClose }, React.createElement('i', { className: 'fas fa-xmark' }))
+                        React.createElement('button', { className:'ib', onClick:onClose }, React.createElement('i', { className:'fas fa-xmark' }))
                     ),
                     currentConfigured
                         ? React.createElement('div', null,
-                            React.createElement('div', { style: { padding: '14px 16px', background: 'rgba(16,185,129,.07)', borderRadius: 10, border: '1px solid rgba(16,185,129,.15)', marginBottom: 16 } },
-                                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 } },
-                                    React.createElement('i', { className: 'fas fa-circle-check', style: { color: '#10b981', fontSize: 13 } }),
-                                    React.createElement('span', { style: { fontSize: 13, fontWeight: 700, color: '#10b981' } }, 'Connected to Supabase')
+                            React.createElement('div', { style:{ padding:'14px 16px', background:'rgba(16,185,129,.07)', borderRadius:10, border:'1px solid rgba(16,185,129,.15)', marginBottom:16 } },
+                                React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:8, marginBottom:6 } },
+                                    React.createElement('i', { className:'fas fa-circle-check', style:{ color:'#10b981', fontSize:13 } }),
+                                    React.createElement('span', { style:{ fontSize:13, fontWeight:700, color:'#10b981' } }, 'Connected to Supabase')
                                 ),
-                                React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt3)', lineHeight: 1.5 } },
-                                    'Project URL: ', React.createElement('code', { style: { fontSize: 11, color: 'var(--txt2)' } }, SB_URL.replace(/https:\/\/([^.]+).*/, 'https://$1…'))
+                                React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt3)', lineHeight:1.5 } },
+                                    'Project URL: ', React.createElement('code', { style:{ fontSize:11, color:'var(--txt2)' } }, SB_URL.replace(/https:\/\/([^.]+).*/, 'https://$1…'))
                                 )
                             ),
-                            React.createElement('div', { style: { padding: '12px 14px', background: 'var(--elevated)', borderRadius: 9, border: '1px solid var(--brd)' } },
-                                React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt3)', lineHeight: 1.6 } },
-                                    React.createElement('i', { className: 'fas fa-info-circle', style: { color: '#10b981', marginRight: 6 } }),
+                            React.createElement('div', { style:{ padding:'12px 14px', background:'var(--elevated)', borderRadius:9, border:'1px solid var(--brd)' } },
+                                React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt3)', lineHeight:1.6 } },
+                                    React.createElement('i', { className:'fas fa-info-circle', style:{ color:'#10b981', marginRight:6 } }),
                                     'To change credentials, update the SB_URL and SB_KEY constants in the HTML file.'
                                 )
                             )
                         )
                         : React.createElement('div', null,
-                            React.createElement('div', { style: { padding: '14px 16px', background: 'rgba(244,63,94,.07)', borderRadius: 10, border: '1px solid rgba(244,63,94,.15)', marginBottom: 16 } },
-                                React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 } },
-                                    React.createElement('i', { className: 'fas fa-circle-exclamation', style: { color: '#f43f5e', fontSize: 13 } }),
-                                    React.createElement('span', { style: { fontSize: 13, fontWeight: 700, color: '#f43f5e' } }, 'Credentials not configured')
+                            React.createElement('div', { style:{ padding:'14px 16px', background:'rgba(244,63,94,.07)', borderRadius:10, border:'1px solid rgba(244,63,94,.15)', marginBottom:16 } },
+                                React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:8, marginBottom:6 } },
+                                    React.createElement('i', { className:'fas fa-circle-exclamation', style:{ color:'#f43f5e', fontSize:13 } }),
+                                    React.createElement('span', { style:{ fontSize:13, fontWeight:700, color:'#f43f5e' } }, 'Credentials not configured')
                                 ),
-                                React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt3)', lineHeight: 1.5 } }, 'Open the HTML file and paste your Supabase Project URL and anon key into the SB_URL and SB_KEY constants.')
+                                React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt3)', lineHeight:1.5 } }, 'Open the HTML file and paste your Supabase Project URL and anon key into the SB_URL and SB_KEY constants.')
                             ),
-                            React.createElement('div', { className: 'cblk' },
+                            React.createElement('div', { className:'cblk' },
                                 "const SB_URL = 'https://xxxxx.supabase.co';\nconst SB_KEY = 'eyJhbGciOi...';"
                             )
                         ),
-                    React.createElement('div', { style: { textAlign: 'right', marginTop: 18 } },
-                        React.createElement('button', { className: 'bs', onClick: onClose }, 'Close')
+                    React.createElement('div', { style:{ textAlign:'right', marginTop:18 } },
+                        React.createElement('button', { className:'bs', onClick:onClose }, 'Close')
                     )
                 )
             );
@@ -709,37 +294,37 @@
             const [err, setErr] = useState('');
             const [loading, setLoading] = useState(false);
             async function submit() { if (!email || !pwd) { setErr('Enter your email and password'); return } setLoading(true); setErr(''); const res = await DB.signIn(email, pwd); setLoading(false); if (res.ok) onOk(); else setErr(res.msg); }
-            return React.createElement('div', { className: 'mov', onClick: onCancel },
-                React.createElement('div', { className: 'mbx', onClick: e => e.stopPropagation(), style: { maxWidth: 400 } },
-                    React.createElement('div', { style: { textAlign: 'center', marginBottom: 20 } },
-                        React.createElement('div', { style: { width: 48, height: 48, borderRadius: 12, background: 'rgba(16,185,129,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' } },
-                            React.createElement('i', { className: 'fas fa-lock', style: { color: '#10b981', fontSize: 18 } })
+            return React.createElement('div', { className:'mov', onClick:onCancel },
+                React.createElement('div', { className:'mbx', onClick:e => e.stopPropagation(), style:{ maxWidth:400 } },
+                    React.createElement('div', { style:{ textAlign:'center', marginBottom:20 } },
+                        React.createElement('div', { style:{ width:48, height:48, borderRadius:12, background:'rgba(16,185,129,.1)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 12px' } },
+                            React.createElement('i', { className:'fas fa-lock', style:{ color:'#10b981', fontSize:18 } })
                         ),
-                        React.createElement('h3', { style: { fontSize: 17, fontWeight: 800, color: 'var(--txt)' } }, 'Admin Sign In'),
-                        React.createElement('p', { style: { fontSize: 13, fontWeight: 600, color: 'var(--txt3)', marginTop: 4 } }, 'Sign in to add or edit registration data')
+                        React.createElement('h3', { style:{ fontSize:17, fontWeight:800, color:'var(--txt)' } }, 'Admin Sign In'),
+                        React.createElement('p', { style:{ fontSize:13, fontWeight:600, color:'var(--txt3)', marginTop:4 } }, 'Sign in to add or edit registration data')
                     ),
-                    React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 12 } },
-                        React.createElement('input', { className: 'inp', type: 'email', placeholder: 'Email', value: email, onChange: e => { setEmail(e.target.value); setErr('') } }),
-                        React.createElement('input', { className: 'inp', type: 'password', placeholder: 'Password', value: pwd, onChange: e => { setPwd(e.target.value); setErr('') }, onKeyDown: e => { if (e.key === 'Enter') submit() }, autoFocus: true })
+                    React.createElement('div', { style:{ display:'flex', flexDirection:'column', gap:12, marginBottom:12 } },
+                        React.createElement('input', { className:'inp', type:'email', placeholder:'Email', value:email, onChange:e => { setEmail(e.target.value); setErr('') } }),
+                        React.createElement('input', { className:'inp', type:'password', placeholder:'Password', value:pwd, onChange:e => { setPwd(e.target.value); setErr('') }, onKeyDown:e => { if (e.key==='Enter') submit() }, autoFocus:true })
                     ),
-                    err ? React.createElement('p', { style: { fontSize: 13, fontWeight: 600, color: '#f43f5e', marginBottom: 12 } }, React.createElement('i', { className: 'fas fa-circle-exclamation', style: { marginRight: 4 } }), err) : null,
-                    React.createElement('div', { style: { display: 'flex', gap: 10 } },
-                        React.createElement('button', { className: 'bp', style: { flex: 1 }, onClick: submit, disabled: loading }, loading ? 'Signing in…' : 'Sign In'),
-                        React.createElement('button', { className: 'bs', onClick: onCancel }, 'Cancel')
+                    err ? React.createElement('p', { style:{ fontSize:13, fontWeight:600, color:'#f43f5e', marginBottom:12 } }, React.createElement('i', { className:'fas fa-circle-exclamation', style:{ marginRight:4 } }), err) : null,
+                    React.createElement('div', { style:{ display:'flex', gap:10 } },
+                        React.createElement('button', { className:'bp', style:{ flex:1 }, onClick:submit, disabled:loading }, loading ? 'Signing in…' : 'Sign In'),
+                        React.createElement('button', { className:'bs', onClick:onCancel }, 'Cancel')
                     ),
-                    React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt4)', textAlign: 'center', marginTop: 16, lineHeight: 1.5 } }, 'No account? Create one in Supabase Dashboard under Authentication → Users → Add User')
+                    React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt4)', textAlign:'center', marginTop:16, lineHeight:1.5 } }, 'No account? Create one in Supabase Dashboard under Authentication → Users → Add User')
                 )
             );
         }
 
         function Modal({ title, msg, onOk, onNo }) {
-            return React.createElement('div', { className: 'mov', onClick: onNo },
-                React.createElement('div', { className: 'mbx', onClick: e => e.stopPropagation(), style: { maxWidth: 400 } },
-                    React.createElement('h3', { style: { fontSize: 17, fontWeight: 800, color: 'var(--txt)', marginBottom: 8 } }, title),
-                    React.createElement('p', { style: { fontSize: 13, fontWeight: 600, color: 'var(--txt2)', marginBottom: 24, lineHeight: 1.5 } }, msg),
-                    React.createElement('div', { style: { display: 'flex', gap: 10, justifyContent: 'flex-end' } },
-                        React.createElement('button', { className: 'bs', onClick: onNo }, 'Cancel'),
-                        React.createElement('button', { className: 'bdd', onClick: onOk }, 'Confirm')
+            return React.createElement('div', { className:'mov', onClick:onNo },
+                React.createElement('div', { className:'mbx', onClick:e => e.stopPropagation(), style:{ maxWidth:400 } },
+                    React.createElement('h3', { style:{ fontSize:17, fontWeight:800, color:'var(--txt)', marginBottom:8 } }, title),
+                    React.createElement('p', { style:{ fontSize:13, fontWeight:600, color:'var(--txt2)', marginBottom:24, lineHeight:1.5 } }, msg),
+                    React.createElement('div', { style:{ display:'flex', gap:10, justifyContent:'flex-end' } },
+                        React.createElement('button', { className:'bs', onClick:onNo }, 'Cancel'),
+                        React.createElement('button', { className:'bdd', onClick:onOk }, 'Confirm')
                     )
                 )
             );
@@ -747,68 +332,68 @@
 
         function Header({ done, theme, setTheme, isAdmin, setShowLogin, handleLogout, openSetup }) {
             const pct = Math.round(done / 30 * 100);
-            return React.createElement('header', { style: { padding: 'clamp(16px,3vw,24px) 0 clamp(12px,2vw,16px)', borderBottom: '1px solid var(--brd)', transition: 'border-color .35s' } },
-                React.createElement('div', { style: { maxWidth: 1280, margin: '0 auto', padding: '0 clamp(14px,4vw,24px)' } },
-                    React.createElement('div', { style: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 } },
+            return React.createElement('header', { style:{ padding:'clamp(16px,3vw,24px) 0 clamp(12px,2vw,16px)', borderBottom:'1px solid var(--brd)', transition:'border-color .35s' } },
+                React.createElement('div', { style:{ maxWidth:1280, margin:'0 auto', padding:'0 clamp(14px,4vw,24px)' } },
+                    React.createElement('div', { style:{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:12 } },
                         React.createElement('div', null,
-                            React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 } },
-                                React.createElement('div', { className: 'pd' }),
-                                React.createElement('span', { style: { fontSize: 11, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#10b981' } }, 'Live Dashboard'),
-                                React.createElement('span', { style: { fontSize: 10, fontWeight: 700, color: 'var(--txt4)', border: '1px solid var(--brd)', borderRadius: 4, padding: '1px 6px' } }, 'Cloud')
+                            React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:8, marginBottom:6 } },
+                                React.createElement('div', { className:'pd' }),
+                                React.createElement('span', { style:{ fontSize:11, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:'#10b981' } }, 'Live Dashboard'),
+                                React.createElement('span', { style:{ fontSize:10, fontWeight:700, color:'var(--txt4)', border:'1px solid var(--brd)', borderRadius:4, padding:'1px 6px' } }, 'Cloud')
                             ),
-                            React.createElement('h1', { style: { fontSize: 'clamp(24px,6vw,38px)', fontWeight: 900, color: 'var(--txt)', lineHeight: 1.05, letterSpacing: '-.02em', transition: 'color .35s' } }, 'Wiga Ward'),
-                            React.createElement('p', { style: { fontSize: 14, fontWeight: 600, color: 'var(--txt3)', marginTop: 3, transition: 'color .35s' } }, 'Voter Registration Daily Report'),
-                            React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt4)', marginTop: 2 } }, fmtF(DATES[0]) + ' — ' + fmtF(DATES[29]))
+                            React.createElement('h1', { style:{ fontSize:'clamp(24px,6vw,38px)', fontWeight:900, color:'var(--txt)', lineHeight:1.05, letterSpacing:'-.02em', transition:'color .35s' } }, 'Wiga Ward'),
+                            React.createElement('p', { style:{ fontSize:14, fontWeight:600, color:'var(--txt3)', marginTop:3, transition:'color .35s' } }, 'Voter Registration Daily Report'),
+                            React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt4)', marginTop:2 } }, fmtF(DATES[0]) + ' — ' + fmtF(DATES[29]))
                         ),
-                        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8 } },
-                            isAdmin ? React.createElement('span', { style: { fontSize: 11, fontWeight: 700, color: '#10b981', background: 'rgba(16,185,129,.1)', borderRadius: 6, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 5 } },
-                                React.createElement('i', { className: 'fas fa-shield-halved', style: { fontSize: 10 } }), 'Admin'
+                        React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:8 } },
+                            isAdmin ? React.createElement('span', { style:{ fontSize:11, fontWeight:700, color:'#10b981', background:'rgba(16,185,129,.1)', borderRadius:6, padding:'4px 10px', display:'flex', alignItems:'center', gap:5 } },
+                                React.createElement('i', { className:'fas fa-shield-halved', style:{ fontSize:10 } }), 'Admin'
                             ) : null,
-                            React.createElement('button', { className: 'ib', onClick: () => setTheme(theme === 'dark' ? 'light' : 'dark'), title: 'Switch theme' },
-                                React.createElement('i', { className: 'fas ' + (theme === 'dark' ? 'fa-sun' : 'fa-moon') })
+                            React.createElement('button', { className:'ib', onClick:() => setTheme(theme==='dark'?'light':'dark'), title:'Switch theme' },
+                                React.createElement('i', { className:'fas '+(theme==='dark'?'fa-sun':'fa-moon') })
                             ),
                             isAdmin
-                                ? React.createElement('button', { className: 'ib', onClick: handleLogout, title: 'Sign out', style: { borderColor: 'rgba(16,185,129,.3)', color: '#10b981' } }, React.createElement('i', { className: 'fas fa-right-from-bracket' }))
-                                : React.createElement('button', { className: 'ib', onClick: () => setShowLogin(true), title: 'Admin sign in' }, React.createElement('i', { className: 'fas fa-lock' }))
+                                ? React.createElement('button', { className:'ib', onClick:handleLogout, title:'Sign out', style:{ borderColor:'rgba(16,185,129,.3)', color:'#10b981' } }, React.createElement('i', { className:'fas fa-right-from-bracket' }))
+                                : React.createElement('button', { className:'ib', onClick:() => setShowLogin(true), title:'Admin sign in' }, React.createElement('i', { className:'fas fa-lock' }))
                             ,
-                            React.createElement('button', { className: 'ib', onClick: openSetup, title: 'Connection info' }, React.createElement('i', { className: 'fas fa-gear' }))
+                            React.createElement('button', { className:'ib', onClick:openSetup, title:'Connection info' }, React.createElement('i', { className:'fas fa-gear' }))
                         )
                     ),
-                    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 12 } },
-                        React.createElement('div', { className: 'ptk', style: { flex: 1 } }, React.createElement('div', { className: 'pfl', style: { width: pct + '%' } })),
-                        React.createElement('span', { style: { fontSize: 12, fontWeight: 700, color: 'var(--txt3)', whiteSpace: 'nowrap', transition: 'color .35s' } }, done + '/30 days (' + pct + '%)')
+                    React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:10, marginTop:12 } },
+                        React.createElement('div', { className:'ptk', style:{ flex:1 } }, React.createElement('div', { className:'pfl', style:{ width:pct+'%' } })),
+                        React.createElement('span', { style:{ fontSize:12, fontWeight:700, color:'var(--txt3)', whiteSpace:'nowrap', transition:'color .35s' } }, done+'/30 days ('+pct+'%)')
                     )
                 )
             );
         }
 
         function Banner({ msg, icon, onAction, actionLabel }) {
-            return React.createElement('div', { style: { padding: '10px 16px', background: 'var(--inv-bg)', borderRadius: 10, border: '1px solid var(--inv-brd)', display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, color: 'var(--inv-txt)', transition: 'all .35s' } },
-                React.createElement('i', { className: 'fas ' + icon, style: { fontSize: 13, flexShrink: 0 } }),
-                React.createElement('span', { style: { flex: 1, lineHeight: 1.4 } }, msg),
-                onAction ? React.createElement('button', { onClick: onAction, style: { background: 'none', border: 'none', color: 'var(--inv-txt)', cursor: 'pointer', fontWeight: 700, fontSize: 13, textDecoration: 'underline', whiteSpace: 'nowrap' } }, actionLabel) : null
+            return React.createElement('div', { style:{ padding:'10px 16px', background:'var(--inv-bg)', borderRadius:10, border:'1px solid var(--inv-brd)', display:'flex', alignItems:'center', gap:10, fontSize:13, fontWeight:600, color:'var(--inv-txt)', transition:'all .35s' } },
+                React.createElement('i', { className:'fas '+icon, style:{ fontSize:13, flexShrink:0 } }),
+                React.createElement('span', { style:{ flex:1, lineHeight:1.4 } }, msg),
+                onAction ? React.createElement('button', { onClick:onAction, style:{ background:'none', border:'none', color:'var(--inv-txt)', cursor:'pointer', fontWeight:700, fontSize:13, textDecoration:'underline', whiteSpace:'nowrap' } }, actionLabel) : null
             );
         }
 
         function Cards({ data }) {
-            let total = 0, daysW = 0, todayT = 0; const kt = [0, 0, 0]; const todayK = fmtD(new Date());
-            DATES.forEach(d => { const e = data[fmtD(d)]; if (!e) return; const v = [e.kit1, e.kit2, e.kit3]; const dt = v.reduce((a, b) => (a || 0) + (b || 0), 0); if (dt > 0) { daysW++; total += dt; v.forEach((x, i) => kt[i] += (x || 0)) } if (fmtD(d) === todayK) todayT = dt });
-            const avg = daysW ? Math.round(total / daysW) : 0;
+            let total = 0, daysW = 0, todayT = 0; const kt = [0,0,0]; const todayK = fmtD(new Date());
+            DATES.forEach(d => { const e = data[fmtD(d)]; if (!e) return; const v = [e.kit1, e.kit2, e.kit3]; const dt = v.reduce((a,b) => (a||0)+(b||0), 0); if (dt > 0) { daysW++; total += dt; v.forEach((x,i) => kt[i] += (x||0)) } if (fmtD(d) === todayK) todayT = dt });
+            const avg = daysW ? Math.round(total/daysW) : 0;
             const topI = kt.indexOf(Math.max(...kt));
             const cards = [
-                { label: 'Total Registered', val: total, icon: 'fa-users', clr: '#10b981', bg: 'rgba(16,185,129,.07)', sub: 'Across ' + KN.length + ' kits' },
-                { label: "Today's Count", val: todayT, icon: 'fa-calendar-day', clr: '#f59e0b', bg: 'rgba(245,158,11,.07)', sub: todayT ? 'Registered today' : 'No data for today' },
-                { label: 'Daily Average', val: avg, icon: 'fa-chart-line', clr: '#06b6d4', bg: 'rgba(6,182,212,.07)', sub: 'Based on ' + daysW + ' day' + (daysW !== 1 ? 's' : '') },
-                { label: 'Top Performer', val: null, txt: KN[topI], icon: 'fa-trophy', clr: '#f43f5e', bg: 'rgba(244,63,94,.07)', sub: kt[topI].toLocaleString() + ' registrations' }
+                { label:'Total Registered', val:total, icon:'fa-users', clr:'#10b981', bg:'rgba(16,185,129,.07)', sub:'Across '+KN.length+' kits' },
+                { label:"Today's Count", val:todayT, icon:'fa-calendar-day', clr:'#f59e0b', bg:'rgba(245,158,11,.07)', sub:todayT?'Registered today':'No data for today' },
+                { label:'Daily Average', val:avg, icon:'fa-chart-line', clr:'#06b6d4', bg:'rgba(6,182,212,.07)', sub:'Based on '+daysW+' day'+(daysW!==1?'s':'') },
+                { label:'Top Performer', val:null, txt:KN[topI], icon:'fa-trophy', clr:'#f43f5e', bg:'rgba(244,63,94,.07)', sub:kt[topI].toLocaleString()+' registrations' }
             ];
-            return React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap: 14 } },
-                cards.map((c, i) => React.createElement('div', { key: i, className: 'gc fi', style: { padding: 'clamp(16px,3vw,22px)', animationDelay: i * 80 + 'ms' } },
-                    React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 } },
-                        React.createElement('span', { style: { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.07em', color: 'var(--txt3)', transition: 'color .35s' } }, c.label),
-                        React.createElement('div', { style: { width: 34, height: 34, borderRadius: 9, background: c.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, React.createElement('i', { className: 'fas ' + c.icon, style: { fontSize: 13, color: c.clr } }))
+            return React.createElement('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap:14 } },
+                cards.map((c,i) => React.createElement('div', { key:i, className:'gc fi', style:{ padding:'clamp(16px,3vw,22px)', animationDelay:i*80+'ms' } },
+                    React.createElement('div', { style:{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 } },
+                        React.createElement('span', { style:{ fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'.07em', color:'var(--txt3)', transition:'color .35s' } }, c.label),
+                        React.createElement('div', { style:{ width:34, height:34, borderRadius:9, background:c.bg, display:'flex', alignItems:'center', justifyContent:'center' } }, React.createElement('i', { className:'fas '+c.icon, style:{ fontSize:13, color:c.clr } }))
                     ),
-                    React.createElement('div', { style: { fontSize: 'clamp(24px,5vw,30px)', fontWeight: 900, color: 'var(--txt)', letterSpacing: '-.02em', transition: 'color .35s' } }, c.val !== null ? React.createElement(ANum, { value: c.val }) : c.txt),
-                    React.createElement('p', { style: { fontSize: 12, fontWeight: 700, color: 'var(--txt4)', marginTop: 5, transition: 'color .35s' } }, c.sub)
+                    React.createElement('div', { style:{ fontSize:'clamp(24px,5vw,30px)', fontWeight:900, color:'var(--txt)', letterSpacing:'-.02em', transition:'color .35s' } }, c.val !== null ? React.createElement(ANum, { value:c.val }) : c.txt),
+                    React.createElement('p', { style:{ fontSize:12, fontWeight:700, color:'var(--txt4)', marginTop:5, transition:'color .35s' } }, c.sub)
                 ))
             );
         }
@@ -816,104 +401,105 @@
         function Update({ data, setData, toast }) {
             const [tab, setTab] = useState('quick');
             const [fDate, setFDate] = useState('');
-            const [fVal, setFVal] = useState({ kit1: '', kit2: '', kit3: '' });
+            const [fVal, setFVal] = useState({ kit1:'', kit2:'', kit3:'' });
             const [editing, setEditing] = useState(false);
             const fRef = useRef(null);
             const [drag, setDrag] = useState(false);
             const [confirmReset, setConfirmReset] = useState(false);
             useEffect(() => { const t = fmtD(new Date()); const ok = DATES.some(d => fmtD(d) === t); setFDate(ok ? t : fmtD(DATES[0])) }, []);
-            useEffect(() => { const e = data[fDate]; if (e) { const has = e.kit1 !== null || e.kit2 !== null || e.kit3 !== null; if (has) { setFVal({ kit1: e.kit1 !== null ? '' + e.kit1 : '', kit2: e.kit2 !== null ? '' + e.kit2 : '', kit3: e.kit3 !== null ? '' + e.kit3 : '' }); setEditing(true) } else { setFVal({ kit1: '', kit2: '', kit3: '' }); setEditing(false) } } }, [fDate, data]);
+            useEffect(() => { const e = data[fDate]; if (e) { const has = e.kit1 !== null || e.kit2 !== null || e.kit3 !== null; if (has) { setFVal({ kit1: e.kit1!==null?''+e.kit1:'', kit2: e.kit2!==null?''+e.kit2:'', kit3: e.kit3!==null?''+e.kit3:'' }); setEditing(true) } else { setFVal({ kit1:'', kit2:'', kit3:'' }); setEditing(false) } } }, [fDate, data]);
             async function submit() {
                 const vs = KK.map(k => fVal[k].trim()); if (vs.every(v => !v)) { toast('Enter at least one kit value', 'error'); return }
-                const nums = vs.map(v => v ? parseInt(v) : null); if (nums.some((n, i) => vs[i] && isNaN(n))) { toast('Enter valid numbers', 'error'); return }
+                const nums = vs.map(v => v ? parseInt(v) : null); if (nums.some((n,i) => vs[i] && isNaN(n))) { toast('Enter valid numbers', 'error'); return }
                 if (nums.some(n => n !== null && n < 0)) { toast('Values cannot be negative', 'error'); return }
                 if (!DATES.find(d => fmtD(d) === fDate)) { toast('Date outside registration period', 'error'); return }
                 const res = await DB.upsert(fDate, nums[0], nums[1], nums[2]);
-                if (!res.error) { const nd = { ...data, [fDate]: { kit1: nums[0], kit2: nums[1], kit3: nums[2] } }; setData(nd); toast((editing ? 'Updated' : 'Added') + ' data for ' + fmtS(DATES.find(d => fmtD(d) === fDate)), 'success'); setFVal({ kit1: '', kit2: '', kit3: '' }); setEditing(false); const ci = DATES.findIndex(d => fmtD(d) === fDate); if (ci < DATES.length - 1) setFDate(fmtD(DATES[ci + 1])); }
+                if (!res.error) { const nd = { ...data, [fDate]: { kit1:nums[0], kit2:nums[1], kit3:nums[2] } }; setData(nd); toast((editing?'Updated':'Added')+' data for '+fmtS(DATES.find(d => fmtD(d)===fDate)), 'success'); setFVal({ kit1:'', kit2:'', kit3:'' }); setEditing(false); const ci = DATES.findIndex(d => fmtD(d)===fDate); if (ci < DATES.length-1) setFDate(fmtD(DATES[ci+1])); }
                 else toast('Write failed — you may have been signed out', 'error');
             }
-            function parseCSV(file) { if (!file) return; Papa.parse(file, { header: true, skipEmptyLines: true, complete: r => { const nd = { ...data }; let imp = 0, skip = 0; r.data.forEach(row => { const dt = (row['Date'] || row['date'] || '').trim(); if (!dt) { skip++; return } if (!DATES.find(d => fmtD(d) === dt)) { skip++; return } const v1 = (row['Kit 1'] || row['kit1'] || '').trim(), v2 = (row['Kit 2'] || row['kit2'] || '').trim(), v3 = (row['Kit 3'] || row['kit3'] || '').trim(); nd[dt] = { kit1: v1 ? parseInt(v1) : null, kit2: v2 ? parseInt(v2) : null, kit3: v3 ? parseInt(v3) : null }; imp++ }); Promise.all(DATES.map(d => { const k = fmtD(d), e = nd[k]; if (e && (e.kit1 !== null || e.kit2 !== null || e.kit3 !== null)) return DB.upsert(k, e.kit1, e.kit2, e.kit3); return Promise.resolve({}) })).then(() => { }); setData(nd); toast('Imported ' + imp + ' entries' + (skip ? ', skipped ' + skip : ''), 'success'); if (fRef.current) fRef.current.value = ''; }, error: () => toast('CSV parse error', 'error') }); }
+            function parseCSV(file) { if (!file) return; Papa.parse(file, { header:true, skipEmptyLines:true, complete: r => { const nd = { ...data }; let imp=0, skip=0; r.data.forEach(row => { const dt = (row['Date']||row['date']||'').trim(); if (!dt) { skip++; return } if (!DATES.find(d => fmtD(d)===dt)) { skip++; return } const v1=(row['Kit 1']||row['kit1']||'').trim(), v2=(row['Kit 2']||row['kit2']||'').trim(), v3=(row['Kit 3']||row['kit3']||'').trim(); nd[dt] = { kit1:v1?parseInt(v1):null, kit2:v2?parseInt(v2):null, kit3:v3?parseInt(v3):null }; imp++ }); Promise.all(DATES.map(d => { const k = fmtD(d), e = nd[k]; if (e && (e.kit1!==null||e.kit2!==null||e.kit3!==null)) return DB.upsert(k,e.kit1,e.kit2,e.kit3); return Promise.resolve({}) })).then(() => {}); setData(nd); toast('Imported '+imp+' entries'+(skip?', skipped '+skip:''), 'success'); if (fRef.current) fRef.current.value = ''; }, error: () => toast('CSV parse error', 'error') }); }
             function onDrop(e) { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files[0]; if (f && f.name.endsWith('.csv')) parseCSV(f); else toast('Upload a .csv file', 'error') }
-            function dlSample() { const b = new Blob([sampleCSV()], { type: 'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'wiga_sample_template.csv'; a.click(); toast('Template downloaded', 'info') }
-            function dlExport() { const b = new Blob([exportCSV(data)], { type: 'text/csv' }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'wiga_data_' + fmtD(new Date()) + '.csv'; a.click(); toast('Data exported', 'success') }
+            function dlSample() { const b = new Blob([sampleCSV()],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='wiga_sample_template.csv'; a.click(); toast('Template downloaded','info') }
+            function dlExport() { const b = new Blob([exportCSV(data)],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='wiga_data_'+fmtD(new Date())+'.csv'; a.click(); toast('Data exported','success') }
             async function doReset() { const r = await DB.deleteAll(); if (r.error) { toast('Failed to clear data', 'error'); return } setData(empty()); setConfirmReset(false); toast('All data cleared', 'success'); }
-            const tabs = [['quick', 'fa-pen-to-square', 'Quick Entry'], ['csv', 'fa-file-csv', 'CSV Upload'], ['more', 'fa-ellipsis', 'More']];
-            const lblStyle = { fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.06em', display: 'block', marginBottom: 6, transition: 'color .35s' };
-            return React.createElement('div', { className: 'gc fi', style: { padding: 0, animationDelay: '380ms' } },
-                React.createElement('div', { style: { display: 'flex', gap: 4, padding: '14px 14px 0', overflowX: 'auto' } },
-                    tabs.map(t => React.createElement('button', { key: t[0], className: 'tb ' + (tab === t[0] ? 'ta' : 'tn'), onClick: () => setTab(t[0]), style: { whiteSpace: 'nowrap' } }, React.createElement('i', { className: 'fas ' + t[1], style: { marginRight: 6 } }), t[2]))
+            const tabs = [['quick','fa-pen-to-square','Quick Entry'],['csv','fa-file-csv','CSV Upload'],['more','fa-ellipsis','More']];
+            const lblStyle = { fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'.06em', display:'block', marginBottom:6, transition:'color .35s' };
+            return React.createElement('div', { className:'gc fi', style:{ padding:0, animationDelay:'380ms' } },
+                React.createElement('div', { style:{ display:'flex', gap:4, padding:'14px 14px 0', overflowX:'auto' } },
+                    tabs.map(t => React.createElement('button', { key:t[0], className:'tb '+(tab===t[0]?'ta':'tn'), onClick:() => setTab(t[0]), style:{ whiteSpace:'nowrap' } }, React.createElement('i', { className:'fas '+t[1], style:{ marginRight:6 } }), t[2]))
                 ),
-                React.createElement('div', { style: { padding: 'clamp(14px,3vw,18px)' } },
-                    tab === 'quick' ? React.createElement('div', { className: 'fi' },
-                        editing ? React.createElement('div', { style: { marginBottom: 14, padding: '10px 14px', background: 'var(--inv-bg)', borderRadius: 9, border: '1px solid var(--inv-brd)', transition: 'all .35s' } }, React.createElement('span', { style: { fontSize: 12, fontWeight: 700, color: 'var(--inv-txt)' } }, React.createElement('i', { className: 'fas fa-pen', style: { marginRight: 6 } }), 'Editing existing entry — submit to overwrite')) : null,
-                        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,130px),1fr))', gap: 10, alignItems: 'end' } },
-                            React.createElement('div', null, React.createElement('label', { style: lblStyle, color: 'var(--txt3)' }, 'Date'), React.createElement('input', { className: 'inp', type: 'date', value: fDate, min: fmtD(DATES[0]), max: fmtD(DATES[29]), onChange: e => setFDate(e.target.value) })),
-                            KK.map((k, i) => React.createElement('div', { key: k }, React.createElement('label', { style: lblStyle, color: KC[i] }, KN[i]), React.createElement('input', { className: 'inp', type: 'number', placeholder: '0', value: fVal[k], min: '0', onChange: e => { const nv = { ...fVal }; nv[k] = e.target.value; setFVal(nv) }, style: { borderLeft: '3px solid ' + KC[i] }, onKeyDown: e => { if (e.key === 'Enter') submit() } }))),
-                            React.createElement('div', null, React.createElement('button', { className: 'bp', style: { width: '100%' }, onClick: submit }, React.createElement('i', { className: 'fas ' + (editing ? 'fa-save' : 'fa-plus'), style: { marginRight: 8 } }), editing ? 'Update' : 'Add'))
+                React.createElement('div', { style:{ padding:'clamp(14px,3vw,18px)' } },
+                    tab==='quick' ? React.createElement('div', { className:'fi' },
+                        editing ? React.createElement('div', { style:{ marginBottom:14, padding:'10px 14px', background:'var(--inv-bg)', borderRadius:9, border:'1px solid var(--inv-brd)', transition:'all .35s' } }, React.createElement('span', { style:{ fontSize:12, fontWeight:700, color:'var(--inv-txt)' } }, React.createElement('i', { className:'fas fa-pen', style:{ marginRight:6 } }), 'Editing existing entry — submit to overwrite')) : null,
+                        React.createElement('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(min(100%,130px),1fr))', gap:10, alignItems:'end' } },
+                            React.createElement('div', null, React.createElement('label', { style:lblStyle, color:'var(--txt3)' }, 'Date'), React.createElement('input', { className:'inp', type:'date', value:fDate, min:fmtD(DATES[0]), max:fmtD(DATES[29]), onChange:e => setFDate(e.target.value) })),
+                            KK.map((k,i) => React.createElement('div', { key:k }, React.createElement('label', { style:lblStyle, color:KC[i] }, KN[i]), React.createElement('input', { className:'inp', type:'number', placeholder:'0', value:fVal[k], min:'0', onChange:e => { const nv={...fVal}; nv[k]=e.target.value; setFVal(nv) }, style:{ borderLeft:'3px solid '+KC[i] }, onKeyDown:e => { if (e.key==='Enter') submit() } }))),
+                            React.createElement('div', null, React.createElement('button', { className:'bp', style:{ width:'100%' }, onClick:submit }, React.createElement('i', { className:'fas '+(editing?'fa-save':'fa-plus'), style:{ marginRight:8 } }), editing?'Update':'Add'))
                         )
                     ) : null,
-                    tab === 'csv' ? React.createElement('div', { className: 'fi' },
-                        React.createElement('div', { className: 'dz ' + (drag ? 'dov' : ''), style: { padding: '32px 20px', textAlign: 'center', borderRadius: 12, marginBottom: 14, cursor: 'pointer' }, onDragOver: e => { e.preventDefault(); setDrag(true) }, onDragLeave: () => setDrag(false), onDrop, onClick: () => fRef.current && fRef.current.click() },
-                            React.createElement('input', { ref: fRef, type: 'file', accept: '.csv', style: { display: 'none' }, onChange: e => { if (e.target.files[0]) parseCSV(e.target.files[0]) } }),
-                            React.createElement('i', { className: 'fas fa-cloud-arrow-up', style: { fontSize: 28, color: 'rgba(16,185,129,.35)', marginBottom: 10, display: 'block' } }),
-                            React.createElement('p', { style: { fontSize: 13, fontWeight: 600, color: 'var(--txt2)', marginBottom: 3 } }, 'Drag and drop your CSV file here'),
-                            React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt4)' } }, 'or click to browse')
+                    tab==='csv' ? React.createElement('div', { className:'fi' },
+                        React.createElement('div', { className:'dz '+(drag?'dov':''), style:{ padding:'32px 20px', textAlign:'center', borderRadius:12, marginBottom:14, cursor:'pointer' }, onDragOver:e => { e.preventDefault(); setDrag(true) }, onDragLeave:() => setDrag(false), onDrop, onClick:() => fRef.current && fRef.current.click() },
+                            React.createElement('input', { ref:fRef, type:'file', accept:'.csv', style:{ display:'none' }, onChange:e => { if (e.target.files[0]) parseCSV(e.target.files[0]) } }),
+                            React.createElement('i', { className:'fas fa-cloud-arrow-up', style:{ fontSize:28, color:'rgba(16,185,129,.35)', marginBottom:10, display:'block' } }),
+                            React.createElement('p', { style:{ fontSize:13, fontWeight:600, color:'var(--txt2)', marginBottom:3 } }, 'Drag and drop your CSV file here'),
+                            React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt4)' } }, 'or click to browse')
                         ),
-                        React.createElement('div', { style: { padding: '12px 14px', background: 'var(--elevated)', borderRadius: 9, border: '1px solid var(--brd)', transition: 'all .35s' } }, React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt3)', marginBottom: 4 } }, React.createElement('i', { className: 'fas fa-info-circle', style: { marginRight: 5, color: '#10b981' } }), 'Expected columns: Date, Kit 1, Kit 2, Kit 3'), React.createElement('code', { style: { fontSize: 11, fontWeight: 600, color: 'var(--txt4)', fontFamily: 'monospace' } }, '2026-03-30,15,12,18')),
-                        React.createElement('button', { className: 'bs', style: { marginTop: 10, width: '100%' }, onClick: dlSample }, React.createElement('i', { className: 'fas fa-file-arrow-down', style: { marginRight: 8 } }), 'Download Sample Template')
+                        React.createElement('div', { style:{ padding:'12px 14px', background:'var(--elevated)', borderRadius:9, border:'1px solid var(--brd)', transition:'all .35s' } }, React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt3)', marginBottom:4 } }, React.createElement('i', { className:'fas fa-info-circle', style:{ marginRight:5, color:'#10b981' } }), 'Expected columns: Date, Kit 1, Kit 2, Kit 3'), React.createElement('code', { style:{ fontSize:11, fontWeight:600, color:'var(--txt4)', fontFamily:'monospace' } }, '2026-03-30,15,12,18')),
+                        React.createElement('button', { className:'bs', style:{ marginTop:10, width:'100%' }, onClick:dlSample }, React.createElement('i', { className:'fas fa-file-arrow-down', style:{ marginRight:8 } }), 'Download Sample Template')
                     ) : null,
-                    tab === 'more' ? React.createElement('div', { className: 'fi', style: { display: 'grid', gap: 10 } },
-                        React.createElement('button', { className: 'bs', style: { width: '100%' }, onClick: dlExport }, React.createElement('i', { className: 'fas fa-file-export', style: { marginRight: 8 } }), 'Export Data as CSV'),
-                        React.createElement('button', { className: 'bs', style: { width: '100%' }, onClick: dlSample }, React.createElement('i', { className: 'fas fa-file-arrow-down', style: { marginRight: 8 } }), 'Download Empty Template'),
-                        React.createElement('button', { className: 'bdd', style: { width: '100%' }, onClick: () => setConfirmReset(true) }, React.createElement('i', { className: 'fas fa-trash-can', style: { marginRight: 8 } }), 'Reset All Data')
+                    tab==='more' ? React.createElement('div', { className:'fi', style:{ display:'grid', gap:10 } },
+                        React.createElement('button', { className:'bs', style:{ width:'100%' }, onClick:dlExport }, React.createElement('i', { className:'fas fa-file-export', style:{ marginRight:8 } }), 'Export Data as CSV'),
+                        React.createElement('button', { className:'bs', style:{ width:'100%' }, onClick:dlSample }, React.createElement('i', { className:'fas fa-file-arrow-down', style:{ marginRight:8 } }), 'Download Empty Template'),
+                        React.createElement('button', { className:'bdd', style:{ width:'100%' }, onClick:() => setConfirmReset(true) }, React.createElement('i', { className:'fas fa-trash-can', style:{ marginRight:8 } }), 'Reset All Data')
                     ) : null
                 ),
-                confirmReset ? React.createElement(Modal, { title: 'Reset All Data', msg: 'This will permanently erase every registration entry from Supabase.', onOk: doReset, onNo: () => setConfirmReset(false) }) : null
+                confirmReset ? React.createElement(Modal, { title:'Reset All Data', msg:'This will permanently erase every registration entry from Supabase.', onOk:doReset, onNo:() => setConfirmReset(false) }) : null
             );
         }
+
         function BarChart({ data, theme }) {
             const cv = useRef(null); const ch = useRef(null); const o = cOpts(theme);
             useEffect(() => {
                 if (!cv.current) return; if (ch.current) ch.current.destroy();
-                ch.current = new Chart(cv.current.getContext('2d'), {
-                    type: 'bar',
-                    data: {
-                        labels: DATES.map(fmtS),
-                        datasets: KK.map((k, i) => ({
-                            label: KN[i],
-                            data: DATES.map(d => { const e = data[fmtD(d)]; return e && e[k] !== null ? e[k] : 0 }),
-                            backgroundColor: KCL[i],
-                            borderColor: KC[i],
-                            borderWidth: 1,
-                            borderRadius: 3,
-                            borderSkipped: false
+                ch.current = new Chart(cv.current.getContext('2d'), { 
+                    type:'bar', 
+                    data:{ 
+                        labels:DATES.map(fmtS), 
+                        datasets:KK.map((k,i) => ({ 
+                            label:KN[i], 
+                            data:DATES.map(d => { const e=data[fmtD(d)]; return e&&e[k]!==null?e[k]:0 }), 
+                            backgroundColor:KCL[i], 
+                            borderColor:KC[i], 
+                            borderWidth:1, 
+                            borderRadius:3, 
+                            borderSkipped:false 
                         }))
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: { intersect: false, mode: 'index' },
-                        plugins: {
-                            legend: { position: 'top', labels: { color: o.tick, font: { family: FF, size: 12, weight: '700' }, boxWidth: 10, boxHeight: 10, borderRadius: 2, useBorderRadius: true, padding: 14 } },
-                            tooltip: { backgroundColor: o.tbg, borderColor: o.tbrd, borderWidth: 1, titleColor: o.tt, bodyColor: o.tb, titleFont: { family: FF, weight: '700', size: 13 }, bodyFont: { family: FF, weight: '600', size: 12 }, padding: 10, cornerRadius: 8 }
-                        },
-                        scales: {
-                            x: { stacked: true, grid: { color: o.grid }, ticks: { color: o.tick, font: { family: FF, size: 10, weight: '700' }, maxRotation: 50 }, border: { color: o.grid } },
-                            y: {
-                                stacked: true,
-                                beginAtZero: true,
-                                grid: { color: o.grid },
-                                ticks: { color: o.tick, font: { family: FF, size: 11, weight: '700' } }, // Removed invalid nested 'border'
-                                border: { color: o.grid }
-                            }
-                        }
+                    }, 
+                    options:{ 
+                        responsive:true, 
+                        maintainAspectRatio:false, 
+                        interaction:{ intersect:false, mode:'index' }, 
+                        plugins:{ 
+                            legend:{ position:'top', labels:{ color:o.tick, font:{ family:FF, size:12, weight:'700' }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } }, 
+                            tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:FF, weight:'700', size:13 }, bodyFont:{ family:FF, weight:'600', size:12 }, padding:10, cornerRadius:8 } 
+                        }, 
+                        scales:{ 
+                            x:{ stacked:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:FF, size:10, weight:'700' }, maxRotation:50 }, border:{ color:o.grid } }, 
+                            y:{ 
+                                stacked:true, 
+                                beginAtZero:true, 
+                                grid:{ color:o.grid }, 
+                                ticks:{ color:o.tick, font:{ family:FF, size:11, weight:'700' } }, // Removed invalid nested 'border'
+                                border:{ color:o.grid } 
+                            } 
+                        } 
                     }
                 });
                 return () => { if (ch.current) ch.current.destroy() };
             }, [data, theme]);
-            return React.createElement('div', { className: 'gc fi', style: { padding: 'clamp(14px,3vw,18px)', animationDelay: '480ms' } },
-                React.createElement('h3', { style: { fontSize: 15, fontWeight: 800, color: 'var(--txt)', marginBottom: 14, transition: 'color .35s' } }, 'Daily Registration Trend'),
-                React.createElement('div', { style: { height: 280 } }, React.createElement('canvas', { ref: cv }))
+            return React.createElement('div', { className:'gc fi', style:{ padding:'clamp(14px,3vw,18px)', animationDelay:'480ms' } },
+                React.createElement('h3', { style:{ fontSize:15, fontWeight:800, color:'var(--txt)', marginBottom:14, transition:'color .35s' } }, 'Daily Registration Trend'),
+                React.createElement('div', { style:{ height:280 } }, React.createElement('canvas', { ref:cv }))
             );
         }
 
@@ -921,13 +507,13 @@
             const cv = useRef(null); const ch = useRef(null); const o = cOpts(theme);
             useEffect(() => {
                 if (!cv.current) return; if (ch.current) ch.current.destroy();
-                const totals = KK.map(k => DATES.reduce((s, d) => { const e = data[fmtD(d)]; return s + (e && e[k] !== null ? e[k] : 0) }, 0)); const has = totals.some(t => t > 0);
-                ch.current = new Chart(cv.current.getContext('2d'), { type: 'doughnut', data: { labels: KN, datasets: [{ data: has ? totals : [.001, .001, .001], backgroundColor: ['rgba(16,185,129,.78)', 'rgba(245,158,11,.78)', 'rgba(244,63,94,.78)'], borderColor: o.dbord, borderWidth: 3, hoverOffset: 6 }] }, options: { responsive: true, maintainAspectRatio: false, cutout: '66%', plugins: { legend: { position: 'bottom', labels: { color: o.tick, font: { family: FF, size: 12, weight: '700' }, boxWidth: 10, boxHeight: 10, borderRadius: 2, useBorderRadius: true, padding: 14 } }, tooltip: { backgroundColor: o.tbg, borderColor: o.tbrd, borderWidth: 1, titleColor: o.tt, bodyColor: o.tb, titleFont: { family: FF, weight: '700', size: 13 }, bodyFont: { family: FF, weight: '600', size: 12 }, padding: 10, cornerRadius: 8, callbacks: { label: ctx => { if (!has) return 'No data'; const tot = totals.reduce((a, b) => a + b, 0); return ctx.label + ': ' + ctx.raw.toLocaleString() + ' (' + (ctx.raw / tot * 100).toFixed(1) + '%)' } } } } } });
+                const totals = KK.map(k => DATES.reduce((s,d) => { const e=data[fmtD(d)]; return s+(e&&e[k]!==null?e[k]:0) }, 0)); const has = totals.some(t => t > 0);
+                ch.current = new Chart(cv.current.getContext('2d'), { type:'doughnut', data:{ labels:KN, datasets:[{ data:has?totals:[.001,.001,.001], backgroundColor:['rgba(16,185,129,.78)','rgba(245,158,11,.78)','rgba(244,63,94,.78)'], borderColor:o.dbord, borderWidth:3, hoverOffset:6 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'66%', plugins:{ legend:{ position:'bottom', labels:{ color:o.tick, font:{ family:FF, size:12, weight:'700' }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } }, tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:FF, weight:'700', size:13 }, bodyFont:{ family:FF, weight:'600', size:12 }, padding:10, cornerRadius:8, callbacks:{ label:ctx => { if (!has) return 'No data'; const tot=totals.reduce((a,b)=>a+b,0); return ctx.label+': '+ctx.raw.toLocaleString()+' ('+(ctx.raw/tot*100).toFixed(1)+'%)' } } } } } });
                 return () => { if (ch.current) ch.current.destroy() };
             }, [data, theme]);
-            return React.createElement('div', { className: 'gc fi', style: { padding: 'clamp(14px,3vw,18px)', animationDelay: '560ms' } },
-                React.createElement('h3', { style: { fontSize: 15, fontWeight: 800, color: 'var(--txt)', marginBottom: 14, transition: 'color .35s' } }, 'Kit Performance'),
-                React.createElement('div', { style: { height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, React.createElement('canvas', { ref: cv }))
+            return React.createElement('div', { className:'gc fi', style:{ padding:'clamp(14px,3vw,18px)', animationDelay:'560ms' } },
+                React.createElement('h3', { style:{ fontSize:15, fontWeight:800, color:'var(--txt)', marginBottom:14, transition:'color .35s' } }, 'Kit Performance'),
+                React.createElement('div', { style:{ height:280, display:'flex', alignItems:'center', justifyContent:'center' } }, React.createElement('canvas', { ref:cv }))
             );
         }
 
@@ -943,53 +529,51 @@
         function Table({ data, setData, toast, isAdmin }) {
             const mobile = useMobile(640);
             const [editK, setEditK] = useState(null);
-            const [ev, setEv] = useState({ kit1: '', kit2: '', kit3: '' });
+            const [ev, setEv] = useState({ kit1:'', kit2:'', kit3:'' });
             let cum = 0;
-            const rows = DATES.map((d, i) => { const k = fmtD(d), e = data[k] || {}, dt = [e.kit1, e.kit2, e.kit3].reduce((a, b) => (a || 0) + (b || 0), 0); cum += dt; return { i: i + 1, d, k, e, dt, cum, has: dt > 0, today: k === fmtD(new Date()) }; });
-            function startEdit(r) { if (!isAdmin) return; setEditK(r.k); setEv({ kit1: r.e.kit1 !== null ? '' + r.e.kit1 : '', kit2: r.e.kit2 !== null ? '' + r.e.kit2 : '', kit3: r.e.kit3 !== null ? '' + r.e.kit3 : '' }) }
-            async function saveRow() { const nd = { ...data, [editK]: { kit1: ev.kit1 !== '' ? parseInt(ev.kit1) : null, kit2: ev.kit2 !== '' ? parseInt(ev.kit2) : null, kit3: ev.kit3 !== '' ? parseInt(ev.kit3) : null } }; const res = await DB.upsert(editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3); if (!res.error) { setData(nd); setEditK(null); toast('Entry updated', 'success') } else toast('Failed to save — you may have been signed out', 'error'); }
-            var headers = mobile ? ['#', 'Date (Day)', KN[0], KN[1], KN[2], 'Cum.'] : ['#', 'Date', 'Day', KN[0], KN[1], KN[2], 'Daily', 'Cumulative'];
-            function kitHi(hi) { return mobile ? hi - 2 : hi - 3 }
-            var thStyle = (hi) => ({ padding: mobile ? '8px 8px' : '10px 12px', textAlign: (mobile ? hi >= 2 : hi >= 3) ? 'right' : 'left', fontSize: mobile ? '9px' : '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.05em', color: (mobile ? hi >= 2 && hi < 5 : hi >= 3 && hi < 6) ? KC[kitHi(hi)] : 'var(--txt3)', borderBottom: '1px solid var(--brd)', transition: 'all .35s', whiteSpace: 'nowrap' });
+            const rows = DATES.map((d,i) => { const k=fmtD(d), e=data[k]||{}, dt=[e.kit1,e.kit2,e.kit3].reduce((a,b)=>(a||0)+(b||0),0); cum += dt; return { i:i+1, d, k, e, dt, cum, has:dt>0, today:k===fmtD(new Date()) }; });
+            function startEdit(r) { if (!isAdmin) return; setEditK(r.k); setEv({ kit1:r.e.kit1!==null?''+r.e.kit1:'', kit2:r.e.kit2!==null?''+r.e.kit2:'', kit3:r.e.kit3!==null?''+r.e.kit3:'' }) }
+            async function saveRow() { const nd = { ...data, [editK]:{ kit1:ev.kit1!==''?parseInt(ev.kit1):null, kit2:ev.kit2!==''?parseInt(ev.kit2):null, kit3:ev.kit3!==''?parseInt(ev.kit3):null } }; const res = await DB.upsert(editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3); if (!res.error) { setData(nd); setEditK(null); toast('Entry updated', 'success') } else toast('Failed to save — you may have been signed out', 'error'); }
+            var headers = mobile ? ['#','Date (Day)',KN[0],KN[1],KN[2],'Cum.'] : ['#','Date','Day',KN[0],KN[1],KN[2],'Daily','Cumulative'];
+            function kitHi(hi) { return mobile ? hi-2 : hi-3 }
+            var thStyle = (hi) => ({ padding: mobile ? '8px 8px' : '10px 12px', textAlign: (mobile ? hi>=2 : hi>=3) ? 'right' : 'left', fontSize: mobile ? '9px' : '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.05em', color: (mobile ? hi>=2&&hi<5 : hi>=3&&hi<6) ? KC[kitHi(hi)] : 'var(--txt3)', borderBottom: '1px solid var(--brd)', transition: 'all .35s', whiteSpace: 'nowrap' });
             var dateTd = (r) => { var s = { padding: mobile ? '8px 6px' : '10px 12px', fontWeight: r.today ? 700 : 600, whiteSpace: 'nowrap' }; if (mobile) { s.color = r.today ? '#10b981' : 'var(--txt2)'; s.fontSize = '12px'; s.borderLeft = r.today ? '3px solid #10b981' : 'none'; s.paddingLeft = r.today ? '7px' : '6px'; } else { s.color = r.today ? '#10b981' : 'var(--txt2)'; s.fontSize = '13px'; } return s };
             var dayTd = () => ({ padding: mobile ? '0' : '10px 12px', color: 'var(--txt3)', fontSize: mobile ? '0' : '12px', fontWeight: 700, display: mobile ? 'none' : 'table-cell' });
-            var numTd = (ki, r) => ({ padding: mobile ? '8px 6px' : '10px 12px', textAlign: 'right', fontSize: '13px', fontWeight: r.e[ki] !== null ? 600 : 500, color: r.e[ki] !== null ? KC[ki] : 'var(--txt4)' });
+            var numTd = (ki, r) => ({ padding: mobile ? '8px 6px' : '10px 12px', textAlign: 'right', fontSize: '13px', fontWeight: r.e[ki]!==null ? 600 : 500, color: r.e[ki]!==null ? KC[ki] : 'var(--txt4)' });
             var idxTd = () => ({ padding: mobile ? '8px 6px' : '10px 12px', color: 'var(--txt4)', fontSize: mobile ? '11px' : '12px', fontWeight: 700 });
-
-            // Fix for last column (Cumulative) to prevent layout break during edit
-            var lastTd = (r, isEd) => ({
-                padding: mobile ? '8px 6px' : '10px 12px',
-                textAlign: 'right',
-                color: r.cum > 0 ? 'var(--txt2)' : 'var(--txt4)',
-                fontWeight: 600,
-                fontSize: '13px'
+            
+            var lastTd = (r, isEd) => ({ 
+                padding: mobile ? '8px 6px' : '10px 12px', 
+                textAlign: 'right', 
+                color: r.cum>0?'var(--txt2)':'var(--txt4)', 
+                fontWeight: 600, 
+                fontSize: '13px' 
             });
 
-            return React.createElement('div', { className: 'gc fi', style: { padding: 0, animationDelay: '640ms' } },
-                React.createElement('div', { style: { padding: 'clamp(14px,3vw,18px) clamp(14px,3vw,18px) 12px', borderBottom: '1px solid var(--brd)', transition: 'border-color .35s' } },
-                    React.createElement('h3', { style: { fontSize: 15, fontWeight: 800, color: 'var(--txt)', transition: 'color .35s' } }, 'Detailed Records'),
-                    React.createElement('p', { style: { fontSize: 12, fontWeight: 700, color: 'var(--txt4)', marginTop: 3, transition: 'color .35s' } }, isAdmin ? 'Click any row to edit inline' : 'Read-only view')
+            return React.createElement('div', { className:'gc fi', style:{ padding:0, animationDelay:'640ms' } },
+                React.createElement('div', { style:{ padding:'clamp(14px,3vw,18px) clamp(14px,3vw,18px) 12px', borderBottom:'1px solid var(--brd)', transition:'border-color .35s' } },
+                    React.createElement('h3', { style:{ fontSize:15, fontWeight:800, color:'var(--txt)', transition:'color .35s' } }, 'Detailed Records'),
+                    React.createElement('p', { style:{ fontSize:12, fontWeight:700, color:'var(--txt4)', marginTop:3, transition:'color .35s' } }, isAdmin ? 'Click any row to edit inline' : 'Read-only view')
                 ),
-                React.createElement('div', { className: 'tw', style: { maxHeight: 500, overflowY: 'auto' } },
-                    React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', fontSize: 13 } },
-                        React.createElement('thead', null, React.createElement('tr', { className: 'dth' }, headers.map((h, hi) => React.createElement('th', { key: hi, style: thStyle(hi) }, h)))),
-                        React.createElement('tbody', null, rows.map((r, idx) => {
+                React.createElement('div', { className:'tw', style:{ maxHeight:500, overflowY:'auto' } },
+                    React.createElement('table', { style:{ width:'100%', borderCollapse:'collapse', fontSize:13 } },
+                        React.createElement('thead', null, React.createElement('tr', { className:'dth' }, headers.map((h,hi) => React.createElement('th', { key:hi, style:thStyle(hi) }, h)))),
+                        React.createElement('tbody', null, rows.map((r,idx) => {
                             var isEd = editK === r.k;
-                            return React.createElement('tr', { key: r.k, onClick: function () { if (!isEd) startEdit(r) }, style: { cursor: isAdmin ? 'pointer' : 'default', background: r.today ? 'var(--today)' : idx % 2 ? 'var(--ralt)' : 'transparent', borderBottom: '1px solid var(--brd)', transition: 'background .12s' }, onMouseEnter: function (e) { if (isAdmin && !isEd) e.currentTarget.style.background = 'var(--rhov)' }, onMouseLeave: function (e) { e.currentTarget.style.background = r.today ? 'var(--today)' : idx % 2 ? 'var(--ralt)' : 'transparent' } },
-                                React.createElement('td', { style: idxTd() }, r.i),
-                                React.createElement('td', { style: dateTd(r) }, mobile ? fmtDateDay(r.d) : fmtS(r.d), !mobile && r.today ? React.createElement('span', { style: { fontSize: 9, color: '#10b981', marginLeft: 5, fontWeight: 700, border: '1px solid rgba(16,185,129,.2)', borderRadius: 4, padding: '1px 5px' } }, 'TODAY') : null),
-                                React.createElement('td', { style: dayTd() }, DAYS[r.d.getDay()]),
-                                isEd ? KK.map(function (k) { return React.createElement('td', { key: k, style: { padding: '4px 4px' } }, React.createElement('input', { className: 'inp', type: 'number', style: { padding: '5px 6px', fontSize: 16, textAlign: 'right', width: mobile ? 52 : 68, minHeight: 36 }, value: ev[k], min: '0', onChange: function (e) { var nv = Object.assign({}, ev); nv[k] = e.target.value; setEv(nv) }, onClick: function (e) { e.stopPropagation() }, onKeyDown: function (e) { if (e.key === 'Enter') saveRow(); if (e.key === 'Escape') setEditK(null) }, autoFocus: true })) })
-                                    : KK.map(function (k, ki) { return React.createElement('td', { key: k, style: numTd(ki, r) }, r.e[k] !== null ? r.e[k].toLocaleString() : '—') }),
-                                React.createElement('td', { style: { padding: mobile ? '0' : '10px 12px', textAlign: 'right', color: r.dt > 0 ? 'var(--txt)' : 'var(--txt4)', fontWeight: r.dt > 0 ? 800 : 500, fontSize: '13px', display: mobile ? 'none' : 'table-cell' } }, r.dt > 0 ? r.dt.toLocaleString() : '—'),
-                                // Last column: Shows Cumulative normally, or Buttons if editing
-                                React.createElement('td', { style: lastTd(r, isEd) },
-                                    isEd
-                                        ? React.createElement(React.Fragment, null,
-                                            React.createElement('button', { className: 'bp', style: { padding: '5px 10px', fontSize: 12, marginRight: 3, minHeight: 34 }, onClick: function (e) { e.stopPropagation(); saveRow() } }, 'Save'),
-                                            React.createElement('button', { className: 'bs', style: { padding: '5px 10px', fontSize: 12, minHeight: 34 }, onClick: function (e) { e.stopPropagation(); setEditK(null) } }, 'Cancel')
-                                        )
-                                        : (r.cum > 0 ? r.cum.toLocaleString() : '—')
+                            return React.createElement('tr', { key:r.k, onClick:function(){ if (!isEd) startEdit(r) }, style:{ cursor:isAdmin?'pointer':'default', background:r.today?'var(--today)':idx%2?'var(--ralt)':'transparent', borderBottom:'1px solid var(--brd)', transition:'background .12s' }, onMouseEnter:function(e){ if (isAdmin&&!isEd) e.currentTarget.style.background='var(--rhov)' }, onMouseLeave:function(e){ e.currentTarget.style.background=r.today?'var(--today)':idx%2?'var(--ralt)':'transparent' } },
+                                React.createElement('td', { style:idxTd() }, r.i),
+                                React.createElement('td', { style:dateTd(r) }, mobile ? fmtDateDay(r.d) : fmtS(r.d), !mobile && r.today ? React.createElement('span', { style:{ fontSize:9, color:'#10b981', marginLeft:5, fontWeight:700, border:'1px solid rgba(16,185,129,.2)', borderRadius:4, padding:'1px 5px' } }, 'TODAY') : null),
+                                React.createElement('td', { style:dayTd() }, DAYS[r.d.getDay()]),
+                                isEd ? KK.map(function(k){ return React.createElement('td', { key:k, style:{ padding:'4px 4px' } }, React.createElement('input', { className:'inp', type:'number', style:{ padding:'5px 6px', fontSize:16, textAlign:'right', width:mobile?52:68, minHeight:36 }, value:ev[k], min:'0', onChange:function(e){ var nv=Object.assign({},ev); nv[k]=e.target.value; setEv(nv) }, onClick:function(e){ e.stopPropagation() }, onKeyDown:function(e){ if(e.key==='Enter') saveRow(); if(e.key==='Escape') setEditK(null) }, autoFocus:true })) })
+                                  : KK.map(function(k,ki){ return React.createElement('td', { key:k, style:numTd(ki,r) }, r.e[k]!==null?r.e[k].toLocaleString():'—')}),
+                                React.createElement('td', { style:{ padding:mobile?'0':'10px 12px', textAlign:'right', color:r.dt>0?'var(--txt)':'var(--txt4)', fontWeight:r.dt>0?800:500, fontSize:'13px', display:mobile?'none':'table-cell' } }, r.dt>0?r.dt.toLocaleString():'—'),
+                                React.createElement('td', { style:lastTd(r, isEd) }, 
+                                    isEd 
+                                        ? React.createElement(React.Fragment, null, 
+                                            React.createElement('button', { className:'bp', style:{ padding:'5px 10px', fontSize:12, marginRight:3, minHeight:34 }, onClick:function(e){ e.stopPropagation(); saveRow() } }, 'Save'),
+                                            React.createElement('button', { className:'bs', style:{ padding:'5px 10px', fontSize:12, minHeight:34 }, onClick:function(e){ e.stopPropagation(); setEditK(null) } }, 'Cancel')
+                                          )
+                                        : (r.cum>0?r.cum.toLocaleString():'—')
                                 )
                             );
                         }))
@@ -1008,34 +592,34 @@
             const [fetching, setFetching] = useState(true);
             const [fetchErr, setFetchErr] = useState(false);
             function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('wiga_theme', t); setThemeState(t) }
-            const toast = useCallback((msg, type) => { type = type || 'success'; const id = ++_tid; setToasts(p => [...p, { id, msg, type, out: false }]); setTimeout(() => { setToasts(p => p.map(t => t.id === id ? { ...t, out: true } : t)); setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 300); }, 3500); }, []);
+            const toast = useCallback((msg, type) => { type=type||'success'; const id = ++_tid; setToasts(p => [...p, { id, msg, type, out:false }]); setTimeout(() => { setToasts(p => p.map(t => t.id===id ? {...t, out:true} : t)); setTimeout(() => setToasts(p => p.filter(t => t.id!==id)), 300); }, 3500); }, []);
             const onAuthChange = useCallback((authed) => { setIsAdmin(authed); if (!authed) toast('Session ended', 'info'); }, [toast]);
             useEffect(() => { if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) { setFetching(false); setFetchErr(true); return } const ok = DB.init(SB_URL, SB_KEY, onAuthChange); if (!ok) { setFetching(false); setFetchErr(true); return } DB.getSession().then(session => { setIsAdmin(!!session); return DB.fetchAll(); }).then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } else setFetchErr(true); setFetching(false); }).catch(() => { setFetchErr(true); setFetching(false); }); }, [onAuthChange]);
             useEffect(() => { if (!DB.ready) return; const iv = setInterval(() => { DB.fetchAll().then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } }); }, 60000); return () => clearInterval(iv); }, []);
             function handleLogin() { setIsAdmin(true); setShowLogin(false); toast('Signed in as admin', 'success'); }
             function handleLogout() { DB.signOut(); setIsAdmin(false); toast(' signed out', 'info'); }
-            const done = useMemo(() => DATES.filter(d => { const e = data[fmtD(d)]; return e && [e.kit1, e.kit2, e.kit3].some(v => v !== null && v > 0) }).length, [data]);
-            if (fetching) return React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 14 } },
-                React.createElement('div', { style: { width: 36, height: 36, border: '3px solid var(--brd)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite' } }),
-                React.createElement('p', { style: { fontSize: 14, fontWeight: 600, color: 'var(--txt3)' } }, 'Loading dashboard…')
+            const done = useMemo(() => DATES.filter(d => { const e = data[fmtD(d)]; return e && [e.kit1,e.kit2,e.kit3].some(v => v!==null && v>0) }).length, [data]);
+            if (fetching) return React.createElement('div', { style:{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', flexDirection:'column', gap:14 } },
+                React.createElement('div', { style:{ width:36, height:36, border:'3px solid var(--brd)', borderTopColor:'#10b981', borderRadius:'50%', animation:'spin 1s linear infinite' } }),
+                React.createElement('p', { style:{ fontSize:14, fontWeight:600, color:'var(--txt3)' } }, 'Loading dashboard…')
             );
-            return React.createElement('div', { style: { minHeight: '100vh' } },
-                React.createElement(Toasts, { list: toasts }),
-                showSetup ? React.createElement(SetupModal, { onClose: () => setShowSetup(false) }) : null,
-                showLogin ? React.createElement(LoginModal, { onOk: handleLogin, onCancel: () => setShowLogin(false) }) : null,
-                React.createElement(Header, { done, theme, setTheme, isAdmin, setShowLogin, handleLogout, openSetup: () => setShowSetup(true) }),
-                React.createElement('main', { style: { maxWidth: 1280, margin: '0 auto', padding: 'clamp(14px,4vw,22px) clamp(14px,4vw,24px)', display: 'flex', flexDirection: 'column', gap: 16 } },
-                    fetchErr ? React.createElement(Banner, { msg: 'Could not connect to Supabase. Check credentials in the HTML file.', icon: 'fa-triangle-exclamation', onAction: () => setShowSetup(true), actionLabel: 'View Info' }) : null,
+            return React.createElement('div', { style:{ minHeight:'100vh' } },
+                React.createElement(Toasts, { list:toasts }),
+                showSetup ? React.createElement(SetupModal, { onClose:() => setShowSetup(false) }) : null,
+                showLogin ? React.createElement(LoginModal, { onOk:handleLogin, onCancel:() => setShowLogin(false) }) : null,
+                React.createElement(Header, { done, theme, setTheme, isAdmin, setShowLogin, handleLogout, openSetup:() => setShowSetup(true) }),
+                React.createElement('main', { style:{ maxWidth:1280, margin:'0 auto', padding:'clamp(14px,4vw,22px) clamp(14px,4vw,24px)', display:'flex', flexDirection:'column', gap:16 } },
+                    fetchErr ? React.createElement(Banner, { msg:'Could not connect to Supabase. Check credentials in the HTML file.', icon:'fa-triangle-exclamation', onAction:() => setShowSetup(true), actionLabel:'View Info' }) : null,
                     React.createElement(Cards, { data }),
-                    isAdmin ? React.createElement(Update, { data, setData, toast }) : React.createElement(Banner, { msg: 'Read-only view. Admin sign-in required to add or edit data.', icon: 'fa-lock', onAction: () => setShowLogin(true), actionLabel: 'Sign In' }),
-                    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap: 14 } },
+                    isAdmin ? React.createElement(Update, { data, setData, toast }) : React.createElement(Banner, { msg:'Read-only view. Admin sign-in required to add or edit data.', icon:'fa-lock', onAction:() => setShowLogin(true), actionLabel:'Sign In' }),
+                    React.createElement('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap:14 } },
                         React.createElement(BarChart, { data, theme }),
                         React.createElement(DonutChart, { data, theme })
                     ),
                     React.createElement(Table, { data, setData, toast, isAdmin })
                 ),
-                React.createElement('footer', { style: { textAlign: 'center', padding: 'clamp(20px,4vw,28px) clamp(14px,4vw,24px)', borderTop: '1px solid var(--brd)', marginTop: 16, transition: 'border-color .35s' } },
-                    React.createElement('p', { style: { fontSize: 12, fontWeight: 600, color: 'var(--txt4)', transition: 'color .35s' } }, 'Wiga Ward Voter Registration Dashboard — Synced via Supabase')
+                React.createElement('footer', { style:{ textAlign:'center', padding:'clamp(20px,4vw,28px) clamp(14px,4vw,24px)', borderTop:'1px solid var(--brd)', marginTop:16, transition:'border-color .35s' } },
+                    React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt4)', transition:'color .35s' } }, 'Wiga Ward Voter Registration Dashboard — Synced via Supabase')
                 )
             );
         }
@@ -1043,5 +627,4 @@
         ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
     </script>
 </body>
-
 </html>
