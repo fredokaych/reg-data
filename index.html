@@ -129,7 +129,7 @@
         .sn { width: 22px; height: 22px; border-radius: 50%; background: rgba(16,185,129,.12); color: #10b981; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0 }
         @media(max-width:480px){
             .mbx { padding: 20px; border-radius: 14px }
-            .inp { font-size: 16px } /* Prevents iOS zoom on focus */
+            .inp { font-size: 16px }
         }
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
         @keyframes spin { to{transform:rotate(360deg)} }
@@ -150,7 +150,7 @@
         const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlhZHF1Zm5yZnRycWZuYnViZWJzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMzA2NDMsImV4cCI6MjA4NjkwNjY0M30.TTIobfdybG5RX4iLtyj7zzpX-zhXL1tzproJQlkqTsI';
 
         const FF = 'Maiandra, "Maiandra GD", sans-serif';
-        const FW600 = '600'; /* Shared weight for small text readability */
+        const FW600 = '600';
 
         const START = new Date(2026, 2, 30, 12);
         const DATES = Array.from({ length: 30 }, (_, i) => { const d = new Date(START); d.setDate(d.getDate() + i); return d });
@@ -260,7 +260,7 @@
                             React.createElement('div', { style:{ padding:'12px 14px', background:'var(--elevated)', borderRadius:9, border:'1px solid var(--brd)' } },
                                 React.createElement('p', { style:{ fontSize:12, fontWeight:500, color:'var(--txt3)', lineHeight:1.6 } },
                                     React.createElement('i', { className:'fas fa-info-circle', style:{ color:'#10b981', marginRight:6 } }),
-                                    'To change credentials, open the HTML file and update the ', React.createElement('code', { style:{ fontSize:11 } }), 'SB_URL', React.createElement('code', { style:{ fontSize:11 } }), ' and ', React.createElement('code', { style:{ fontSize:11 } }), 'SB_KEY', React.createElement('code', { style:{ fontSize:11 } }), ' constants.'
+                                    'To change credentials, update the SB_URL and SB_KEY constants in the HTML file.'
                                 )
                             )
                         )
@@ -401,60 +401,34 @@
             const fRef = useRef(null);
             const [drag, setDrag] = useState(false);
             const [confirmReset, setConfirmReset] = useState(false);
-
             useEffect(() => { const t = fmtD(new Date()); const ok = DATES.some(d => fmtD(d) === t); setFDate(ok ? t : fmtD(DATES[0])) }, []);
             useEffect(() => { const e = data[fDate]; if (e) { const has = e.kit1 !== null || e.kit2 !== null || e.kit3 !== null; if (has) { setFVal({ kit1: e.kit1!==null?''+e.kit1:'', kit2: e.kit2!==null?''+e.kit2:'', kit3: e.kit3!==null?''+e.kit3:'' }); setEditing(true) } else { setFVal({ kit1:'', kit2:'', kit3:'' }); setEditing(false) } } }, [fDate, data]);
-
             async function submit() {
-                const vs = KK.map(k => fVal[k].trim());
-                if (vs.every(v => !v)) { toast('Enter at least one kit value', 'error'); return }
-                const nums = vs.map(v => v ? parseInt(v) : null);
-                if (nums.some((n,i) => vs[i] && isNaN(n))) { toast('Enter valid numbers', 'error'); return }
+                const vs = KK.map(k => fVal[k].trim()); if (vs.every(v => !v)) { toast('Enter at least one kit value', 'error'); return }
+                const nums = vs.map(v => v ? parseInt(v) : null); if (nums.some((n,i) => vs[i] && isNaN(n))) { toast('Enter valid numbers', 'error'); return }
                 if (nums.some(n => n !== null && n < 0)) { toast('Values cannot be negative', 'error'); return }
                 if (!DATES.find(d => fmtD(d) === fDate)) { toast('Date outside registration period', 'error'); return }
                 const res = await DB.upsert(fDate, nums[0], nums[1], nums[2]);
                 if (!res.error) { const nd = { ...data, [fDate]: { kit1:nums[0], kit2:nums[1], kit3:nums[2] } }; setData(nd); toast((editing?'Updated':'Added')+' data for '+fmtS(DATES.find(d => fmtD(d)===fDate)), 'success'); setFVal({ kit1:'', kit2:'', kit3:'' }); setEditing(false); const ci = DATES.findIndex(d => fmtD(d)===fDate); if (ci < DATES.length-1) setFDate(fmtD(DATES[ci+1])); }
                 else toast('Write failed — you may have been signed out', 'error');
             }
-
-            function parseCSV(file) {
-                if (!file) return;
-                Papa.parse(file, { header:true, skipEmptyLines:true, complete: r => {
-                    const nd = { ...data }; let imp=0, skip=0;
-                    r.data.forEach(row => { const dt = (row['Date']||row['date']||'').trim(); if (!dt) { skip++; return } if (!DATES.find(d => fmtD(d)===dt)) { skip++; return } const v1=(row['Kit 1']||row['kit1']||'').trim(), v2=(row['Kit 2']||row['kit2']||'').trim(), v3=(row['Kit 3']||row['kit3']||'').trim(); nd[dt] = { kit1:v1?parseInt(v1):null, kit2:v2?parseInt(v2):null, kit3:v3?parseInt(v3):null }; imp++ });
-                    Promise.all(DATES.map(d => { const k = fmtD(d), e = nd[k]; if (e && (e.kit1!==null||e.kit2!==null||e.kit3!==null)) return DB.upsert(k,e.kit1,e.kit2,e.kit3); return Promise.resolve({}) })).then(() => {});
-                    setData(nd); toast('Imported '+imp+' entries'+(skip?', skipped '+skip:''), 'success'); if (fRef.current) fRef.current.value = '';
-                }, error: () => toast('CSV parse error', 'error') });
-            }
-
+            function parseCSV(file) { if (!file) return; Papa.parse(file, { header:true, skipEmptyLines:true, complete: r => { const nd = { ...data }; let imp=0, skip=0; r.data.forEach(row => { const dt = (row['Date']||row['date']||'').trim(); if (!dt) { skip++; return } if (!DATES.find(d => fmtD(d)===dt)) { skip++; return } const v1=(row['Kit 1']||row['kit1']||'').trim(), v2=(row['Kit 2']||row['kit2']||'').trim(), v3=(row['Kit 3']||row['kit3']||'').trim(); nd[dt] = { kit1:v1?parseInt(v1):null, kit2:v2?parseInt(v2):null, kit3:v3?parseInt(v3):null }; imp++ }); Promise.all(DATES.map(d => { const k = fmtD(d), e = nd[k]; if (e && (e.kit1!==null||e.kit2!==null||e.kit3!==null)) return DB.upsert(k,e.kit1,e.kit2,e.kit3); return Promise.resolve({}) })).then(() => {}); setData(nd); toast('Imported '+imp+' entries'+(skip?', skipped '+skip:''), 'success'); if (fRef.current) fRef.current.value = ''; }, error: () => toast('CSV parse error', 'error') }); }
             function onDrop(e) { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files[0]; if (f && f.name.endsWith('.csv')) parseCSV(f); else toast('Upload a .csv file', 'error') }
             function dlSample() { const b = new Blob([sampleCSV()],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='wiga_sample_template.csv'; a.click(); toast('Template downloaded','info') }
             function dlExport() { const b = new Blob([exportCSV(data)],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='wiga_data_'+fmtD(new Date())+'.csv'; a.click(); toast('Data exported','success') }
-            async function doReset() { const r = await DB.deleteAll(); if (r.error) { toast('Failed to clear data', 'error'); return } setData(empty()); setConfirmReset(false); toast('All data cleared', 'success') }
-
+            async function doReset() { const r = await DB.deleteAll(); if (r.error) { toast('Failed to clear data', 'error'); return } setData(empty()); setConfirmReset(false); toast('All data cleared', 'success'); }
             const tabs = [['quick','fa-pen-to-square','Quick Entry'],['csv','fa-file-csv','CSV Upload'],['more','fa-ellipsis','More']];
             const lblStyle = { fontSize:11, fontWeight:600, textTransform:'uppercase', letterSpacing:'.06em', display:'block', marginBottom:6, transition:'color .35s' };
-
             return React.createElement('div', { className:'gc fi', style:{ padding:0, animationDelay:'380ms' } },
                 React.createElement('div', { style:{ display:'flex', gap:4, padding:'14px 14px 0', overflowX:'auto' } },
-                    tabs.map(t => React.createElement('button', { key:t[0], className:'tb '+(tab===t[0]?'ta':'tn'), onClick:() => setTab(t[0]), style:{ whiteSpace:'nowrap' } },
-                        React.createElement('i', { className:'fas '+t[1], style:{ marginRight:6 } }), t[2]
-                    ))
+                    tabs.map(t => React.createElement('button', { key:t[0], className:'tb '+(tab===t[0]?'ta':'tn'), onClick:() => setTab(t[0]), style:{ whiteSpace:'nowrap' } }, React.createElement('i', { className:'fas '+t[1], style:{ marginRight:6 } }), t[2]))
                 ),
                 React.createElement('div', { style:{ padding:'clamp(14px,3vw,18px)' } },
                     tab==='quick' ? React.createElement('div', { className:'fi' },
-                        editing ? React.createElement('div', { style:{ marginBottom:14, padding:'10px 14px', background:'var(--inv-bg)', borderRadius:9, border:'1px solid var(--inv-brd)', transition:'all .35s' } },
-                            React.createElement('span', { style:{ fontSize:12, fontWeight:600, color:'var(--inv-txt)' } }, React.createElement('i', { className:'fas fa-pen', style:{ marginRight:6 } }), 'Editing existing entry — submit to overwrite')
-                        ) : null,
+                        editing ? React.createElement('div', { style:{ marginBottom:14, padding:'10px 14px', background:'var(--inv-bg)', borderRadius:9, border:'1px solid var(--inv-brd)', transition:'all .35s' } }, React.createElement('span', { style:{ fontSize:12, fontWeight:600, color:'var(--inv-txt)' } }, React.createElement('i', { className:'fas fa-pen', style:{ marginRight:6 } }), 'Editing existing entry — submit to overwrite')) : null,
                         React.createElement('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(min(100%,130px),1fr))', gap:10, alignItems:'end' } },
-                            React.createElement('div', null,
-                                React.createElement('label', { style:lblStyle, color:'var(--txt3)' }, 'Date'),
-                                React.createElement('input', { className:'inp', type:'date', value:fDate, min:fmtD(DATES[0]), max:fmtD(DATES[29]), onChange:e => setFDate(e.target.value) })
-                            ),
-                            KK.map((k,i) => React.createElement('div', { key:k },
-                                React.createElement('label', { style:lblStyle, color:KC[i] }, KN[i]),
-                                React.createElement('input', { className:'inp', type:'number', placeholder:'0', value:fVal[k], min:'0', onChange:e => { const nv={...fVal}; nv[k]=e.target.value; setFVal(nv) }, style:{ borderLeft:'3px solid '+KC[i] }, onKeyDown:e => { if (e.key==='Enter') submit() } })
-                            )),
+                            React.createElement('div', null, React.createElement('label', { style:lblStyle, color:'var(--txt3)' }, 'Date'), React.createElement('input', { className:'inp', type:'date', value:fDate, min:fmtD(DATES[0]), max:fmtD(DATES[29]), onChange:e => setFDate(e.target.value) })),
+                            KK.map((k,i) => React.createElement('div', { key:k }, React.createElement('label', { style:lblStyle, color:KC[i] }, KN[i]), React.createElement('input', { className:'inp', type:'number', placeholder:'0', value:fVal[k], min:'0', onChange:e => { const nv={...fVal}; nv[k]=e.target.value; setFVal(nv) }, style:{ borderLeft:'3px solid '+KC[i] }, onKeyDown:e => { if (e.key==='Enter') submit() } }))),
                             React.createElement('div', null, React.createElement('button', { className:'bp', style:{ width:'100%' }, onClick:submit }, React.createElement('i', { className:'fas '+(editing?'fa-save':'fa-plus'), style:{ marginRight:8 } }), editing?'Update':'Add'))
                         )
                     ) : null,
@@ -465,10 +439,7 @@
                             React.createElement('p', { style:{ fontSize:13, fontWeight:500, color:'var(--txt2)', marginBottom:3 } }, 'Drag and drop your CSV file here'),
                             React.createElement('p', { style:{ fontSize:12, fontWeight:500, color:'var(--txt4)' } }, 'or click to browse')
                         ),
-                        React.createElement('div', { style:{ padding:'12px 14px', background:'var(--elevated)', borderRadius:9, border:'1px solid var(--brd)', transition:'all .35s' } },
-                            React.createElement('p', { style:{ fontSize:12, fontWeight:500, color:'var(--txt3)', marginBottom:4 } }, React.createElement('i', { className:'fas fa-info-circle', style:{ marginRight:5, color:'#10b981' } }), 'Expected columns: Date, Kit 1, Kit 2, Kit 3'),
-                            React.createElement('code', { style:{ fontSize:11, fontWeight:500, color:'var(--txt4)', fontFamily:'monospace' } }, '2026-03-30,15,12,18')
-                        ),
+                        React.createElement('div', { style:{ padding:'12px 14px', background:'var(--elevated)', borderRadius:9, border:'1px solid var(--brd)', transition:'all .35s' } }, React.createElement('p', { style:{ fontSize:12, fontWeight:500, color:'var(--txt3)', marginBottom:4 } }, React.createElement('i', { className:'fas fa-info-circle', style:{ marginRight:5, color:'#10b981' } }), 'Expected columns: Date, Kit 1, Kit 2, Kit 3'), React.createElement('code', { style:{ fontSize:11, fontWeight:500, color:'var(--txt4)', fontFamily:'monospace' } }, '2026-03-30,15,12,18')),
                         React.createElement('button', { className:'bs', style:{ marginTop:10, width:'100%' }, onClick:dlSample }, React.createElement('i', { className:'fas fa-file-arrow-down', style:{ marginRight:8 } }), 'Download Sample Template')
                     ) : null,
                     tab==='more' ? React.createElement('div', { className:'fi', style:{ display:'grid', gap:10 } },
@@ -484,17 +455,8 @@
         function BarChart({ data, theme }) {
             const cv = useRef(null); const ch = useRef(null); const o = cOpts(theme);
             useEffect(() => {
-                if (!cv.current) return;
-                if (ch.current) ch.current.destroy();
-                ch.current = new Chart(cv.current.getContext('2d'), {
-                    type:'bar',
-                    data:{ labels:DATES.map(fmtS), datasets:KK.map((k,i) => ({ label:KN[i], data:DATES.map(d => { const e=data[fmtD(d)]; return e&&e[k]!==null?e[k]:0 }), backgroundColor:KCL[i], borderColor:KC[i], borderWidth:1, borderRadius:3, borderSkipped:false }))},
-                    options:{ responsive:true, maintainAspectRatio:false, interaction:{ intersect:false, mode:'index' },
-                        plugins:{ legend:{ position:'top', labels:{ color:o.tick, font:{ family:FF, size:12, weight:'600' }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } },
-                            tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:FF, weight:'600', size:13 }, bodyFont:{ family:FF, weight:'500', size:12 }, padding:10, cornerRadius:8 } },
-                        scales:{ x:{ stacked:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:FF, size:10, weight:'600' }, maxRotation:50 }, border:{ color:o.grid } },
-                            y:{ stacked:true, beginAtZero:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:FF, size:11, weight:'600' } }, border:{ color:o.grid } } } }
-                });
+                if (!cv.current) return; if (ch.current) ch.current.destroy();
+                ch.current = new Chart(cv.current.getContext('2d'), { type:'bar', data:{ labels:DATES.map(fmtS), datasets:KK.map((k,i) => ({ label:KN[i], data:DATES.map(d => { const e=data[fmtD(d)]; return e&&e[k]!==null?e[k]:0 }), backgroundColor:KCL[i], borderColor:KC[i], borderWidth:1, borderRadius:3, borderSkipped:false }))}, options:{ responsive:true, maintainAspectRatio:false, interaction:{ intersect:false, mode:'index' }, plugins:{ legend:{ position:'top', labels:{ color:o.tick, font:{ family:FF, size:12, weight:'600' }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } }, tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:FF, weight:'600', size:13 }, bodyFont:{ family:FF, weight:'500', size:12 }, padding:10, cornerRadius:8 } }, scales:{ x:{ stacked:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:FF, size:10, weight:'600' }, maxRotation:50 }, border:{ color:o.grid } }, y:{ stacked:true, beginAtZero:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:FF, size:11, weight:'600' } }, border:{ color:o.grid } } } } });
                 return () => { if (ch.current) ch.current.destroy() };
             }, [data, theme]);
             return React.createElement('div', { className:'gc fi', style:{ padding:'clamp(14px,3vw,18px)', animationDelay:'480ms' } },
@@ -506,18 +468,9 @@
         function DonutChart({ data, theme }) {
             const cv = useRef(null); const ch = useRef(null); const o = cOpts(theme);
             useEffect(() => {
-                if (!cv.current) return;
-                if (ch.current) ch.current.destroy();
-                const totals = KK.map(k => DATES.reduce((s,d) => { const e=data[fmtD(d)]; return s+(e&&e[k]!==null?e[k]:0) }, 0));
-                const has = totals.some(t => t > 0);
-                ch.current = new Chart(cv.current.getContext('2d'), {
-                    type:'doughnut',
-                    data:{ labels:KN, datasets:[{ data:has?totals:[.001,.001,.001], backgroundColor:['rgba(16,185,129,.78)','rgba(245,158,11,.78)','rgba(244,63,94,.78)'], borderColor:o.dbord, borderWidth:3, hoverOffset:6 }] },
-                    options:{ responsive:true, maintainAspectRatio:false, cutout:'66%',
-                        plugins:{ legend:{ position:'bottom', labels:{ color:o.tick, font:{ family:FF, size:12, weight:'600' }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } },
-                            tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:FF, weight:'600', size:13 }, bodyFont:{ family:FF, weight:'500', size:12 }, padding:10, cornerRadius:8,
-                                callbacks:{ label:ctx => { if (!has) return 'No data'; const tot=totals.reduce((a,b)=>a+b,0); return ctx.label+': '+ctx.raw.toLocaleString()+' ('+(ctx.raw/tot*100).toFixed(1)+'%)' } } } } }
-                });
+                if (!cv.current) return; if (ch.current) ch.current.destroy();
+                const totals = KK.map(k => DATES.reduce((s,d) => { const e=data[fmtD(d)]; return s+(e&&e[k]!==null?e[k]:0) }, 0)); const has = totals.some(t => t > 0);
+                ch.current = new Chart(cv.current.getContext('2d'), { type:'doughnut', data:{ labels:KN, datasets:[{ data:has?totals:[.001,.001,.001], backgroundColor:['rgba(16,185,129,.78)','rgba(245,158,11,.78)','rgba(244,63,94,.78)'], borderColor:o.dbord, borderWidth:3, hoverOffset:6 }] }, options:{ responsive:true, maintainAspectRatio:false, cutout:'66%', plugins:{ legend:{ position:'bottom', labels:{ color:o.tick, font:{ family:FF, size:12, weight:'600' }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } }, tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:FF, weight:'600', size:13 }, bodyFont:{ family:FF, weight:'500', size:12 }, padding:10, cornerRadius:8, callbacks:{ label:ctx => { if (!has) return 'No data'; const tot=totals.reduce((a,b)=>a+b,0); return ctx.label+': '+ctx.raw.toLocaleString()+' ('+(ctx.raw/tot*100).toFixed(1)+'%)' } } } } } });
                 return () => { if (ch.current) ch.current.destroy() };
             }, [data, theme]);
             return React.createElement('div', { className:'gc fi', style:{ padding:'clamp(14px,3vw,18px)', animationDelay:'560ms' } },
@@ -526,7 +479,25 @@
             );
         }
 
+        /* ═══════════ MOBILE-AWARE TABLE ═══════════ */
+        function useMobile(breakpoint) {
+            breakpoint = breakpoint || 640;
+            const [mobile, setMobile] = useState(typeof window !== 'undefined' && window.innerWidth < breakpoint);
+            useEffect(() => {
+                function onResize() { setMobile(window.innerWidth < breakpoint) }
+                window.addEventListener('resize', onResize);
+                return () => window.removeEventListener('resize', onResize);
+            }, [breakpoint]);
+            return mobile;
+        }
+
+        /* Combined date+day display: "30 Mar (Mon)" */
+        function fmtDateDay(d) {
+            return fmtS(d) + ' (' + DAYS[d.getDay()] + ')';
+        }
+
         function Table({ data, setData, toast, isAdmin }) {
+            const mobile = useMobile(640);
             const [editK, setEditK] = useState(null);
             const [ev, setEv] = useState({ kit1:'', kit2:'', kit3:'' });
             let cum = 0;
@@ -535,8 +506,87 @@
             function startEdit(r) { if (!isAdmin) return; setEditK(r.k); setEv({ kit1:r.e.kit1!==null?''+r.e.kit1:'', kit2:r.e.kit2!==null?''+r.e.kit2:'', kit3:r.e.kit3!==null?''+r.e.kit3:'' }) }
             async function saveRow() { const nd = { ...data, [editK]:{ kit1:ev.kit1!==''?parseInt(ev.kit1):null, kit2:ev.kit2!==''?parseInt(ev.kit2):null, kit3:ev.kit3!==''?parseInt(ev.kit3):null } }; const res = await DB.upsert(editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3); if (!res.error) { setData(nd); setEditK(null); toast('Entry updated', 'success') } else toast('Failed to save — you may have been signed out', 'error'); }
 
-            const headers = ['#','Date','Day',KN[0],KN[1],KN[2],'Daily','Cumulative'];
-            const thStyle = (hi) => ({ padding:'10px 12px', textAlign:hi>=3?'right':'left', fontSize:10, fontWeight:700, textTransform:'uppercase', letterSpacing:'.06em', color:hi>=3&&hi<6?KC[hi-3]:'var(--txt3)', borderBottom:'1px solid var(--brd)', transition:'all .35s', whiteSpace:'nowrap' });
+            /* Desktop: 8 columns | Mobile: 6 columns (Date+Day merged, no TODAY badge, Cum. shortened) */
+            var headers = mobile
+                ? ['#','Date (Day)',KN[0],KN[1],KN[2],'Cum.']
+                : ['#','Date','Day',KN[0],KN[1],KN[2],'Daily','Cumulative'];
+
+            /* Map mobile header index → kit color index for header coloring */
+            function kitHi(hi) { return mobile ? hi-2 : hi-3 }
+
+            var thStyle = (hi) => ({
+                padding: mobile ? '8px 8px' : '10px 12px',
+                textAlign: (mobile ? hi>=2 : hi>=3) ? 'right' : 'left',
+                fontSize: mobile ? '9px' : '10px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '.05em',
+                color: (mobile ? hi>=2&&hi<5 : hi>=3&&hi<6) ? KC[kitHi(hi)] : 'var(--txt3)',
+                borderBottom: '1px solid var(--brd)',
+                transition: 'all .35s',
+                whiteSpace: 'nowrap'
+            });
+
+            /* Cell styles that adapt to mobile vs desktop */
+            var dateTd = (r, isEd) => {
+                var s = { padding: mobile ? '8px 6px' : '10px 12px', fontWeight: r.today ? 600 : 500, whiteSpace: 'nowrap' };
+                if (mobile) {
+                    /* Combined date+day cell */
+                    s.color = r.today ? '#10b981' : 'var(--txt2)';
+                    s.fontSize = '12px';
+                    /* TODAY shown as subtle left border instead of badge */
+                    s.borderLeft = r.today ? '3px solid #10b981' : 'none';
+                    s.paddingLeft = r.today ? '7px' : '6px';
+                } else {
+                    s.color = r.today ? '#10b981' : 'var(--txt2)';
+                    s.fontSize = '13px';
+                }
+                return s;
+            };
+
+            var dayTd = () => ({
+                padding: mobile ? '0' : '10px 12px',
+                color: 'var(--txt3)',
+                fontSize: mobile ? '0' : '12px',
+                fontWeight: 600,
+                display: mobile ? 'none' : 'table-cell'
+            });
+
+            var numTd = () => ({
+                padding: mobile ? '8px 6px' : '10px 12px',
+                textAlign: 'right',
+                fontSize: '13px',
+                fontWeight: 500
+            });
+
+            var idxTd = () => ({
+                padding: mobile ? '8px 6px' : '10px 12px',
+                color: 'var(--txt4)',
+                fontSize: mobile ? '11px' : '12px',
+                fontWeight: 600
+            });
+
+            var dailyStyle = (r) => ({
+                padding: mobile ? '0' : '10px 12px',
+                textAlign: 'right',
+                color: r.dt>0 ? 'var(--txt)' : 'var(--txt4)',
+                fontWeight: r.dt>0 ? 700 : 500,
+                fontSize: '13px',
+                display: mobile ? 'none' : 'table-cell'
+            });
+
+            var cumStyle = (r) => ({
+                padding: mobile ? '8px 6px' : '10px 12px',
+                textAlign: 'right',
+                color: r.cum>0 ? 'var(--txt2)' : 'var(--txt4)',
+                fontWeight: 500,
+                fontSize: '13px'
+            });
+
+            var editInp = () => ({
+                className: 'inp', type: 'number',
+                style: { padding:'5px 6px', fontSize:16, textAlign:'right', width: mobile?52:68, minHeight:36 }
+            });
 
             return React.createElement('div', { className:'gc fi', style:{ padding:0, animationDelay:'640ms' } },
                 React.createElement('div', { style:{ padding:'clamp(14px,3vw,18px) clamp(14px,3vw,18px) 12px', borderBottom:'1px solid var(--brd)', transition:'border-color .35s' } },
@@ -546,40 +596,62 @@
                 React.createElement('div', { className:'tw', style:{ maxHeight:500, overflowY:'auto' } },
                     React.createElement('table', { style:{ width:'100%', borderCollapse:'collapse', fontSize:13 } },
                         React.createElement('thead', null,
-                            React.createElement('tr', { className:'dth' }, headers.map((h,hi) => React.createElement('th', { key:hi, style:thStyle(hi) }, h)))
+                            React.createElement('tr', { className:'dth' },
+                                headers.map((h,hi) => React.createElement('th', { key:hi, style:thStyle(hi) }, h))
+                            )
                         ),
                         React.createElement('tbody', null,
                             rows.map((r,idx) => {
-                                const isEd = editK === r.k;
+                                var isEd = editK === r.k;
                                 return React.createElement('tr', { key:r.k,
-                                    onClick:() => { if (!isEd) startEdit(r) },
+                                    onClick: function(){ if (!isEd) startEdit(r) },
                                     style:{ cursor:isAdmin?'pointer':'default', background:r.today?'var(--today)':idx%2?'var(--ralt)':'transparent', borderBottom:'1px solid var(--brd)', transition:'background .12s' },
-                                    onMouseEnter:e => { if (isAdmin&&!isEd) e.currentTarget.style.background='var(--rhov)' },
-                                    onMouseLeave:e => { e.currentTarget.style.background=r.today?'var(--today)':idx%2?'var(--ralt)':'transparent' }
+                                    onMouseEnter:function(e){ if (isAdmin&&!isEd) e.currentTarget.style.background='var(--rhov)' },
+                                    onMouseLeave:function(e){ e.currentTarget.style.background=r.today?'var(--today)':idx%2?'var(--ralt)':'transparent' }
                                 },
-                                    React.createElement('td', { style:{ padding:'10px 12px', color:'var(--txt4)', fontSize:12, fontWeight:600 } }, r.i),
-                                    React.createElement('td', { style:{ padding:'10px 12px', color:r.today?'#10b981':'var(--txt2)', fontWeight:r.today?600:500, whiteSpace:'nowrap', fontSize:13 } },
-                                        fmtS(r.d),
-                                        r.today ? React.createElement('span', { style:{ fontSize:9, color:'#10b981', marginLeft:5, fontWeight:600, border:'1px solid rgba(16,185,129,.2)', borderRadius:4, padding:'1px 5px' } }, 'TODAY') : null
+                                    /* Row # */
+                                    React.createElement('td', { style:idxTd() }, r.i),
+
+                                    /* Date column — shows combined date+day on mobile */
+                                    React.createElement('td', { style:dateTd(r, isEd) },
+                                        mobile ? fmtDateDay(r.d) : fmtS(r.d),
+                                        !mobile && r.today ? React.createElement('span', { style:{ fontSize:9, color:'#10b981', marginLeft:5, fontWeight:600, border:'1px solid rgba(16,185,129,.2)', borderRadius:4, padding:'1px 5px' } }, 'TODAY') : null
                                     ),
-                                    React.createElement('td', { style:{ padding:'10px 12px', color:'var(--txt3)', fontSize:12, fontWeight:600 } }, DAYS[r.d.getDay()]),
+
+                                    /* Day column — hidden on mobile */
+                                    React.createElement('td', { style:dayTd() }, DAYS[r.d.getDay()]),
+
+                                    /* Kit columns */
                                     isEd
-                                        ? KK.map(k => React.createElement('td', { key:k, style:{ padding:'5px 6px' } },
-                                            React.createElement('input', { className:'inp', type:'number', style:{ padding:'6px 8px', fontSize:16, textAlign:'right', width:68, minHeight:40 }, value:ev[k], min:'0', onChange:e => { const nv={...ev}; nv[k]=e.target.value; setEv(nv) }, onClick:e => e.stopPropagation(), onKeyDown:e => { if(e.key==='Enter') saveRow(); if(e.key==='Escape') setEditK(null) }, autoFocus:true })
-                                          ))
-                                        : KK.map((k,ki) => React.createElement('td', { key:k, style:{ padding:'10px 12px', textAlign:'right', color:r.e[k]!==null?KC[ki]:'var(--txt4)', fontWeight:r.e[k]!==null?600:500, fontSize:13 } }, r.e[k]!==null?r.e[k].toLocaleString():'—')),
+                                        ? KK.map(function(k){ return React.createElement('td', { key:k, style:{ padding:'4px 4px' } },
+                                            React.createElement('input', Object.assign({}, editInp(), { value:ev[k], min:'0', key:k,
+                                                onChange:function(e){ var nv=Object.assign({},ev); nv[k]=e.target.value; setEv(nv) },
+                                                onClick:function(e){ e.stopPropagation() },
+                                                onKeyDown:function(e){ if(e.key==='Enter') saveRow(); if(e.key==='Escape') setEditK(null) },
+                                                autoFocus:true
+                                            }))
+                                          )})
+                                        : KK.map(function(k,ki){ return React.createElement('td', { key:k, style:Object.assign({}, numTd(), { color:r.e[k]!==null?KC[ki]:'var(--txt4)', fontWeight:r.e[k]!==null?600:500 }) }, r.e[k]!==null?r.e[k].toLocaleString():'—')}),
+
+                                    /* Daily total — hidden on mobile */
+                                    React.createElement('td', { style:dailyStyle(r) }, r.dt>0?r.dt.toLocaleString():'—'),
+
+                                    /* Cumulative */
+                                    React.createElement('td', { style:cumStyle(r) }, r.cum>0?r.cum.toLocaleString():'—'),
+
+                                    /* Edit buttons — full width on mobile */
                                     isEd
                                         ? React.createElement(React.Fragment, null,
-                                            React.createElement('td', { style:{ padding:'10px 12px', textAlign:'right' } },
-                                                React.createElement('button', { className:'bp', style:{ padding:'6px 14px', fontSize:13, marginRight:4, minHeight:38 }, onClick:e => { e.stopPropagation(); saveRow() } }, 'Save'),
-                                                React.createElement('button', { className:'bs', style:{ padding:'6px 14px', fontSize:13, minHeight:38 }, onClick:e => { e.stopPropagation(); setEditK(null) } }, 'Cancel')
+                                            React.createElement('td', { style:{ padding:mobile?'6px 4px':'10px 12px', textAlign:'right', display:mobile?'table-cell':'none' } },
+                                                React.createElement('button', { className:'bp', style:{ padding:'5px 10px', fontSize:12, marginRight:3, minHeight:34 }, onClick:function(e){ e.stopPropagation(); saveRow() } }, 'Save'),
+                                                React.createElement('button', { className:'bs', style:{ padding:'5px 10px', fontSize:12, minHeight:34 }, onClick:function(e){ e.stopPropagation(); setEditK(null) } }, 'Cancel')
                                             ),
-                                            React.createElement('td', null)
+                                            React.createElement('td', { style:{ display:mobile?'none':'table-cell' } },
+                                                React.createElement('button', { className:'bp', style:{ padding:'6px 14px', fontSize:13, marginRight:4, minHeight:38 }, onClick:function(e){ e.stopPropagation(); saveRow() } }, 'Save'),
+                                                React.createElement('button', { className:'bs', style:{ padding:'6px 14px', fontSize:13, minHeight:38 }, onClick:function(e){ e.stopPropagation(); setEditK(null) } }, 'Cancel')
+                                            )
                                           )
-                                        : React.createElement(React.Fragment, null,
-                                            React.createElement('td', { style:{ padding:'10px 12px', textAlign:'right', color:r.dt>0?'var(--txt)':'var(--txt4)', fontWeight:r.dt>0?700:500, fontSize:13 } }, r.dt>0?r.dt.toLocaleString():'—'),
-                                            React.createElement('td', { style:{ padding:'10px 12px', textAlign:'right', color:r.cum>0?'var(--txt2)':'var(--txt4)', fontWeight:500, fontSize:13 } }, r.cum>0?r.cum.toLocaleString():'—')
-                                          )
+                                        : null
                                 );
                             })
                         )
@@ -599,17 +671,10 @@
             const [fetchErr, setFetchErr] = useState(false);
 
             function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('wiga_theme', t); setThemeState(t) }
-
-            const toast = useCallback((msg, type='success') => { const id = ++_tid; setToasts(p => [...p, { id, msg, type, out:false }]); setTimeout(() => { setToasts(p => p.map(t => t.id===id ? {...t, out:true} : t)); setTimeout(() => setToasts(p => p.filter(t => t.id!==id)), 300); }, 3500); }, []);
+            const toast = useCallback((msg, type) => { type=type||'success'; const id = ++_tid; setToasts(p => [...p, { id, msg, type, out:false }]); setTimeout(() => { setToasts(p => p.map(t => t.id===id ? {...t, out:true} : t)); setTimeout(() => setToasts(p => p.filter(t => t.id!==id)), 300); }, 3500); }, []);
             const onAuthChange = useCallback((authed) => { setIsAdmin(authed); if (!authed) toast('Session ended', 'info'); }, [toast]);
 
-            useEffect(() => {
-                if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) { setFetching(false); setFetchErr(true); return }
-                const ok = DB.init(SB_URL, SB_KEY, onAuthChange);
-                if (!ok) { setFetching(false); setFetchErr(true); return }
-                DB.getSession().then(session => { setIsAdmin(!!session); return DB.fetchAll(); }).then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } else setFetchErr(true); setFetching(false); }).catch(() => { setFetchErr(true); setFetching(false); });
-            }, [onAuthChange]);
-
+            useEffect(() => { if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) { setFetching(false); setFetchErr(true); return } const ok = DB.init(SB_URL, SB_KEY, onAuthChange); if (!ok) { setFetching(false); setFetchErr(true); return } DB.getSession().then(session => { setIsAdmin(!!session); return DB.fetchAll(); }).then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } else setFetchErr(true); setFetching(false); }).catch(() => { setFetchErr(true); setFetching(false); }); }, [onAuthChange]);
             useEffect(() => { if (!DB.ready) return; const iv = setInterval(() => { DB.fetchAll().then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } }); }, 60000); return () => clearInterval(iv); }, []);
 
             function handleLogin() { setIsAdmin(true); setShowLogin(false); toast('Signed in as admin', 'success'); }
@@ -629,10 +694,7 @@
                 React.createElement('main', { style:{ maxWidth:1280, margin:'0 auto', padding:'clamp(14px,4vw,22px) clamp(14px,4vw,24px)', display:'flex', flexDirection:'column', gap:16 } },
                     fetchErr ? React.createElement(Banner, { msg:'Could not connect to Supabase. Check credentials in the HTML file.', icon:'fa-triangle-exclamation', onAction:() => setShowSetup(true), actionLabel:'View Info' }) : null,
                     React.createElement(Cards, { data }),
-                    isAdmin
-                        ? React.createElement(Update, { data, setData, toast })
-                        : React.createElement(Banner, { msg:'Read-only view. Admin sign-in required to add or edit data.', icon:'fa-lock', onAction:() => setShowLogin(true), actionLabel:'Sign In' })
-                    ,
+                    isAdmin ? React.createElement(Update, { data, setData, toast }) : React.createElement(Banner, { msg:'Read-only view. Admin sign-in required to add or edit data.', icon:'fa-lock', onAction:() => setShowLogin(true), actionLabel:'Sign In' }),
                     React.createElement('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap:14 } },
                         React.createElement(BarChart, { data, theme }),
                         React.createElement(DonutChart, { data, theme })
