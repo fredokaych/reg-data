@@ -847,8 +847,8 @@
                     tab === 'quick' ? React.createElement('div', { className: 'fi' },
                         editing ? React.createElement('div', { style: { marginBottom: 14, padding: '10px 14px', background: 'var(--inv-bg)', borderRadius: 9, border: '1px solid var(--inv-brd)', transition: 'all .35s' } }, React.createElement('span', { style: { fontSize: 12, fontWeight: 700, color: 'var(--inv-txt)' } }, React.createElement('i', { className: 'fas fa-pen', style: { marginRight: 6 } }), 'Editing existing entry — submit to overwrite')) : null,
                         React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%,130px),1fr))', gap: 10, alignItems: 'end' } },
-                            React.createElement('div', null, React.createElement('label', { style: { ...lblStyle, color: 'var(--txt3)' } }, 'Date'), React.createElement('input', { className: 'inp', type: 'date', value: fDate, min: fmtD(DATES[0]), max: fmtD(DATES[29]), onChange: e => setFDate(e.target.value) })),
-                            KK.map((k, i) => React.createElement('div', { key: k }, React.createElement('label', { style: { ...lblStyle, color: KC[i] } }, KN[i]), React.createElement('input', { className: 'inp', type: 'number', placeholder: '0', value: fVal[k], min: '0', onChange: e => { const nv = { ...fVal }; nv[k] = e.target.value; setFVal(nv) }, style: { borderLeft: '3px solid ' + KC[i] }, onKeyDown: e => { if (e.key === 'Enter') submit() } }))),
+                            React.createElement('div', null, React.createElement('label', { style: lblStyle, color: 'var(--txt3)' }, 'Date'), React.createElement('input', { className: 'inp', type: 'date', value: fDate, min: fmtD(DATES[0]), max: fmtD(DATES[29]), onChange: e => setFDate(e.target.value) })),
+                            KK.map((k, i) => React.createElement('div', { key: k }, React.createElement('label', { style: lblStyle, color: KC[i] }, KN[i]), React.createElement('input', { className: 'inp', type: 'number', placeholder: '0', value: fVal[k], min: '0', onChange: e => { const nv = { ...fVal }; nv[k] = e.target.value; setFVal(nv) }, style: { borderLeft: '3px solid ' + KC[i] }, onKeyDown: e => { if (e.key === 'Enter') submit() } }))),
                             React.createElement('div', null, React.createElement('button', { className: 'bp', style: { width: '100%' }, onClick: submit }, React.createElement('i', { className: 'fas ' + (editing ? 'fa-save' : 'fa-plus'), style: { marginRight: 8 } }), editing ? 'Update' : 'Add'))
                         )
                     ) : null,
@@ -879,6 +879,8 @@
 
             useEffect(() => {
                 if (!cv.current) return;
+
+                // Destroy existing chart before creating a new one
                 if (ch.current) ch.current.destroy();
 
                 ch.current = new Chart(cv.current.getContext('2d'), {
@@ -902,7 +904,6 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         interaction: { intersect: false, mode: 'index' },
-
                         plugins: {
                             legend: {
                                 position: 'top',
@@ -928,7 +929,6 @@
                                 cornerRadius: 8
                             }
                         },
-
                         scales: {
                             x: {
                                 stacked: true,
@@ -938,9 +938,8 @@
                                     font: { family: FF, size: 10, weight: '700' },
                                     maxRotation: 50
                                 },
-                                border: { color: o.grid }   // ✅ correct
+                                border: { color: o.grid }
                             },
-
                             y: {
                                 stacked: true,
                                 beginAtZero: true,
@@ -949,7 +948,7 @@
                                     color: o.tick,
                                     font: { family: FF, size: 11, weight: '700' }
                                 },
-                                border: { color: o.grid }   // ✅ FIXED
+                                border: { color: o.grid } // ✅ FIXED POSITION
                             }
                         }
                     }
@@ -1018,21 +1017,10 @@
             let cum = 0;
 
             const rows = DATES.map((d, i) => {
-                const k = fmtD(d);
-                const e = data[k] || {};
+                const k = fmtD(d), e = data[k] || {};
                 const dt = [e.kit1, e.kit2, e.kit3].reduce((a, b) => (a || 0) + (b || 0), 0);
                 cum += dt;
-
-                return {
-                    i: i + 1,
-                    d,
-                    k,
-                    e,
-                    dt,
-                    cum,
-                    has: dt > 0,
-                    today: k === fmtD(new Date())
-                };
+                return { i: i + 1, d, k, e, dt, cum, has: dt > 0, today: k === fmtD(new Date()) };
             });
 
             function startEdit(r) {
@@ -1054,7 +1042,6 @@
                         kit3: ev.kit3 !== '' ? parseInt(ev.kit3) : null
                     }
                 };
-
                 const res = await DB.upsert(editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3);
 
                 if (!res.error) {
@@ -1070,9 +1057,7 @@
                 ? ['#', 'Date (Day)', KN[0], KN[1], KN[2], 'Cum.']
                 : ['#', 'Date', 'Day', KN[0], KN[1], KN[2], 'Daily', 'Cumulative'];
 
-            function kitHi(hi) {
-                return mobile ? hi - 2 : hi - 3;
-            }
+            function kitHi(hi) { return mobile ? hi - 2 : hi - 3 }
 
             var thStyle = (hi) => ({
                 padding: mobile ? '8px 8px' : '10px 12px',
@@ -1085,6 +1070,7 @@
                     ? KC[kitHi(hi)]
                     : 'var(--txt3)',
                 borderBottom: '1px solid var(--brd)',
+                transition: 'all .35s',
                 whiteSpace: 'nowrap'
             });
 
@@ -1094,15 +1080,23 @@
                     fontWeight: r.today ? 700 : 600,
                     whiteSpace: 'nowrap'
                 };
-
-                s.color = r.today ? '#10b981' : 'var(--txt2)';
-                s.fontSize = mobile ? '12px' : '13px';
-
+                if (mobile) {
+                    s.color = r.today ? '#10b981' : 'var(--txt2)';
+                    s.fontSize = '12px';
+                    s.borderLeft = r.today ? '3px solid #10b981' : 'none';
+                    s.paddingLeft = r.today ? '7px' : '6px';
+                } else {
+                    s.color = r.today ? '#10b981' : 'var(--txt2)';
+                    s.fontSize = '13px';
+                }
                 return s;
             };
 
             var dayTd = () => ({
                 padding: mobile ? '0' : '10px 12px',
+                color: 'var(--txt3)',
+                fontSize: mobile ? '0' : '12px',
+                fontWeight: 700,
                 display: mobile ? 'none' : 'table-cell'
             });
 
@@ -1116,64 +1110,170 @@
 
             var idxTd = () => ({
                 padding: mobile ? '8px 6px' : '10px 12px',
-                color: 'var(--txt4)'
+                color: 'var(--txt4)',
+                fontSize: mobile ? '11px' : '12px',
+                fontWeight: 700
             });
 
-            return React.createElement('div', { className: 'gc fi' },
-
-                React.createElement('div', null,
-                    React.createElement('h3', null, 'Detailed Records')
+            return React.createElement('div', { className: 'gc fi', style: { padding: 0, animationDelay: '640ms' } },
+                React.createElement('div', {
+                    style: {
+                        padding: 'clamp(14px,3vw,18px) clamp(14px,3vw,18px) 12px',
+                        borderBottom: '1px solid var(--brd)',
+                        transition: 'border-color .35s'
+                    }
+                },
+                    React.createElement('h3', {
+                        style: { fontSize: 15, fontWeight: 800, color: 'var(--txt)', transition: 'color .35s' }
+                    }, 'Detailed Records'),
+                    React.createElement('p', {
+                        style: { fontSize: 12, fontWeight: 700, color: 'var(--txt4)', marginTop: 3, transition: 'color .35s' }
+                    }, isAdmin ? 'Click any row to edit inline' : 'Read-only view')
                 ),
 
-                React.createElement('div', { className: 'tw' },
+                React.createElement('div', { className: 'tw', style: { maxHeight: 500, overflowY: 'auto' } },
+                    React.createElement('table', { style: { width: '100%', borderCollapse: 'collapse', fontSize: 13 } },
 
-                    React.createElement('table', { style: { width: '100%' } },
-
-                        // ✅ THEAD
+                        // ✅ THEAD (fixed)
                         React.createElement('thead', null,
-                            React.createElement('tr', null,
+                            React.createElement('tr', { className: 'dth' },
                                 headers.map((h, hi) =>
                                     React.createElement('th', { key: hi, style: thStyle(hi) }, h)
                                 )
                             )
                         ),
 
-                        // ✅ TBODY (FIXED POSITION)
+                        // ✅ TBODY (moved out correctly)
                         React.createElement('tbody', null,
-
                             rows.map((r, idx) => {
                                 var isEd = editK === r.k;
 
                                 return React.createElement('tr', {
                                     key: r.k,
-                                    onClick: function () { if (!isEd) startEdit(r); }
+                                    onClick: function () { if (!isEd) startEdit(r) },
+                                    style: {
+                                        cursor: isAdmin ? 'pointer' : 'default',
+                                        background: r.today ? 'var(--today)' : idx % 2 ? 'var(--ralt)' : 'transparent',
+                                        borderBottom: '1px solid var(--brd)',
+                                        transition: 'background .12s'
+                                    },
+                                    onMouseEnter: function (e) {
+                                        if (isAdmin && !isEd) e.currentTarget.style.background = 'var(--rhov)';
+                                    },
+                                    onMouseLeave: function (e) {
+                                        e.currentTarget.style.background =
+                                            r.today ? 'var(--today)' : idx % 2 ? 'var(--ralt)' : 'transparent';
+                                    }
                                 },
-
                                     React.createElement('td', { style: idxTd() }, r.i),
-                                    React.createElement('td', { style: dateTd(r) }, fmtS(r.d)),
+                                    React.createElement('td', { style: dateTd(r) },
+                                        mobile ? fmtDateDay(r.d) : fmtS(r.d),
+                                        !mobile && r.today
+                                            ? React.createElement('span', {
+                                                style: {
+                                                    fontSize: 9,
+                                                    color: '#10b981',
+                                                    marginLeft: 5,
+                                                    fontWeight: 700,
+                                                    border: '1px solid rgba(16,185,129,.2)',
+                                                    borderRadius: 4,
+                                                    padding: '1px 5px'
+                                                }
+                                            }, 'TODAY')
+                                            : null
+                                    ),
                                     React.createElement('td', { style: dayTd() }, DAYS[r.d.getDay()]),
 
                                     isEd
-                                        ? KK.map(k =>
-                                            React.createElement('td', { key: k },
+                                        ? KK.map(function (k) {
+                                            return React.createElement('td', { key: k, style: { padding: '4px 4px' } },
                                                 React.createElement('input', {
+                                                    className: 'inp',
+                                                    type: 'number',
+                                                    style: {
+                                                        padding: '5px 6px',
+                                                        fontSize: 16,
+                                                        textAlign: 'right',
+                                                        width: mobile ? 52 : 68,
+                                                        minHeight: 36
+                                                    },
                                                     value: ev[k],
+                                                    min: '0',
                                                     onChange: function (e) {
-                                                        var nv = { ...ev };
+                                                        var nv = Object.assign({}, ev);
                                                         nv[k] = e.target.value;
                                                         setEv(nv);
-                                                    }
+                                                    },
+                                                    onClick: function (e) { e.stopPropagation() },
+                                                    onKeyDown: function (e) {
+                                                        if (e.key === 'Enter') saveRow();
+                                                        if (e.key === 'Escape') setEditK(null);
+                                                    },
+                                                    autoFocus: true
                                                 })
-                                            )
-                                        )
-                                        : KK.map((k, ki) =>
-                                            React.createElement('td', { key: k, style: numTd(ki, r) },
-                                                r.e[k] !== null ? r.e[k] : '—'
-                                            )
-                                        ),
+                                            );
+                                        })
+                                        : KK.map(function (k, ki) {
+                                            return React.createElement('td', { key: k, style: numTd(ki, r) },
+                                                r.e[k] !== null ? r.e[k].toLocaleString() : '—'
+                                            );
+                                        }),
 
-                                    React.createElement('td', null, r.dt || '—'),
-                                    React.createElement('td', null, r.cum || '—')
+                                    React.createElement('td', {
+                                        style: {
+                                            padding: mobile ? '0' : '10px 12px',
+                                            textAlign: 'right',
+                                            color: r.dt > 0 ? 'var(--txt)' : 'var(--txt4)',
+                                            fontWeight: r.dt > 0 ? 800 : 500,
+                                            fontSize: '13px',
+                                            display: mobile ? 'none' : 'table-cell'
+                                        }
+                                    }, r.dt > 0 ? r.dt.toLocaleString() : '—'),
+
+                                    React.createElement('td', {
+                                        style: {
+                                            padding: mobile ? '8px 6px' : '10px 12px',
+                                            textAlign: 'right',
+                                            color: r.cum > 0 ? 'var(--txt2)' : 'var(--txt4)',
+                                            fontWeight: 600,
+                                            fontSize: '13px'
+                                        }
+                                    }, r.cum > 0 ? r.cum.toLocaleString() : '—'),
+
+                                    isEd ? React.createElement(React.Fragment, null,
+                                        React.createElement('td', {
+                                            style: {
+                                                padding: mobile ? '6px 4px' : '10px 12px',
+                                                textAlign: 'right',
+                                                display: mobile ? 'table-cell' : 'none'
+                                            }
+                                        },
+                                            React.createElement('button', {
+                                                className: 'bp',
+                                                style: { padding: '5px 10px', fontSize: 12, marginRight: 3, minHeight: 34 },
+                                                onClick: function (e) { e.stopPropagation(); saveRow() }
+                                            }, 'Save'),
+                                            React.createElement('button', {
+                                                className: 'bs',
+                                                style: { padding: '5px 10px', fontSize: 12, minHeight: 34 },
+                                                onClick: function (e) { e.stopPropagation(); setEditK(null) }
+                                            }, 'Cancel')
+                                        ),
+                                        React.createElement('td', {
+                                            style: { display: mobile ? 'none' : 'table-cell' }
+                                        },
+                                            React.createElement('button', {
+                                                className: 'bp',
+                                                style: { padding: '6px 14px', fontSize: 13, marginRight: 4, minHeight: 38 },
+                                                onClick: function (e) { e.stopPropagation(); saveRow() }
+                                            }, 'Save'),
+                                            React.createElement('button', {
+                                                className: 'bs',
+                                                style: { padding: '6px 14px', fontSize: 13, minHeight: 38 },
+                                                onClick: function (e) { e.stopPropagation(); setEditK(null) }
+                                            }, 'Cancel')
+                                        )
+                                    ) : null
                                 );
                             })
                         )
@@ -1197,24 +1297,24 @@
             useEffect(() => { if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) { setFetching(false); setFetchErr(true); return } const ok = DB.init(SB_URL, SB_KEY, onAuthChange); if (!ok) { setFetching(false); setFetchErr(true); return } DB.getSession().then(session => { setIsAdmin(!!session); return DB.fetchAll(); }).then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } else setFetchErr(true); setFetching(false); }).catch(() => { setFetchErr(true); setFetching(false); }); }, [onAuthChange]);
             useEffect(() => { if (!DB.ready) return; const iv = setInterval(() => { DB.fetchAll().then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } }); }, 60000); return () => clearInterval(iv); }, []);
             function handleLogin() { setIsAdmin(true); setShowLogin(false); toast('Signed in as admin', 'success'); }
-            function handleLogout() { DB.signOut(); setIsAdmin(false); toast('Signed out', 'info'); }
+            function handleLogout() { DB.signOut(); setIsAdmin(false); toast(' signed out', 'info'); }
             const done = useMemo(() => DATES.filter(d => { const e = data[fmtD(d)]; return e && [e.kit1, e.kit2, e.kit3].some(v => v !== null && v > 0) }).length, [data]);
             if (fetching) return React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 14 } },
                 React.createElement('div', { style: { width: 36, height: 36, border: '3px solid var(--brd)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite' } }),
                 React.createElement('p', { style: { fontSize: 14, fontWeight: 600, color: 'var(--txt3)' } }, 'Loading dashboard…')
             );
             return React.createElement('div', { style: { minHeight: '100vh' } },
-                React.createElement(Toasts, { list: toasts }),
+                React.createElement(React.createElement(Toasts, { list: toasts })),
                 showSetup ? React.createElement(SetupModal, { onClose: () => setShowSetup(false) }) : null,
                 showLogin ? React.createElement(LoginModal, { onOk: handleLogin, onCancel: () => setShowLogin(false) }) : null,
-                React.createElement(Header, { done, theme, setTheme, isAdmin, setShowLogin, handleLogout, openSetup: () => setShowSetup(true) }),
+                React.createElement(React.createElement(Header, { done, theme, setTheme, isAdmin, setShowLogin, handleLogout, openSetup: () => setShowSetup(true) })),
                 React.createElement('main', { style: { maxWidth: 1280, margin: '0 auto', padding: 'clamp(14px,4vw,22px) clamp(14px,4vw,24px)', display: 'flex', flexDirection: 'column', gap: 16 } },
-                    fetchErr ? React.createElement(Banner, { msg: 'Could not connect to Supabase. Check credentials in the HTML file.', icon: 'fa-triangle-exclamation', onAction: () => setShowSetup(true), actionLabel: 'View Info' }) : null,
+                    fetchErr ? React.createElement(React.createElement(Banner, { msg: 'Could not connect to Supabase. Check credentials in the HTML file.', icon: 'fa-triangle-exclamation', onAction: () => setShowSetup(true), actionLabel: 'View Info' })) : null,
                     React.createElement(Cards, { data }),
-                    isAdmin ? React.createElement(Update, { data, setData, toast }) : React.createElement(Banner, { msg: 'Read-only view. Admin sign-in required to add or edit data.', icon: 'fa-lock', onAction: () => setShowLogin(true), actionLabel: 'Sign In' }),
+                    isAdmin ? React.createElement(React.createElement(Update, { data, setData, toast })) : React.createElement(Banner, { msg: 'Read-only view. Admin sign-in required to add or edit data.', icon: 'fa-lock', onAction: () => setShowLogin(true), actionLabel: 'Sign In' }),
                     React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap: 14 } },
-                        React.createElement(BarChart, { data, theme }),
-                        React.createElement(DonutChart, { data, theme })
+                        React.createElement(React.createElement(BarChart, { data, theme })),
+                        React.createElement(React.createElement(DonutChart, { data, theme }))
                     ),
                     React.createElement(Table, { data, setData, toast, isAdmin })
                 ),
