@@ -12,13 +12,10 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <link
-        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,400;9..40,500;9..40,700;9..40,900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('wiga_theme') || 'dark')</script>
     <script>
-        tailwind.config = { theme: { extend: { colors: { brand: { 500: '#10b981', 600: '#059669' }, gold: { 500: '#f59e0b' }, rose: { 500: '#f43f5e' } }, fontFamily: { display: ['"Space Grotesk"', 'sans-serif'], body: ['"DM Sans"', 'sans-serif'] } } } }
+        tailwind.config = { theme: { extend: { colors: { brand: { 500: '#10b981', 600: '#059669' }, gold: { 500: '#f59e0b' }, rose: { 500: '#f43f5e' } }, fontFamily: { display: ['"Space Grotesk"', 'sans-serif'], body: ['Maiandra', 'Maiandra GD', 'sans-serif'] } } } }
     </script>
     <style>
         :root,
@@ -56,9 +53,9 @@
             --elevated: #f9f8f5;
             --input: #ffffff;
             --txt: #1a1a1a;
-            --txt2: rgba(26, 26, 26, .55);
-            --txt3: rgba(26, 26, 26, .3);
-            --txt4: rgba(26, 26, 26, .12);
+            --txt2: rgba(26, 26, 26, .7);
+            --txt3: rgba(26, 26, 26, .55);
+            --txt4: rgba(26, 26, 26, .45);
             --brd: rgba(0, 0, 0, .07);
             --brd-h: rgba(0, 0, 0, .14);
             --brd-f: rgba(16, 185, 129, .4);
@@ -77,7 +74,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; overflow-x: hidden; transition: background .35s, color .35s }
+        body { font-family: Maiandra, 'Maiandra GD', sans-serif; background: var(--bg); color: var(--txt); min-height: 100vh; overflow-x: hidden; transition: background .35s, color .35s }
         .bg-orb { position: fixed; border-radius: 50%; filter: blur(90px); opacity: var(--orb); pointer-events: none; z-index: 0; transition: opacity .35s }
         .bg-orb-1 { width: 520px; height: 520px; background: #10b981; top: -120px; left: -80px; animation: f1 22s ease-in-out infinite }
         .bg-orb-2 { width: 420px; height: 420px; background: #f59e0b; bottom: -80px; right: -60px; animation: f2 26s ease-in-out infinite }
@@ -103,21 +100,21 @@
         .dz.dov { border-color: #10b981; background: rgba(16,185,129,.04) }
         .pd { width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pd 2s ease-in-out infinite }
         @keyframes pd { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.6)} }
-        .inp { background: var(--input); border: 1px solid var(--brd); border-radius: 10px; padding: 10px 14px; color: var(--txt); font-family: 'DM Sans',sans-serif; font-size: 14px; transition: border-color .2s,box-shadow .2s,background .35s; outline: none; width: 100% }
+        .inp { background: var(--input); border: 1px solid var(--brd); border-radius: 10px; padding: 10px 14px; color: var(--txt); font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 14px; transition: border-color .2s,box-shadow .2s,background .35s; outline: none; width: 100% }
         .inp:focus { border-color: var(--brd-f); box-shadow: 0 0 0 3px rgba(16,185,129,.08) }
         .inp::placeholder { color: var(--txt4) }
         input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.65); cursor: pointer }
         [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator { filter: none }
         input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0 }
         input[type="number"] { -moz-appearance: textfield }
-        .bp { background: linear-gradient(135deg,#10b981,#059669); color: #fff; font-weight: 600; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-family: 'DM Sans',sans-serif; font-size: 14px; transition: transform .15s,box-shadow .15s }
+        .bp { background: linear-gradient(135deg,#10b981,#059669); color: #fff; font-weight: 600; padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer; font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 14px; transition: transform .15s,box-shadow .15s }
         .bp:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16,185,129,.25) }
         .bp:active { transform: translateY(0) }
-        .bs { background: rgba(16,185,129,.08); color: #10b981; font-weight: 500; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(16,185,129,.18); cursor: pointer; font-family: 'DM Sans',sans-serif; font-size: 14px; transition: background .15s }
+        .bs { background: rgba(16,185,129,.08); color: #10b981; font-weight: 500; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(16,185,129,.18); cursor: pointer; font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 14px; transition: background .15s }
         .bs:hover { background: rgba(16,185,129,.13) }
-        .bdd { background: rgba(244,63,94,.08); color: #f43f5e; font-weight: 500; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(244,63,94,.18); cursor: pointer; font-family: 'DM Sans',sans-serif; font-size: 14px; transition: background .15s }
+        .bdd { background: rgba(244,63,94,.08); color: #f43f5e; font-weight: 500; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(244,63,94,.18); cursor: pointer; font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 14px; transition: background .15s }
         .bdd:hover { background: rgba(244,63,94,.13) }
-        .tb { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; border: none; font-family: 'DM Sans',sans-serif }
+        .tb { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .2s; border: none; font-family: Maiandra, 'Maiandra GD', sans-serif }
         .ta { background: rgba(16,185,129,.13); color: #10b981 }
         .tn { background: transparent; color: var(--txt3) }
         .tn:hover { color: var(--txt2) }
@@ -153,6 +150,9 @@
         /* ═══════════════════════════════════════════════
            ▲▲  FILL IN YOUR SUPABASE CREDENTIALS ABOVE  ▲▲
            ═══════════════════════════════════════════════ */
+
+        /* Font name constant — used by charts and anywhere font-family is set inline */
+        const FF = 'Maiandra, "Maiandra GD", sans-serif';
 
         /* ═══════════ CONSTANTS ═══════════ */
         const START = new Date(2026, 2, 30, 12);
@@ -233,8 +233,8 @@
                 const tc = cs.getPropertyValue('--txt').trim() || '#fff';
                 const tc3 = cs.getPropertyValue('--txt3').trim() || 'rgba(226,232,240,.3)';
                 const ctx = chart.ctx; ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                if (ph) { ctx.font = '500 13px "DM Sans"'; ctx.fillStyle = tc3; ctx.fillText('No data yet', cx, cy) }
-                else { const t = v.reduce((a,b) => a+b, 0); ctx.font = '900 26px "Space Grotesk"'; ctx.fillStyle = tc; ctx.fillText(t.toLocaleString(), cx, cy-8); ctx.font = '400 11px "DM Sans"'; ctx.fillStyle = tc3; ctx.fillText('Total', cx, cy+14) }
+                if (ph) { ctx.font = '500 13px ' + FF; ctx.fillStyle = tc3; ctx.fillText('No data yet', cx, cy) }
+                else { const t = v.reduce((a,b) => a+b, 0); ctx.font = '900 26px "Space Grotesk"'; ctx.fillStyle = tc; ctx.fillText(t.toLocaleString(), cx, cy-8); ctx.font = '400 11px ' + FF; ctx.fillStyle = tc3; ctx.fillText('Total', cx, cy+14) }
                 ctx.restore();
             }
         });
@@ -284,7 +284,6 @@
         }
 
         /* ═══════════ SETUP / RECONFIGURE MODAL ═══════════ */
-        /* This is only reachable via the gear icon — never auto-shown to viewers */
         function SetupModal({ onClose }) {
             const currentConfigured = SB_URL && !SB_URL.includes('PASTE');
 
@@ -522,7 +521,6 @@
                             const v1=(row['Kit 1']||row['kit1']||'').trim(), v2=(row['Kit 2']||row['kit2']||'').trim(), v3=(row['Kit 3']||row['kit3']||'').trim();
                             nd[dt] = { kit1:v1?parseInt(v1):null, kit2:v2?parseInt(v2):null, kit3:v3?parseInt(v3):null }; imp++;
                         });
-                        // Persist each upserted row to Supabase
                         Promise.all(DATES.map(d => {
                             const k = fmtD(d), e = nd[k];
                             if (e && (e.kit1!==null||e.kit2!==null||e.kit3!==null)) return DB.upsert(k,e.kit1,e.kit2,e.kit3);
@@ -618,10 +616,10 @@
                         backgroundColor:KCL[i], borderColor:KC[i], borderWidth:1, borderRadius:3, borderSkipped:false
                     }))},
                     options:{ responsive:true, maintainAspectRatio:false, interaction:{ intersect:false, mode:'index' },
-                        plugins:{ legend:{ position:'top', labels:{ color:o.tick, font:{ family:'DM Sans',size:11 }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } },
-                            tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:'DM Sans',weight:'600' }, bodyFont:{ family:'DM Sans' }, padding:10, cornerRadius:8 } },
-                        scales:{ x:{ stacked:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:'DM Sans',size:9 }, maxRotation:50 }, border:{ color:o.grid } },
-                            y:{ stacked:true, beginAtZero:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:'DM Sans',size:10 } }, border:{ color:o.grid } } } }
+                        plugins:{ legend:{ position:'top', labels:{ color:o.tick, font:{ family:FF, size:11 }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } },
+                            tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:FF, weight:'600' }, bodyFont:{ family:FF }, padding:10, cornerRadius:8 } },
+                        scales:{ x:{ stacked:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:FF, size:9 }, maxRotation:50 }, border:{ color:o.grid } },
+                            y:{ stacked:true, beginAtZero:true, grid:{ color:o.grid }, ticks:{ color:o.tick, font:{ family:FF, size:10 } }, border:{ color:o.grid } } } }
                 });
                 return () => { if (ch.current) ch.current.destroy() };
             }, [data, theme]);
@@ -643,8 +641,8 @@
                     type:'doughnut',
                     data:{ labels:KN, datasets:[{ data:has?totals:[.001,.001,.001], backgroundColor:['rgba(16,185,129,.78)','rgba(245,158,11,.78)','rgba(244,63,94,.78)'], borderColor:o.dbord, borderWidth:3, hoverOffset:6 }] },
                     options:{ responsive:true, maintainAspectRatio:false, cutout:'66%',
-                        plugins:{ legend:{ position:'bottom', labels:{ color:o.tick, font:{ family:'DM Sans',size:11 }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } },
-                            tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:'DM Sans',weight:'600' }, bodyFont:{ family:'DM Sans' }, padding:10, cornerRadius:8,
+                        plugins:{ legend:{ position:'bottom', labels:{ color:o.tick, font:{ family:FF, size:11 }, boxWidth:10, boxHeight:10, borderRadius:2, useBorderRadius:true, padding:14 } },
+                            tooltip:{ backgroundColor:o.tbg, borderColor:o.tbrd, borderWidth:1, titleColor:o.tt, bodyColor:o.tb, titleFont:{ family:FF, weight:'600' }, bodyFont:{ family:FF }, padding:10, cornerRadius:8,
                                 callbacks:{ label:ctx => { if (!has) return 'No data'; const tot=totals.reduce((a,b)=>a+b,0); return ctx.label+': '+ctx.raw.toLocaleString()+' ('+(ctx.raw/tot*100).toFixed(1)+'%)' } } } } }
                 });
                 return () => { if (ch.current) ch.current.destroy() };
@@ -761,7 +759,6 @@
             }, [toast]);
 
             useEffect(() => {
-                /* Check credentials are filled in */
                 if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) {
                     setFetching(false);
                     setFetchErr(true);
@@ -781,7 +778,6 @@
                     .catch(() => { setFetchErr(true); setFetching(false); });
             }, [onAuthChange]);
 
-            /* Auto-refresh every 60s */
             useEffect(() => {
                 if (!DB.ready) return;
                 const iv = setInterval(() => {
@@ -827,5 +823,4 @@
         ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
     </script>
 </body>
-
 </html>
