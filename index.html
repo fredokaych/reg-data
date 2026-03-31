@@ -18,6 +18,18 @@
         tailwind.config = { theme: { extend: { colors: { brand: { 500: '#10b981', 600: '#059669' }, gold: { 500: '#f59e0b' }, rose: { 500: '#f43f5e' } }, fontFamily: { display: ['Maiandra', 'Maiandra GD', 'sans-serif'], body: ['Maiandra', 'Maiandra GD', 'sans-serif'] } } } }
     </script>
     <style>
+        /* ═══════════════════════════════════════════
+           SELF-HOSTED FONT — place maiandra.woff2
+           in the same folder as this HTML file
+           ═══════════════════════════════════════════ */
+        @font-face {
+            font-family: 'Maiandra';
+            src: url('maiandra.woff2') format('woff2');
+            font-weight: 100 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
         :root,
         [data-theme="dark"] {
             --bg: #080c0a;
@@ -479,22 +491,14 @@
             );
         }
 
-        /* ═══════════ MOBILE-AWARE TABLE ═══════════ */
         function useMobile(breakpoint) {
             breakpoint = breakpoint || 640;
             const [mobile, setMobile] = useState(typeof window !== 'undefined' && window.innerWidth < breakpoint);
-            useEffect(() => {
-                function onResize() { setMobile(window.innerWidth < breakpoint) }
-                window.addEventListener('resize', onResize);
-                return () => window.removeEventListener('resize', onResize);
-            }, [breakpoint]);
+            useEffect(() => { function onResize() { setMobile(window.innerWidth < breakpoint) } window.addEventListener('resize', onResize); return () => window.removeEventListener('resize', onResize); }, [breakpoint]);
             return mobile;
         }
 
-        /* Combined date+day display: "30 Mar (Mon)" */
-        function fmtDateDay(d) {
-            return fmtS(d) + ' (' + DAYS[d.getDay()] + ')';
-        }
+        function fmtDateDay(d) { return fmtS(d) + ' (' + DAYS[d.getDay()] + ')'; }
 
         function Table({ data, setData, toast, isAdmin }) {
             const mobile = useMobile(640);
@@ -502,92 +506,16 @@
             const [ev, setEv] = useState({ kit1:'', kit2:'', kit3:'' });
             let cum = 0;
             const rows = DATES.map((d,i) => { const k=fmtD(d), e=data[k]||{}, dt=[e.kit1,e.kit2,e.kit3].reduce((a,b)=>(a||0)+(b||0),0); cum += dt; return { i:i+1, d, k, e, dt, cum, has:dt>0, today:k===fmtD(new Date()) }; });
-
             function startEdit(r) { if (!isAdmin) return; setEditK(r.k); setEv({ kit1:r.e.kit1!==null?''+r.e.kit1:'', kit2:r.e.kit2!==null?''+r.e.kit2:'', kit3:r.e.kit3!==null?''+r.e.kit3:'' }) }
             async function saveRow() { const nd = { ...data, [editK]:{ kit1:ev.kit1!==''?parseInt(ev.kit1):null, kit2:ev.kit2!==''?parseInt(ev.kit2):null, kit3:ev.kit3!==''?parseInt(ev.kit3):null } }; const res = await DB.upsert(editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3); if (!res.error) { setData(nd); setEditK(null); toast('Entry updated', 'success') } else toast('Failed to save — you may have been signed out', 'error'); }
-
-            /* Desktop: 8 columns | Mobile: 6 columns (Date+Day merged, no TODAY badge, Cum. shortened) */
-            var headers = mobile
-                ? ['#','Date (Day)',KN[0],KN[1],KN[2],'Cum.']
-                : ['#','Date','Day',KN[0],KN[1],KN[2],'Daily','Cumulative'];
-
-            /* Map mobile header index → kit color index for header coloring */
+            var headers = mobile ? ['#','Date (Day)',KN[0],KN[1],KN[2],'Cum.'] : ['#','Date','Day',KN[0],KN[1],KN[2],'Daily','Cumulative'];
             function kitHi(hi) { return mobile ? hi-2 : hi-3 }
-
-            var thStyle = (hi) => ({
-                padding: mobile ? '8px 8px' : '10px 12px',
-                textAlign: (mobile ? hi>=2 : hi>=3) ? 'right' : 'left',
-                fontSize: mobile ? '9px' : '10px',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '.05em',
-                color: (mobile ? hi>=2&&hi<5 : hi>=3&&hi<6) ? KC[kitHi(hi)] : 'var(--txt3)',
-                borderBottom: '1px solid var(--brd)',
-                transition: 'all .35s',
-                whiteSpace: 'nowrap'
-            });
-
-            /* Cell styles that adapt to mobile vs desktop */
-            var dateTd = (r, isEd) => {
-                var s = { padding: mobile ? '8px 6px' : '10px 12px', fontWeight: r.today ? 600 : 500, whiteSpace: 'nowrap' };
-                if (mobile) {
-                    /* Combined date+day cell */
-                    s.color = r.today ? '#10b981' : 'var(--txt2)';
-                    s.fontSize = '12px';
-                    /* TODAY shown as subtle left border instead of badge */
-                    s.borderLeft = r.today ? '3px solid #10b981' : 'none';
-                    s.paddingLeft = r.today ? '7px' : '6px';
-                } else {
-                    s.color = r.today ? '#10b981' : 'var(--txt2)';
-                    s.fontSize = '13px';
-                }
-                return s;
-            };
-
-            var dayTd = () => ({
-                padding: mobile ? '0' : '10px 12px',
-                color: 'var(--txt3)',
-                fontSize: mobile ? '0' : '12px',
-                fontWeight: 600,
-                display: mobile ? 'none' : 'table-cell'
-            });
-
-            var numTd = () => ({
-                padding: mobile ? '8px 6px' : '10px 12px',
-                textAlign: 'right',
-                fontSize: '13px',
-                fontWeight: 500
-            });
-
-            var idxTd = () => ({
-                padding: mobile ? '8px 6px' : '10px 12px',
-                color: 'var(--txt4)',
-                fontSize: mobile ? '11px' : '12px',
-                fontWeight: 600
-            });
-
-            var dailyStyle = (r) => ({
-                padding: mobile ? '0' : '10px 12px',
-                textAlign: 'right',
-                color: r.dt>0 ? 'var(--txt)' : 'var(--txt4)',
-                fontWeight: r.dt>0 ? 700 : 500,
-                fontSize: '13px',
-                display: mobile ? 'none' : 'table-cell'
-            });
-
-            var cumStyle = (r) => ({
-                padding: mobile ? '8px 6px' : '10px 12px',
-                textAlign: 'right',
-                color: r.cum>0 ? 'var(--txt2)' : 'var(--txt4)',
-                fontWeight: 500,
-                fontSize: '13px'
-            });
-
-            var editInp = () => ({
-                className: 'inp', type: 'number',
-                style: { padding:'5px 6px', fontSize:16, textAlign:'right', width: mobile?52:68, minHeight:36 }
-            });
-
+            var thStyle = (hi) => ({ padding: mobile ? '8px 8px' : '10px 12px', textAlign: (mobile ? hi>=2 : hi>=3) ? 'right' : 'left', fontSize: mobile ? '9px' : '10px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.05em', color: (mobile ? hi>=2&&hi<5 : hi>=3&&hi<6) ? KC[kitHi(hi)] : 'var(--txt3)', borderBottom: '1px solid var(--brd)', transition: 'all .35s', whiteSpace: 'nowrap' });
+            var dateTd = (r) => { var s = { padding: mobile ? '8px 6px' : '10px 12px', fontWeight: r.today ? 600 : 500, whiteSpace: 'nowrap' }; if (mobile) { s.color = r.today ? '#10b981' : 'var(--txt2)'; s.fontSize = '12px'; s.borderLeft = r.today ? '3px solid #10b981' : 'none'; s.paddingLeft = r.today ? '7px' : '6px'; } else { s.color = r.today ? '#10b981' : 'var(--txt2)'; s.fontSize = '13px'; } return s };
+            var dayTd = () => ({ padding: mobile ? '0' : '10px 12px', color: 'var(--txt3)', fontSize: mobile ? '0' : '12px', fontWeight: 600, display: mobile ? 'none' : 'table-cell' });
+            var numTd = (ki) => ({ padding: mobile ? '8px 6px' : '10px 12px', textAlign: 'right', fontSize: '13px', fontWeight: 500, color: r_e(ki)!==null ? KC[ki] : 'var(--txt4)' });
+            function r_e(ki){ return undefined }
+            var idxTd = () => ({ padding: mobile ? '8px 6px' : '10px 12px', color: 'var(--txt4)', fontSize: mobile ? '11px' : '12px', fontWeight: 600 });
             return React.createElement('div', { className:'gc fi', style:{ padding:0, animationDelay:'640ms' } },
                 React.createElement('div', { style:{ padding:'clamp(14px,3vw,18px) clamp(14px,3vw,18px) 12px', borderBottom:'1px solid var(--brd)', transition:'border-color .35s' } },
                     React.createElement('h3', { style:{ fontSize:15, fontWeight:700, color:'var(--txt)', transition:'color .35s' } }, 'Detailed Records'),
@@ -595,66 +523,23 @@
                 ),
                 React.createElement('div', { className:'tw', style:{ maxHeight:500, overflowY:'auto' } },
                     React.createElement('table', { style:{ width:'100%', borderCollapse:'collapse', fontSize:13 } },
-                        React.createElement('thead', null,
-                            React.createElement('tr', { className:'dth' },
-                                headers.map((h,hi) => React.createElement('th', { key:hi, style:thStyle(hi) }, h))
-                            )
-                        ),
-                        React.createElement('tbody', null,
-                            rows.map((r,idx) => {
-                                var isEd = editK === r.k;
-                                return React.createElement('tr', { key:r.k,
-                                    onClick: function(){ if (!isEd) startEdit(r) },
-                                    style:{ cursor:isAdmin?'pointer':'default', background:r.today?'var(--today)':idx%2?'var(--ralt)':'transparent', borderBottom:'1px solid var(--brd)', transition:'background .12s' },
-                                    onMouseEnter:function(e){ if (isAdmin&&!isEd) e.currentTarget.style.background='var(--rhov)' },
-                                    onMouseLeave:function(e){ e.currentTarget.style.background=r.today?'var(--today)':idx%2?'var(--ralt)':'transparent' }
-                                },
-                                    /* Row # */
-                                    React.createElement('td', { style:idxTd() }, r.i),
-
-                                    /* Date column — shows combined date+day on mobile */
-                                    React.createElement('td', { style:dateTd(r, isEd) },
-                                        mobile ? fmtDateDay(r.d) : fmtS(r.d),
-                                        !mobile && r.today ? React.createElement('span', { style:{ fontSize:9, color:'#10b981', marginLeft:5, fontWeight:600, border:'1px solid rgba(16,185,129,.2)', borderRadius:4, padding:'1px 5px' } }, 'TODAY') : null
-                                    ),
-
-                                    /* Day column — hidden on mobile */
-                                    React.createElement('td', { style:dayTd() }, DAYS[r.d.getDay()]),
-
-                                    /* Kit columns */
-                                    isEd
-                                        ? KK.map(function(k){ return React.createElement('td', { key:k, style:{ padding:'4px 4px' } },
-                                            React.createElement('input', Object.assign({}, editInp(), { value:ev[k], min:'0', key:k,
-                                                onChange:function(e){ var nv=Object.assign({},ev); nv[k]=e.target.value; setEv(nv) },
-                                                onClick:function(e){ e.stopPropagation() },
-                                                onKeyDown:function(e){ if(e.key==='Enter') saveRow(); if(e.key==='Escape') setEditK(null) },
-                                                autoFocus:true
-                                            }))
-                                          )})
-                                        : KK.map(function(k,ki){ return React.createElement('td', { key:k, style:Object.assign({}, numTd(), { color:r.e[k]!==null?KC[ki]:'var(--txt4)', fontWeight:r.e[k]!==null?600:500 }) }, r.e[k]!==null?r.e[k].toLocaleString():'—')}),
-
-                                    /* Daily total — hidden on mobile */
-                                    React.createElement('td', { style:dailyStyle(r) }, r.dt>0?r.dt.toLocaleString():'—'),
-
-                                    /* Cumulative */
-                                    React.createElement('td', { style:cumStyle(r) }, r.cum>0?r.cum.toLocaleString():'—'),
-
-                                    /* Edit buttons — full width on mobile */
-                                    isEd
-                                        ? React.createElement(React.Fragment, null,
-                                            React.createElement('td', { style:{ padding:mobile?'6px 4px':'10px 12px', textAlign:'right', display:mobile?'table-cell':'none' } },
-                                                React.createElement('button', { className:'bp', style:{ padding:'5px 10px', fontSize:12, marginRight:3, minHeight:34 }, onClick:function(e){ e.stopPropagation(); saveRow() } }, 'Save'),
-                                                React.createElement('button', { className:'bs', style:{ padding:'5px 10px', fontSize:12, minHeight:34 }, onClick:function(e){ e.stopPropagation(); setEditK(null) } }, 'Cancel')
-                                            ),
-                                            React.createElement('td', { style:{ display:mobile?'none':'table-cell' } },
-                                                React.createElement('button', { className:'bp', style:{ padding:'6px 14px', fontSize:13, marginRight:4, minHeight:38 }, onClick:function(e){ e.stopPropagation(); saveRow() } }, 'Save'),
-                                                React.createElement('button', { className:'bs', style:{ padding:'6px 14px', fontSize:13, minHeight:38 }, onClick:function(e){ e.stopPropagation(); setEditK(null) } }, 'Cancel')
-                                            )
-                                          )
-                                        : null
-                                );
-                            })
-                        )
+                        React.createElement('thead', null, React.createElement('tr', { className:'dth' }, headers.map((h,hi) => React.createElement('th', { key:hi, style:thStyle(hi) }, h)))),
+                        React.createElement('tbody', null, rows.map((r,idx) => {
+                            var isEd = editK === r.k;
+                            return React.createElement('tr', { key:r.k, onClick:function(){ if (!isEd) startEdit(r) }, style:{ cursor:isAdmin?'pointer':'default', background:r.today?'var(--today)':idx%2?'var(--ralt)':'transparent', borderBottom:'1px solid var(--brd)', transition:'background .12s' }, onMouseEnter:function(e){ if (isAdmin&&!isEd) e.currentTarget.style.background='var(--rhov)' }, onMouseLeave:function(e){ e.currentTarget.style.background=r.today?'var(--today)':idx%2?'var(--ralt)':'transparent' } },
+                                React.createElement('td', { style:idxTd() }, r.i),
+                                React.createElement('td', { style:dateTd(r) }, mobile ? fmtDateDay(r.d) : fmtS(r.d), !mobile && r.today ? React.createElement('span', { style:{ fontSize:9, color:'#10b981', marginLeft:5, fontWeight:600, border:'1px solid rgba(16,185,129,.2)', borderRadius:4, padding:'1px 5px' } }, 'TODAY') : null),
+                                React.createElement('td', { style:dayTd() }, DAYS[r.d.getDay()]),
+                                isEd ? KK.map(function(k){ return React.createElement('td', { key:k, style:{ padding:'4px 4px' } }, React.createElement('input', { className:'inp', type:'number', style:{ padding:'5px 6px', fontSize:16, textAlign:'right', width:mobile?52:68, minHeight:36 }, value:ev[k], min:'0', onChange:function(e){ var nv=Object.assign({},ev); nv[k]=e.target.value; setEv(nv) }, onClick:function(e){ e.stopPropagation() }, onKeyDown:function(e){ if(e.key==='Enter') saveRow(); if(e.key==='Escape') setEditK(null) }, autoFocus:true })) })
+                                  : KK.map(function(k,ki){ return React.createElement('td', { key:k, style:numTd(ki) }, r.e[k]!==null?r.e[k].toLocaleString():'—')}),
+                                React.createElement('td', { style:{ padding:mobile?'0':'10px 12px', textAlign:'right', color:r.dt>0?'var(--txt)':'var(--txt4)', fontWeight:r.dt>0?700:500, fontSize:'13px', display:mobile?'none':'table-cell' } }, r.dt>0?r.dt.toLocaleString():'—'),
+                                React.createElement('td', { style:{ padding:mobile?'8px 6px':'10px 12px', textAlign:'right', color:r.cum>0?'var(--txt2)':'var(--txt4)', fontWeight:500, fontSize:'13px' } }, r.cum>0?r.cum.toLocaleString():'—'),
+                                isEd ? React.createElement(React.Fragment, null,
+                                    React.createElement('td', { style:{ padding:mobile?'6px 4px':'10px 12px', textAlign:'right', display:mobile?'table-cell':'none' } }, React.createElement('button', { className:'bp', style:{ padding:'5px 10px', fontSize:12, marginRight:3, minHeight:34 }, onClick:function(e){ e.stopPropagation(); saveRow() } }, 'Save'), React.createElement('button', { className:'bs', style:{ padding:'5px 10px', fontSize:12, minHeight:34 }, onClick:function(e){ e.stopPropagation(); setEditK(null) } }, 'Cancel')),
+                                    React.createElement('td', { style:{ display:mobile?'none':'table-cell' } }, React.createElement('button', { className:'bp', style:{ padding:'6px 14px', fontSize:13, marginRight:4, minHeight:38 }, onClick:function(e){ e.stopPropagation(); saveRow() } }, 'Save'), React.createElement('button', { className:'bs', style:{ padding:'6px 14px', fontSize:13, minHeight:38 }, onClick:function(e){ e.stopPropagation(); setEditK(null) } }, 'Cancel'))
+                                  ) : null
+                            );
+                        }))
                     )
                 )
             );
@@ -669,23 +554,18 @@
             const [showSetup, setShowSetup] = useState(false);
             const [fetching, setFetching] = useState(true);
             const [fetchErr, setFetchErr] = useState(false);
-
             function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('wiga_theme', t); setThemeState(t) }
             const toast = useCallback((msg, type) => { type=type||'success'; const id = ++_tid; setToasts(p => [...p, { id, msg, type, out:false }]); setTimeout(() => { setToasts(p => p.map(t => t.id===id ? {...t, out:true} : t)); setTimeout(() => setToasts(p => p.filter(t => t.id!==id)), 300); }, 3500); }, []);
             const onAuthChange = useCallback((authed) => { setIsAdmin(authed); if (!authed) toast('Session ended', 'info'); }, [toast]);
-
             useEffect(() => { if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) { setFetching(false); setFetchErr(true); return } const ok = DB.init(SB_URL, SB_KEY, onAuthChange); if (!ok) { setFetching(false); setFetchErr(true); return } DB.getSession().then(session => { setIsAdmin(!!session); return DB.fetchAll(); }).then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } else setFetchErr(true); setFetching(false); }).catch(() => { setFetchErr(true); setFetching(false); }); }, [onAuthChange]);
             useEffect(() => { if (!DB.ready) return; const iv = setInterval(() => { DB.fetchAll().then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } }); }, 60000); return () => clearInterval(iv); }, []);
-
             function handleLogin() { setIsAdmin(true); setShowLogin(false); toast('Signed in as admin', 'success'); }
             function handleLogout() { DB.signOut(); setIsAdmin(false); toast('Signed out', 'info'); }
             const done = useMemo(() => DATES.filter(d => { const e = data[fmtD(d)]; return e && [e.kit1,e.kit2,e.kit3].some(v => v!==null && v>0) }).length, [data]);
-
             if (fetching) return React.createElement('div', { style:{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', flexDirection:'column', gap:14 } },
                 React.createElement('div', { style:{ width:36, height:36, border:'3px solid var(--brd)', borderTopColor:'#10b981', borderRadius:'50%', animation:'spin 1s linear infinite' } }),
                 React.createElement('p', { style:{ fontSize:14, fontWeight:500, color:'var(--txt3)' } }, 'Loading dashboard…')
             );
-
             return React.createElement('div', { style:{ minHeight:'100vh' } },
                 React.createElement(Toasts, { list:toasts }),
                 showSetup ? React.createElement(SetupModal, { onClose:() => setShowSetup(false) }) : null,
