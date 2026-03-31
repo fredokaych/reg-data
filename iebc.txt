@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wiga Ward — Voter Registration Dashboard</title>
+
+    <!-- CDN Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5/papaparse.min.js"></script>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,400;9..40,500;9..40,700;9..40,900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50:'#ecfdf5',100:'#d1fae5',200:'#a7f3d0',300:'#6ee7b7',400:'#34d399',500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b',950:'#022c22' },
+                        gold: { 400:'#fbbf24',500:'#f59e0b',600:'#d97706' },
+                        rose: { 400:'#fb7185',500:'#f43f5e' },
+                        surface: { DEFAULT:'#080c0a', card:'#0f1612', elevated:'#151e19' }
+                    },
+                    fontFamily: {
+                        display: ['"Space Grotesk"','sans-serif'],
+                        body: ['"DM Sans"','sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'DM Sans',sans-serif;background:#080c0a;color:#e2e8f0;min-height:100vh;overflow-x:hidden}
+
+        /* Ambient background */
+        .bg-orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.12;pointer-events:none;z-index:0}
+        .bg-orb-1{width:520px;height:520px;background:#10b981;top:-120px;left:-80px;animation:f1 22s ease-in-out infinite}
+        .bg-orb-2{width:420px;height:420px;background:#f59e0b;bottom:-80px;right:-60px;animation:f2 26s ease-in-out infinite}
+        .bg-orb-3{width:280px;height:280px;background:#10b981;top:55%;right:18%;animation:f3 19s ease-in-out infinite}
+        @keyframes f1{0%,100%{transform:translate(0,0)}33%{transform:translate(90px,70px)}66%{transform:translate(-40px,110px)}}
+        @keyframes f2{0%,100%{transform:translate(0,0)}33%{transform:translate(-70px,-50px)}66%{transform:translate(50px,-90px)}}
+        @keyframes f3{0%,100%{transform:translate(0,0)}50%{transform:translate(-100px,-70px)}}
+
+        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(16,185,129,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(16,185,129,.025) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0}
+
+        /* Glass card */
+        .glass-card{background:rgba(15,22,18,.82);backdrop-filter:blur(14px);border:1px solid rgba(16,185,129,.09);border-radius:16px;transition:border-color .3s,box-shadow .3s}
+        .glass-card:hover{border-color:rgba(16,185,129,.2);box-shadow:0 0 40px rgba(16,185,129,.04)}
+
+        /* Progress bar */
+        .progress-track{height:7px;background:rgba(16,185,129,.08);border-radius:4px;overflow:hidden}
+        .progress-fill{height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:4px;transition:width .9s cubic-bezier(.4,0,.2,1)}
+
+        /* Scrollbar */
+        ::-webkit-scrollbar{width:5px;height:5px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:rgba(16,185,129,.18);border-radius:3px}
+        ::-webkit-scrollbar-thumb:hover{background:rgba(16,185,129,.35)}
+
+        /* Toasts */
+        .toast-in{animation:tIn .32s ease-out forwards}
+        .toast-out{animation:tOut .28s ease-in forwards}
+        @keyframes tIn{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
+        @keyframes tOut{from{transform:translateX(0);opacity:1}to{transform:translateX(110%);opacity:0}}
+
+        /* Sticky table header */
+        .data-table th{position:sticky;top:0;background:#0f1612;z-index:10}
+
+        /* Drop zone */
+        .drop-zone{border:2px dashed rgba(16,185,129,.25);transition:all .25s}
+        .drop-zone.drag-over{border-color:#10b981;background:rgba(16,185,129,.04)}
+
+        /* Pulse */
+        .pulse-dot{width:8px;height:8px;background:#10b981;border-radius:50%;animation:pd 2s ease-in-out infinite}
+        @keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.6)}}
+
+        /* Inputs */
+        .input-field{background:rgba(15,22,18,.92);border:1px solid rgba(16,185,129,.12);border-radius:10px;padding:10px 14px;color:#e2e8f0;font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color .2s,box-shadow .2s;outline:none;width:100%}
+        .input-field:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.08)}
+        .input-field::placeholder{color:rgba(226,232,240,.25)}
+        input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.65);cursor:pointer}
+        input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+        input[type="number"]{-moz-appearance:textfield}
+
+        /* Buttons */
+        .btn-primary{background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:600;padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;transition:transform .15s,box-shadow .15s}
+        .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,.25)}
+        .btn-primary:active{transform:translateY(0)}
+        .btn-secondary{background:rgba(16,185,129,.08);color:#10b981;font-weight:500;padding:10px 20px;border-radius:10px;border:1px solid rgba(16,185,129,.18);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;transition:background .15s,border-color .15s}
+        .btn-secondary:hover{background:rgba(16,185,129,.13);border-color:rgba(16,185,129,.28)}
+        .btn-danger{background:rgba(244,63,94,.08);color:#f43f5e;font-weight:500;padding:10px 20px;border-radius:10px;border:1px solid rgba(244,63,94,.18);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;transition:background .15s}
+        .btn-danger:hover{background:rgba(244,63,94,.13)}
+
+        /* Tabs */
+        .tab-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:none;font-family:'DM Sans',sans-serif}
+        .tab-active{background:rgba(16,185,129,.13);color:#10b981}
+        .tab-inactive{background:transparent;color:rgba(226,232,240,.35)}
+        .tab-inactive:hover{color:rgba(226,232,240,.6)}
+
+        /* Fade in */
+        .fade-in{animation:fi .5s ease-out both}
+        @keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+        /* Modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center}
+        .modal-box{background:#0f1612;border:1px solid rgba(16,185,129,.12);border-radius:16px;padding:28px;max-width:400px;width:92%}
+
+        .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
+    <div id="root" style="position:relative;z-index:1"></div>
+
+    <script type="text/babel">
+        const {useState,useEffect,useRef,useCallback,useMemo} = React;
+
+        // ───────── Constants ─────────
+        const START = new Date(2026, 2, 30, 12); // March 30 2026, noon (timezone-safe)
+        const DATES = Array.from({length:30},(_,i)=>{const d=new Date(START);d.setDate(d.getDate()+i);return d});
+        const SK = 'wiga_voter_data_v1';
+        const KIT_NAMES = ['Kit 1','Kit 2','Kit 3'];
+        const KIT_KEYS  = ['kit1','kit2','kit3'];
+        const KIT_CLR   = ['#10b981','#f59e0b','#f43f5e'];
+        const KIT_CLR_L = ['rgba(16,185,129,.72)','rgba(245,158,11,.72)','rgba(244,63,94,.72)'];
+        const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const fmtD = d => d.toISOString().split('T')[0];
+        const fmtS = d => d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+        const fmtF = d => d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+
+        // ───────── Data helpers ─────────
+        const empty = () => {const o={};DATES.forEach(d=>o[fmtD(d)]={kit1:null,kit2:null,kit3:null});return o};
+        const load  = () => {try{const s=localStorage.getItem(SK);if(s)return{...empty(),...JSON.parse(s)}}catch(e){}return empty()};
+        const save  = d => {try{localStorage.setItem(SK,JSON.stringify(d))}catch(e){}};
+
+        const sampleCSV = () => {let c='Date,Kit 1,Kit 2,Kit 3\n';DATES.forEach(d=>c+=fmtD(d)+',,\n');return c};
+        const exportCSV  = data => {
+            let c='Date,Day,Kit 1,Kit 2,Kit 3,Total\n';
+            DATES.forEach(d=>{const k=fmtD(d),e=data[k]||{};const t=[e.kit1,e.kit2,e.kit3].reduce((a,b)=>(a||0)+(b||0),0);
+            c+=k+','+DAYS[d.getDay()]+','+(e.kit1??'')+','+(e.kit2??'')+','+(e.kit3??'')+','+(t||'')+'\n'});return c;
+        };
+
+        // ───────── Chart.js center-text plugin ─────────
+        const centerPlugin = {
+            id:'centerText',
+            afterDraw(chart){
+                if(chart.config.type!=='doughnut')return;
+                const{ctx,chartArea:{top,bottom,left,right}}=chart;
+                const cx=(left+right)/2,cy=(top+bottom)/2;
+                const vals=chart.data.datasets[0].data;
+                const isPh=vals.length===3&&vals.every(v=>v<1);
+                ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
+                if(isPh){ctx.font='500 13px "DM Sans"';ctx.fillStyle='rgba(226,232,240,.28)';ctx.fillText('No data yet',cx,cy)}
+                else{const tot=vals.reduce((a,b)=>a+b,0);ctx.font='900 26px "Space Grotesk"';ctx.fillStyle='#fff';ctx.fillText(tot.toLocaleString(),cx,cy-8);ctx.font='400 11px "DM Sans"';ctx.fillStyle='rgba(226,232,240,.38)';ctx.fillText('Total',cx,cy+14)}
+                ctx.restore();
+            }
+        };
+        Chart.register(centerPlugin);
+
+        // ───────── Toast system ─────────
+        let _tid=0;
+        function Toasts({list}){
+            return(<div style={{position:'fixed',top:20,right:20,zIndex:200,display:'flex',flexDirection:'column',gap:8}}>
+                {list.map(t=>(
+                    <div key={t.id} className={`glass-card ${t.out?'toast-out':'toast-in'}`} style={{padding:'12px 18px',display:'flex',alignItems:'center',gap:10,minWidth:260,borderLeft:`3px solid ${t.type==='success'?'#10b981':t.type==='error'?'#f43f5e':'#f59e0b'}`}}>
+                        <i className={`fas ${t.type==='success'?'fa-circle-check':t.type==='error'?'fa-circle-exclamation':'fa-circle-info'}`} style={{color:t.type==='success'?'#10b981':t.type==='error'?'#f43f5e':'#f59e0b',fontSize:14}}/>
+                        <span style={{fontSize:13,color:'#e2e8f0'}}>{t.msg}</span>
+                    </div>
+                ))}
+            </div>);
+        }
+
+        // ───────── Animated number ─────────
+        function ANum({value,dur=700}){
+            const[disp,setDisp]=useState(0);const prev=useRef(0);
+            useEffect(()=>{const s=prev.current,e=value;if(s===e)return;const t0=performance.now();
+            const run=now=>{const p=Math.min((now-t0)/dur,1);const ease=1-Math.pow(1-p,3);setDisp(Math.round(s+(e-s)*ease));
+            if(p<1)requestAnimationFrame(run);else prev.current=e};requestAnimationFrame(run)},[value,dur]);
+            return <span>{disp.toLocaleString()}</span>;
+        }
+
+        // ───────── Confirm modal ─────────
+        function Modal({title,msg,onOk,onNo}){
+            return(<div className="modal-overlay" onClick={onNo}><div className="modal-box" onClick={e=>e.stopPropagation()}>
+                <h3 className="font-display" style={{fontSize:17,fontWeight:700,color:'#e2e8f0',marginBottom:8}}>{title}</h3>
+                <p style={{fontSize:13,color:'rgba(226,232,240,.5)',marginBottom:24,lineHeight:1.5}}>{msg}</p>
+                <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}>
+                    <button className="btn-secondary" onClick={onNo}>Cancel</button>
+                    <button className="btn-danger" onClick={onOk}>Confirm</button>
+                </div>
+            </div></div>);
+        }
+
+        // ───────── Header ─────────
+        function Header({done}){
+            const pct=Math.round(done/30*100);
+            return(<header style={{padding:'28px 0 20px',borderBottom:'1px solid rgba(16,185,129,.07)'}}>
+                <div style={{maxWidth:1280,margin:'0 auto',padding:'0 24px',display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:16}}>
+                    <div>
+                        <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:6}}>
+                            <div className="pulse-dot"/><span style={{fontSize:11,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'#10b981'}}>Live Dashboard</span>
+                        </div>
+                        <h1 className="font-display" style={{fontSize:'clamp(26px,5vw,40px)',fontWeight:900,color:'#fff',lineHeight:1.05,letterSpacing:'-.02em'}}>Wiga Ward</h1>
+                        <p style={{fontSize:14,color:'rgba(226,232,240,.45)',marginTop:5}}>Voter Registration Daily Report</p>
+                        <p style={{fontSize:12,color:'rgba(226,232,240,.28)',marginTop:3}}>{fmtF(DATES[0])} — {fmtF(DATES[29])}</p>
+                    </div>
+                    <div style={{textAlign:'right',minWidth:190}}>
+                        <div style={{display:'flex',alignItems:'center',justifyContent:'flex-end',gap:8,marginBottom:8}}>
+                            <span style={{fontSize:12,color:'rgba(226,232,240,.4)'}}>Progress</span>
+                            <span className="font-display" style={{fontSize:14,fontWeight:700,color:'#10b981'}}>{done}/30 days</span>
+                        </div>
+                        <div className="progress-track" style={{width:190}}><div className="progress-fill" style={{width:pct+'%'}}/></div>
+                        <p style={{fontSize:11,color:'rgba(226,232,240,.25)',marginTop:4,textAlign:'right'}}>{pct}% complete</p>
+                    </div>
+                </div>
+            </header>);
+        }
+
+        // ───────── Summary cards ─────────
+        function Cards({data}){
+            let total=0,daysW=0,todayT=0;const kt=[0,0,0];
+            const todayK=fmtD(new Date());
+            DATES.forEach(d=>{const e=data[fmtD(d)];if(!e)return;const v=[e.kit1,e.kit2,e.kit3];const dt=v.reduce((a,b)=>(a||0)+(b||0),0);
+            if(dt>0){daysW++;total+=dt;v.forEach((x,i)=>{kt[i]+=(x||0)})}if(fmtD(d)===todayK)todayT=dt});
+            const avg=daysW?Math.round(total/daysW):0;
+            const topI=kt.indexOf(Math.max(...kt));
+
+            const cards=[
+                {label:'Total Registered',val:total,icon:'fa-users',clr:'#10b981',bg:'rgba(16,185,129,.07)',sub:`Across ${KIT_NAMES.length} kits`},
+                {label:"Today's Count",val:todayT,icon:'fa-calendar-day',clr:'#f59e0b',bg:'rgba(245,158,11,.07)',sub:todayT?'Registered today':'No data for today'},
+                {label:'Daily Average',val:avg,icon:'fa-chart-line',clr:'#06b6d4',bg:'rgba(6,182,212,.07)',sub:`Based on ${daysW} day${daysW!==1?'s':''}`},
+                {label:'Top Performer',val:null,txt:KIT_NAMES[topI],icon:'fa-trophy',clr:'#f43f5e',bg:'rgba(244,63,94,.07)',sub:kt[topI].toLocaleString()+' registrations'},
+            ];
+            return(<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(230px,1fr))',gap:14}}>
+                {cards.map((c,i)=>(<div key={i} className="glass-card fade-in" style={{padding:22,animationDelay:i*80+'ms'}}>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}}>
+                        <span style={{fontSize:11,fontWeight:600,textTransform:'uppercase',letterSpacing:'.07em',color:'rgba(226,232,240,.35)'}}>{c.label}</span>
+                        <div style={{width:34,height:34,borderRadius:9,background:c.bg,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                            <i className={`fas ${c.icon}`} style={{fontSize:13,color:c.clr}}/>
+                        </div>
+                    </div>
+                    <div className="font-display" style={{fontSize:30,fontWeight:900,color:'#fff',letterSpacing:'-.02em'}}>
+                        {c.val!==null?<ANum value={c.val}/>:c.txt}
+                    </div>
+                    <p style={{fontSize:11,color:'rgba(226,232,240,.3)',marginTop:5}}>{c.sub}</p>
+                </div>))}
+            </div>);
+        }
+
+        // ───────── Update panel ─────────
+        function Update({data,setData,toast}){
+            const[tab,setTab]=useState('quick');
+            const[fDate,setFDate]=useState('');
+            const[fVal,setFVal]=useState({kit1:'',kit2:'',kit3:''});
+            const[editing,setEditing]=useState(false);
+            const fRef=useRef(null);
+            const[drag,setDrag]=useState(false);
+
+            useEffect(()=>{const t=fmtD(new Date());const ok=DATES.some(d=>fmtD(d)===t);setFDate(ok?t:fmtD(DATES[0]))},[]);
+            useEffect(()=>{const e=data[fDate];if(e){const has=e.kit1!==null||e.kit2!==null||e.kit3!==null;
+            if(has){setFVal({kit1:e.kit1!==null?''+e.kit1:'',kit2:e.kit2!==null?''+e.kit2:'',kit3:e.kit3!==null?''+e.kit3:''});setEditing(true)}
+            else{setFVal({kit1:'',kit2:'',kit3:''});setEditing(false)}}},[fDate,data]);
+
+            const submit=()=>{
+                const vs=KIT_KEYS.map(k=>fVal[k].trim());
+                if(vs.every(v=>!v)){toast('Enter at least one kit value','error');return}
+                const nums=vs.map(v=>v?parseInt(v):null);
+                if(nums.some((n,i)=>vs[i]&&isNaN(n))){toast('Enter valid numbers','error');return}
+                if(nums.some(n=>n!==null&&n<0)){toast('Values cannot be negative','error');return}
+                if(!DATES.find(d=>fmtD(d)===fDate)){toast('Date outside registration period','error');return}
+                const nd={...data};nd[fDate]={kit1:nums[0],kit2:nums[1],kit3:nums[2]};setData(nd);save(nd);
+                toast((editing?'Updated':'Added')+' data for '+fmtS(DATES.find(d=>fmtD(d)===fDate)),'success');
+                setFVal({kit1:'',kit2:'',kit3:''});setEditing(false);
+                const ci=DATES.findIndex(d=>fmtD(d)===fDate);if(ci<DATES.length-1)setFDate(fmtD(DATES[ci+1]));
+            };
+
+            const parseCSV=file=>{if(!file)return;Papa.parse(file,{header:true,skipEmptyLines:true,complete:r=>{
+                const nd={...data};let imp=0,skip=0;
+                r.data.forEach(row=>{const dt=row['Date']||row['date'];if(!dt){skip++;return}
+                if(!DATES.find(d=>fmtD(d)===dt)){skip++;return}
+                const v1=row['Kit 1']||row['kit1']||row['kit_1']||'';
+                const v2=row['Kit 2']||row['kit2']||row['kit_2']||'';
+                const v3=row['Kit 3']||row['kit3']||row['kit_3']||'';
+                nd[dt]={kit1:v1!==''?parseInt(v1):null,kit2:v2!==''?parseInt(v2):null,kit3:v3!==''?parseInt(v3):null};imp++});
+                setData(nd);save(nd);toast('Imported '+imp+' entries'+(skip?', skipped '+skip:''),'success');
+                if(fRef.current)fRef.current.value=''},error:err=>toast('CSV parse error: '+err.message,'error')})};
+
+            const onDrop=e=>{e.preventDefault();setDrag(false);const f=e.dataTransfer.files[0];
+            if(f&&f.name.endsWith('.csv'))parseCSV(f);else toast('Please upload a .csv file','error')};
+            const dlSample=()=>{const b=new Blob([sampleCSV()],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='wiga_sample_template.csv';a.click();toast('Sample template downloaded','info')};
+            const dlExport=()=>{const b=new Blob([exportCSV(data)],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='wiga_data_'+fmtD(new Date())+'.csv';a.click();toast('Data exported','success')};
+
+            const[confirmReset,setConfirmReset]=useState(false);
+            const doReset=()=>{const f=empty();setData(f);save(f);setConfirmReset(false);toast('All data cleared','success')};
+
+            return(<div className="glass-card fade-in" style={{padding:0,animationDelay:'380ms'}}>
+                <div style={{display:'flex',gap:4,padding:'14px 18px 0',borderBottom:'1px solid rgba(16,185,129,.05)'}}>
+                    {[['quick','fa-pen-to-square','Quick Entry'],['csv','fa-file-csv','CSV Upload'],['more','fa-ellipsis','More']].map(([k,ic,lb])=>
+                    <button key={k} className={`tab-btn ${tab===k?'tab-active':'tab-inactive'}`} onClick={()=>setTab(k)}><i className={`fas ${ic}`} style={{marginRight:6}}/>{lb}</button>)}
+                </div>
+                <div style={{padding:18}}>
+                    {tab==='quick'&&(<div className="fade-in">
+                        {editing&&<div style={{marginBottom:14,padding:'9px 14px',background:'rgba(245,158,11,.07)',borderRadius:9,border:'1px solid rgba(245,158,11,.12)'}}>
+                            <span style={{fontSize:12,color:'#f59e0b'}}><i className="fas fa-pen" style={{marginRight:6}}/>Editing existing entry — submit to overwrite</span></div>}
+                        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10,alignItems:'end'}}>
+                            <div><label style={{fontSize:10,fontWeight:600,color:'rgba(226,232,240,.35)',textTransform:'uppercase',letterSpacing:'.06em',display:'block',marginBottom:5}}>Date</label>
+                            <input type="date" className="input-field" value={fDate} min={fmtD(DATES[0])} max={fmtD(DATES[29])} onChange={e=>setFDate(e.target.value)}/></div>
+                            {KIT_KEYS.map((k,i)=>(<div key={k}><label style={{fontSize:10,fontWeight:600,color:KIT_CLR[i],textTransform:'uppercase',letterSpacing:'.06em',display:'block',marginBottom:5}}>{KIT_NAMES[i]}</label>
+                            <input type="number" className="input-field" placeholder="0" value={fVal[k]} min="0" onChange={e=>setFVal({...fVal,[k]:e.target.value})} style={{borderLeft:'3px solid '+KIT_CLR[i]}} onKeyDown={e=>{if(e.key==='Enter')submit()}}/></div>))}
+                            <div><button className="btn-primary" style={{width:'100%',height:42}} onClick={submit}><i className={`fas ${editing?'fa-save':'fa-plus'}`} style={{marginRight:8}}/>{editing?'Update':'Add Entry'}</button></div>
+                        </div>
+                    </div>)}
+
+                    {tab==='csv'&&(<div className="fade-in">
+                        <div className={`drop-zone ${drag?'drag-over':''}`} style={{padding:'36px 20px',textAlign:'center',borderRadius:12,marginBottom:14,cursor:'pointer'}}
+                            onDragOver={e=>{e.preventDefault();setDrag(true)}} onDragLeave={()=>setDrag(false)} onDrop={onDrop} onClick={()=>fRef.current?.click()}>
+                            <input ref={fRef} type="file" accept=".csv" style={{display:'none'}} onChange={e=>{if(e.target.files[0])parseCSV(e.target.files[0])}}/>
+                            <i className="fas fa-cloud-arrow-up" style={{fontSize:30,color:'rgba(16,185,129,.35)',marginBottom:10,display:'block'}}/>
+                            <p style={{fontSize:13,color:'rgba(226,232,240,.5)',marginBottom:3}}>Drag and drop your CSV file here</p>
+                            <p style={{fontSize:11,color:'rgba(226,232,240,.25)'}}>or click to browse</p>
+                        </div>
+                        <div style={{padding:'12px 14px',background:'rgba(16,185,129,.03)',borderRadius:9,border:'1px solid rgba(16,185,129,.05)'}}>
+                            <p style={{fontSize:11,color:'rgba(226,232,240,.35)',marginBottom:6}}><i className="fas fa-info-circle" style={{marginRight:5,color:'#10b981'}}/>Expected columns: Date, Kit 1, Kit 2, Kit 3</p>
+                            <code style={{fontSize:10,color:'rgba(226,232,240,.22)',fontFamily:'monospace'}}>2026-03-30,15,12,18</code>
+                        </div>
+                        <button className="btn-secondary" style={{marginTop:10,width:'100%'}} onClick={dlSample}><i className="fas fa-file-arrow-down" style={{marginRight:8}}/>Download Sample Template</button>
+                    </div>)}
+
+                    {tab==='more'&&(<div className="fade-in" style={{display:'grid',gap:10}}>
+                        <button className="btn-secondary" style={{width:'100%'}} onClick={dlExport}><i className="fas fa-file-export" style={{marginRight:8}}/>Export Data as CSV</button>
+                        <button className="btn-secondary" style={{width:'100%'}} onClick={dlSample}><i className="fas fa-file-arrow-down" style={{marginRight:8}}/>Download Empty Template</button>
+                        <button className="btn-danger" style={{width:'100%'}} onClick={()=>setConfirmReset(true)}><i className="fas fa-trash-can" style={{marginRight:8}}/>Reset All Data</button>
+                        <p style={{fontSize:10,color:'rgba(226,232,240,.2)',textAlign:'center',marginTop:4}}>Data persists in your browser via localStorage</p>
+                    </div>)}
+                </div>
+                {confirmReset&&<Modal title="Reset All Data" msg="This will permanently erase every registration entry. This action cannot be undone." onOk={doReset} onNo={()=>setConfirmReset(false)}/>}
+            </div>);
+        }
+
+        // ───────── Daily bar chart ─────────
+        function BarChart({data}){
+            const cv=useRef(null);const ch=useRef(null);
+            useEffect(()=>{if(ch.current)ch.current.destroy();
+                const ctx=cv.current.getContext('2d');
+                ch.current=new Chart(ctx,{type:'bar',data:{labels:DATES.map(fmtS),datasets:KIT_KEYS.map((k,i)=>({
+                    label:KIT_NAMES[i],data:DATES.map(d=>{const e=data[fmtD(d)];return e&&e[k]!==null?e[k]:0}),
+                    backgroundColor:KIT_CLR_L[i],borderColor:KIT_CLR[i],borderWidth:1,borderRadius:3,borderSkipped:false}))},
+                options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
+                    plugins:{legend:{position:'top',labels:{color:'rgba(226,232,240,.55)',font:{family:'DM Sans',size:11},boxWidth:10,boxHeight:10,borderRadius:2,useBorderRadius:true,padding:14}},
+                    tooltip:{backgroundColor:'#151e19',borderColor:'rgba(16,185,129,.15)',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'rgba(226,232,240,.65)',titleFont:{family:'DM Sans',weight:'600'},bodyFont:{family:'DM Sans'},padding:10,cornerRadius:8}},
+                    scales:{x:{stacked:true,grid:{color:'rgba(16,185,129,.03)'},ticks:{color:'rgba(226,232,240,.3)',font:{family:'DM Sans',size:9},maxRotation:50},border:{color:'rgba(16,185,129,.06)'}},
+                    y:{stacked:true,beginAtZero:true,grid:{color:'rgba(16,185,129,.03)'},ticks:{color:'rgba(226,232,240,.3)',font:{family:'DM Sans',size:10}},border:{color:'rgba(16,185,129,.06)'}}}}});
+                return()=>{if(ch.current)ch.current.destroy()}},[data]);
+            return(<div className="glass-card fade-in" style={{padding:18,animationDelay:'480ms'}}>
+                <h3 className="font-display" style={{fontSize:15,fontWeight:700,color:'#e2e8f0',marginBottom:14}}>Daily Registration Trend</h3>
+                <div style={{height:310,position:'relative'}}><canvas ref={cv}/></div>
+            </div>);
+        }
+
+        // ───────── Doughnut chart ─────────
+        function DonutChart({data}){
+            const cv=useRef(null);const ch=useRef(null);
+            useEffect(()=>{if(ch.current)ch.current.destroy();
+                const totals=KIT_KEYS.map(k=>DATES.reduce((s,d)=>{const e=data[fmtD(d)];return s+(e&&e[k]!==null?e[k]:0)},0));
+                const has=totals.some(t=>t>0);
+                ch.current=new Chart(cv.current.getContext('2d'),{type:'doughnut',data:{labels:KIT_NAMES,datasets:[{data:has?totals:[.001,.001,.001],
+                backgroundColor:['rgba(16,185,129,.78)','rgba(245,158,11,.78)','rgba(244,63,94,.78)'],borderColor:'#0f1612',borderWidth:3,hoverOffset:6}]},
+                options:{responsive:true,maintainAspectRatio:false,cutout:'66%',
+                    plugins:{legend:{position:'bottom',labels:{color:'rgba(226,232,240,.55)',font:{family:'DM Sans',size:11},boxWidth:10,boxHeight:10,borderRadius:2,useBorderRadius:true,padding:14}},
+                    tooltip:{backgroundColor:'#151e19',borderColor:'rgba(16,185,129,.15)',borderWidth:1,titleColor:'#e2e8f0',bodyColor:'rgba(226,232,240,.65)',titleFont:{family:'DM Sans',weight:'600'},bodyFont:{family:'DM Sans'},padding:10,cornerRadius:8,
+                    callbacks:{label:ctx=>{if(!has)return'No data';const tot=totals.reduce((a,b)=>a+b,0);return ctx.label+': '+ctx.raw.toLocaleString()+' ('+((ctx.raw/tot)*100).toFixed(1)+'%)'}}}}}});
+                return()=>{if(ch.current)ch.current.destroy()}},[data]);
+            return(<div className="glass-card fade-in" style={{padding:18,animationDelay:'560ms'}}>
+                <h3 className="font-display" style={{fontSize:15,fontWeight:700,color:'#e2e8f0',marginBottom:14}}>Kit Performance</h3>
+                <div style={{height:310,position:'relative',display:'flex',alignItems:'center',justifyContent:'center'}}><canvas ref={cv}/></div>
+            </div>);
+        }
+
+        // ───────── Data table ─────────
+        function Table({data,setData,toast}){
+            const[editK,setEditK]=useState(null);const[ev,setEv]=useState({kit1:'',kit2:'',kit3:''});
+            let cum=0;
+            const rows=DATES.map((d,i)=>{const k=fmtD(d);const e=data[k]||{};const dt=[e.kit1,e.kit2,e.kit3].reduce((a,b)=>(a||0)+(b||0),0);cum+=dt;
+            return{i:i+1,d,k,e,dt,cum,has:dt>0,today:k===fmtD(new Date())}});
+
+            const startEdit=r=>{setEditK(r.k);setEv({kit1:r.e.kit1!==null?''+r.e.kit1:'',kit2:r.e.kit2!==null?''+r.e.kit2:'',kit3:r.e.kit3!==null?''+r.e.kit3:''})};
+            const saveRow=()=>{const nd={...data};nd[editK]={kit1:ev.kit1!==''?parseInt(ev.kit1):null,kit2:ev.kit2!==''?parseInt(ev.kit2):null,kit3:ev.kit3!==''?parseInt(ev.kit3):null};
+            setData(nd);save(nd);setEditK(null);toast('Entry updated','success')};
+
+            return(<div className="glass-card fade-in" style={{padding:0,animationDelay:'640ms'}}>
+                <div style={{padding:'18px 18px 14px',borderBottom:'1px solid rgba(16,185,129,.05)'}}>
+                    <h3 className="font-display" style={{fontSize:15,fontWeight:700,color:'#e2e8f0'}}>Detailed Records</h3>
+                    <p style={{fontSize:11,color:'rgba(226,232,240,.3)',marginTop:2}}>Click any row to edit inline</p>
+                </div>
+                <div className="table-wrap" style={{maxHeight:500,overflowY:'auto'}}>
+                    <table className="data-table" style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
+                        <thead><tr>
+                            {['#','Date','Day',...KIT_NAMES,'Daily','Cumulative'].map((h,hi)=>(
+                            <th key={hi} style={{padding:'11px 14px',textAlign:hi>=3?'right':'left',fontSize:10,fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em',color:hi>=3&&hi<6?KIT_CLR[hi-3]:'rgba(226,232,240,.35)',borderBottom:'1px solid rgba(16,185,129,.05)'}}>{h}</th>
+                            ))}
+                        </tr></thead>
+                        <tbody>{rows.map((r,idx)=>{
+                            const isEditing=editK===r.k;
+                            return(<tr key={r.k} onClick={()=>!isEditing&&startEdit(r)} style={{cursor:'pointer',background:r.today?'rgba(16,185,129,.035)':idx%2?'rgba(16,185,129,.012)':'transparent',borderBottom:'1px solid rgba(16,185,129,.03)',transition:'background .12s'}}
+                                onMouseEnter={e=>{if(!isEditing)e.currentTarget.style.background='rgba(16,185,129,.055)'}}
+                                onMouseLeave={e=>{e.currentTarget.style.background=r.today?'rgba(16,185,129,.035)':idx%2?'rgba(16,185,129,.012)':'transparent'}}>
+                                <td style={{padding:'9px 14px',color:'rgba(226,232,240,.25)',fontSize:11}}>{r.i}</td>
+                                <td style={{padding:'9px 14px',color:r.today?'#10b981':'rgba(226,232,240,.65)',fontWeight:r.today?600:400,whiteSpace:'nowrap'}}>
+                                    {fmtS(r.d)}{r.today&&<span style={{fontSize:9,color:'#10b981',marginLeft:5,fontWeight:500,border:'1px solid rgba(16,185,129,.2)',borderRadius:4,padding:'1px 5px'}}>TODAY</span>}
+                                </td>
+                                <td style={{padding:'9px 14px',color:'rgba(226,232,240,.3)',fontSize:11}}>{DAYS[r.d.getDay()]}</td>
+                                {isEditing?KIT_KEYS.map(k=>(<td key={k} style={{padding:'5px 6px'}}>
+                                    <input type="number" className="input-field" style={{padding:'5px 7px',fontSize:12,textAlign:'right',width:66}} value={ev[k]} min="0"
+                                    onChange={e=>setEv({...ev,[k]:e.target.value})} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==='Enter')saveRow();if(e.key==='Escape')setEditK(null)}} autoFocus/>
+                                </td>)):KIT_KEYS.map((k,ki)=>(<td key={k} style={{padding:'9px 14px',textAlign:'right',color:r.e[k]!==null?KIT_CLR[ki]:'rgba(226,232,240,.12)',fontWeight:r.e[k]!==null?600:400}}>
+                                    {r.e[k]!==null?r.e[k].toLocaleString():'—'}
+                                </td>))}
+                                {isEditing?(
+                                    <>
+                                    <td style={{padding:'9px 14px',textAlign:'right'}}><button className="btn-primary" style={{padding:'4px 12px',fontSize:11,marginRight:4}} onClick={e=>{e.stopPropagation();saveRow()}}>Save</button><button className="btn-secondary" style={{padding:'4px 12px',fontSize:11}} onClick={e=>{e.stopPropagation();setEditK(null)}}>Cancel</button></td>
+                                    <td></td>
+                                    </>
+                                ):(
+                                    <>
+                                    <td style={{padding:'9px 14px',textAlign:'right',color:r.dt>0?'#e2e8f0':'rgba(226,232,240,.12)',fontWeight:r.dt>0?700:400}}>{r.dt>0?r.dt.toLocaleString():'—'}</td>
+                                    <td style={{padding:'9px 14px',textAlign:'right',color:r.cum>0?'rgba(226,232,240,.5)':'rgba(226,232,240,.12)',fontWeight:500}}>{r.cum>0?r.cum.toLocaleString():'—'}</td>
+                                    </>
+                                )}
+                            </tr>)})}</tbody>
+                    </table>
+                </div>
+            </div>);
+        }
+
+        // ───────── App ─────────
+        function App(){
+            const[data,setData]=useState(load);
+            const[toasts,setToasts]=useState([]);
+            const toast=useCallback((msg,type='success')=>{const id=++_tid;setToasts(p=>[...p,{id,msg,type,out:false}]);
+                setTimeout(()=>{setToasts(p=>p.map(t=>t.id===id?{...t,out:true}:t));setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),300)},3200)},[]);
+
+            const done=useMemo(()=>DATES.filter(d=>{const e=data[fmtD(d)];return e&&[e.kit1,e.kit2,e.kit3].some(v=>v!==null&&v>0)}).length,[data]);
+
+            return(<div style={{minHeight:'100vh'}}>
+                <Toasts list={toasts}/>
+                <Header done={done}/>
+                <main style={{maxWidth:1280,margin:'0 auto',padding:'22px 24px',display:'flex',flexDirection:'column',gap:20}}>
+                    <Cards data={data}/>
+                    <Update data={data} setData={setData} toast={toast}/>
+                    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,380px),1fr))',gap:14}}>
+                        <BarChart data={data}/>
+                        <DonutChart data={data}/>
+                    </div>
+                    <Table data={data} setData={setData} toast={toast}/>
+                </main>
+                <footer style={{textAlign:'center',padding:'28px 24px',borderTop:'1px solid rgba(16,185,129,.05)',marginTop:16}}>
+                    <p style={{fontSize:11,color:'rgba(226,232,240,.18)'}}>Wiga Ward Voter Registration Dashboard — Data stored locally in your browser</p>
+                </footer>
+            </div>);
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+    </script>
+</body>
+</html>
