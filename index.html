@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,79 +12,526 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,400;9..40,500;9..40,700;9..40,900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,200;9..40,400;9..40,500;9..40,700;9..40,900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <script>document.documentElement.setAttribute('data-theme',localStorage.getItem('wiga_theme')||'dark')</script>
+    <script>document.documentElement.setAttribute('data-theme', localStorage.getItem('wiga_theme') || 'dark')</script>
     <script>
-        tailwind.config={theme:{extend:{colors:{brand:{500:'#10b981',600:'#059669'},gold:{500:'#f59e0b'},rose:{500:'#f43f5e'}},fontFamily:{display:['"Space Grotesk"','sans-serif'],body:['"DM Sans"','sans-serif']}}}}
+        tailwind.config = { theme: { extend: { colors: { brand: { 500: '#10b981', 600: '#059669' }, gold: { 500: '#f59e0b' }, rose: { 500: '#f43f5e' } }, fontFamily: { display: ['"Space Grotesk"', 'sans-serif'], body: ['"DM Sans"', 'sans-serif'] } } } }
     </script>
     <style>
-        :root,[data-theme="dark"]{
-            --bg:#080c0a;--card:rgba(15,22,18,.82);--card-s:#0f1612;--elevated:#151e19;
-            --input:rgba(15,22,18,.92);--txt:#e2e8f0;--txt2:rgba(226,232,240,.55);
-            --txt3:rgba(226,232,240,.3);--txt4:rgba(226,232,240,.18);
-            --brd:rgba(16,185,129,.09);--brd-h:rgba(16,185,129,.2);--brd-f:rgba(16,185,129,.35);
-            --grid:rgba(16,185,129,.025);--orb:.12;--shadow:0 0 40px rgba(16,185,129,.04);
-            --mover:rgba(0,0,0,.55);--thbg:#0f1612;--dbord:#0f1612;
-            --today:rgba(16,185,129,.035);--rhov:rgba(16,185,129,.055);--ralt:rgba(16,185,129,.012);
-            --inv-bg:rgba(245,158,11,.07);--inv-brd:rgba(245,158,11,.12);--inv-txt:#f59e0b;
+        :root,
+        [data-theme="dark"] {
+            --bg: #080c0a;
+            --card: rgba(15, 22, 18, .82);
+            --card-s: #0f1612;
+            --elevated: #151e19;
+            --input: rgba(15, 22, 18, .92);
+            --txt: #e2e8f0;
+            --txt2: rgba(226, 232, 240, .55);
+            --txt3: rgba(226, 232, 240, .3);
+            --txt4: rgba(226, 232, 240, .18);
+            --brd: rgba(16, 185, 129, .09);
+            --brd-h: rgba(16, 185, 129, .2);
+            --brd-f: rgba(16, 185, 129, .35);
+            --grid: rgba(16, 185, 129, .025);
+            --orb: .12;
+            --shadow: 0 0 40px rgba(16, 185, 129, .04);
+            --mover: rgba(0, 0, 0, .55);
+            --thbg: #0f1612;
+            --dbord: #0f1612;
+            --today: rgba(16, 185, 129, .035);
+            --rhov: rgba(16, 185, 129, .055);
+            --ralt: rgba(16, 185, 129, .012);
+            --inv-bg: rgba(245, 158, 11, .07);
+            --inv-brd: rgba(245, 158, 11, .12);
+            --inv-txt: #f59e0b;
         }
-        [data-theme="light"]{
-            --bg:#f4f2ed;--card:rgba(255,255,255,.88);--card-s:#ffffff;--elevated:#f9f8f5;
-            --input:#ffffff;--txt:#1a1a1a;--txt2:rgba(26,26,26,.55);
-            --txt3:rgba(26,26,26,.3);--txt4:rgba(26,26,26,.12);
-            --brd:rgba(0,0,0,.07);--brd-h:rgba(0,0,0,.14);--brd-f:rgba(16,185,129,.4);
-            --grid:rgba(0,0,0,.025);--orb:.04;--shadow:0 2px 16px rgba(0,0,0,.06);
-            --mover:rgba(0,0,0,.3);--thbg:#f9f8f5;--dbord:#ffffff;
-            --today:rgba(16,185,129,.06);--rhov:rgba(16,185,129,.06);--ralt:rgba(0,0,0,.018);
-            --inv-bg:rgba(180,83,9,.06);--inv-brd:rgba(180,83,9,.15);--inv-txt:#b45309;
+
+        [data-theme="light"] {
+            --bg: #f4f2ed;
+            --card: rgba(255, 255, 255, .88);
+            --card-s: #ffffff;
+            --elevated: #f9f8f5;
+            --input: #ffffff;
+            --txt: #1a1a1a;
+            --txt2: rgba(26, 26, 26, .55);
+            --txt3: rgba(26, 26, 26, .3);
+            --txt4: rgba(26, 26, 26, .12);
+            --brd: rgba(0, 0, 0, .07);
+            --brd-h: rgba(0, 0, 0, .14);
+            --brd-f: rgba(16, 185, 129, .4);
+            --grid: rgba(0, 0, 0, .025);
+            --orb: .04;
+            --shadow: 0 2px 16px rgba(0, 0, 0, .06);
+            --mover: rgba(0, 0, 0, .3);
+            --thbg: #f9f8f5;
+            --dbord: #ffffff;
+            --today: rgba(16, 185, 129, .06);
+            --rhov: rgba(16, 185, 129, .06);
+            --ralt: rgba(0, 0, 0, .018);
+            --inv-bg: rgba(180, 83, 9, .06);
+            --inv-brd: rgba(180, 83, 9, .15);
+            --inv-txt: #b45309;
         }
-        *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden;transition:background .35s,color .35s}
-        .bg-orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:var(--orb);pointer-events:none;z-index:0;transition:opacity .35s}
-        .bg-orb-1{width:520px;height:520px;background:#10b981;top:-120px;left:-80px;animation:f1 22s ease-in-out infinite}
-        .bg-orb-2{width:420px;height:420px;background:#f59e0b;bottom:-80px;right:-60px;animation:f2 26s ease-in-out infinite}
-        .bg-orb-3{width:280px;height:280px;background:#10b981;top:55%;right:18%;animation:f3 19s ease-in-out infinite}
-        @keyframes f1{0%,100%{transform:translate(0,0)}33%{transform:translate(90px,70px)}66%{transform:translate(-40px,110px)}}
-        @keyframes f2{0%,100%{transform:translate(0,0)}33%{transform:translate(-70px,-50px)}66%{transform:translate(50px,-90px)}}
-        @keyframes f3{0%,100%{transform:translate(0,0)}50%{transform:translate(-100px,-70px)}}
-        .bg-grid{position:fixed;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0}
-        .gc{background:var(--card);backdrop-filter:blur(14px);border:1px solid var(--brd);border-radius:16px;transition:border-color .3s,box-shadow .3s,background .35s}
-        .gc:hover{border-color:var(--brd-h);box-shadow:var(--shadow)}
-        .ptk{height:7px;background:rgba(16,185,129,.08);border-radius:4px;overflow:hidden}
-        [data-theme="light"] .ptk{background:rgba(16,185,129,.1)}
-        .pfl{height:100%;background:linear-gradient(90deg,#10b981,#34d399);border-radius:4px;transition:width .9s cubic-bezier(.4,0,.2,1)}
-        ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(16,185,129,.18);border-radius:3px}
-        .ti{animation:tI .32s ease-out forwards}.to{animation:tO .28s ease-in forwards}
-        @keyframes tI{from{transform:translateX(110%);opacity:0}to{transform:translateX(0);opacity:1}}
-        @keyframes tO{from{transform:translateX(0);opacity:1}to{transform:translateX(110%);opacity:0}}
-        .dth{position:sticky;top:0;background:var(--thbg);z-index:10;transition:background .35s}
-        .dz{border:2px dashed rgba(16,185,129,.25);transition:all .25s}.dz.dov{border-color:#10b981;background:rgba(16,185,129,.04)}
-        .pd{width:8px;height:8px;background:#10b981;border-radius:50%;animation:pd 2s ease-in-out infinite}
-        @keyframes pd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.6)}}
-        .inp{background:var(--input);border:1px solid var(--brd);border-radius:10px;padding:10px 14px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;transition:border-color .2s,box-shadow .2s,background .35s;outline:none;width:100%}
-        .inp:focus{border-color:var(--brd-f);box-shadow:0 0 0 3px rgba(16,185,129,.08)}.inp::placeholder{color:var(--txt4)}
-        input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(.65);cursor:pointer}
-        [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator{filter:none}
-        input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}input[type="number"]{-moz-appearance:textfield}
-        .bp{background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-weight:600;padding:10px 20px;border-radius:10px;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;transition:transform .15s,box-shadow .15s}
-        .bp:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,.25)}.bp:active{transform:translateY(0)}
-        .bs{background:rgba(16,185,129,.08);color:#10b981;font-weight:500;padding:10px 20px;border-radius:10px;border:1px solid rgba(16,185,129,.18);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;transition:background .15s}.bs:hover{background:rgba(16,185,129,.13)}
-        .bd{background:rgba(244,63,94,.08);color:#f43f5e;font-weight:500;padding:10px 20px;border-radius:10px;border:1px solid rgba(244,63,94,.18);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14px;transition:background .15s}.bd:hover{background:rgba(244,63,94,.13)}
-        .tb{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:none;font-family:'DM Sans',sans-serif}
-        .ta{background:rgba(16,185,129,.13);color:#10b981}.tn{background:transparent;color:var(--txt3)}.tn:hover{color:var(--txt2)}
-        .fi{animation:fi .5s ease-out both}@keyframes fi{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-        .mov{position:fixed;inset:0;background:var(--mover);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center}
-        .mbx{background:var(--card-s);border:1px solid var(--brd);border-radius:16px;padding:28px;max-width:540px;width:92%;max-height:90vh;overflow-y:auto;transition:background .35s}
-        .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
-        .ib{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1px solid var(--brd);background:var(--card);transition:all .2s;color:var(--txt2);font-size:15px}
-        .ib:hover{border-color:var(--brd-h);color:var(--txt)}
-        .cblk{background:var(--elevated);border:1px solid var(--brd);border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:11.5px;color:var(--txt2);white-space:pre-wrap;word-break:break-all;line-height:1.6;max-height:150px;overflow-y:auto;transition:background .35s}
-        .step-num{width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,.12);color:#10b981;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
-        @keyframes spin{to{transform:rotate(360deg)}}
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--txt);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: background .35s, color .35s
+        }
+
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: var(--orb);
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity .35s
+        }
+
+        .bg-orb-1 {
+            width: 520px;
+            height: 520px;
+            background: #10b981;
+            top: -120px;
+            left: -80px;
+            animation: f1 22s ease-in-out infinite
+        }
+
+        .bg-orb-2 {
+            width: 420px;
+            height: 420px;
+            background: #f59e0b;
+            bottom: -80px;
+            right: -60px;
+            animation: f2 26s ease-in-out infinite
+        }
+
+        .bg-orb-3 {
+            width: 280px;
+            height: 280px;
+            background: #10b981;
+            top: 55%;
+            right: 18%;
+            animation: f3 19s ease-in-out infinite
+        }
+
+        @keyframes f1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            33% {
+                transform: translate(90px, 70px)
+            }
+
+            66% {
+                transform: translate(-40px, 110px)
+            }
+        }
+
+        @keyframes f2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            33% {
+                transform: translate(-70px, -50px)
+            }
+
+            66% {
+                transform: translate(50px, -90px)
+            }
+        }
+
+        @keyframes f3 {
+
+            0%,
+            100% {
+                transform: translate(0, 0)
+            }
+
+            50% {
+                transform: translate(-100px, -70px)
+            }
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+            z-index: 0
+        }
+
+        .gc {
+            background: var(--card);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--brd);
+            border-radius: 16px;
+            transition: border-color .3s, box-shadow .3s, background .35s
+        }
+
+        .gc:hover {
+            border-color: var(--brd-h);
+            box-shadow: var(--shadow)
+        }
+
+        .ptk {
+            height: 7px;
+            background: rgba(16, 185, 129, .08);
+            border-radius: 4px;
+            overflow: hidden
+        }
+
+        [data-theme="light"] .ptk {
+            background: rgba(16, 185, 129, .1)
+        }
+
+        .pfl {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            border-radius: 4px;
+            transition: width .9s cubic-bezier(.4, 0, .2, 1)
+        }
+
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(16, 185, 129, .18);
+            border-radius: 3px
+        }
+
+        .ti {
+            animation: tI .32s ease-out forwards
+        }
+
+        .to {
+            animation: tO .28s ease-in forwards
+        }
+
+        @keyframes tI {
+            from {
+                transform: translateX(110%);
+                opacity: 0
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1
+            }
+        }
+
+        @keyframes tO {
+            from {
+                transform: translateX(0);
+                opacity: 1
+            }
+
+            to {
+                transform: translateX(110%);
+                opacity: 0
+            }
+        }
+
+        .dth {
+            position: sticky;
+            top: 0;
+            background: var(--thbg);
+            z-index: 10;
+            transition: background .35s
+        }
+
+        .dz {
+            border: 2px dashed rgba(16, 185, 129, .25);
+            transition: all .25s
+        }
+
+        .dz.dov {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, .04)
+        }
+
+        .pd {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pd 2s ease-in-out infinite
+        }
+
+        @keyframes pd {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1)
+            }
+
+            50% {
+                opacity: .4;
+                transform: scale(1.6)
+            }
+        }
+
+        .inp {
+            background: var(--input);
+            border: 1px solid var(--brd);
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: var(--txt);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            transition: border-color .2s, box-shadow .2s, background .35s;
+            outline: none;
+            width: 100%
+        }
+
+        .inp:focus {
+            border-color: var(--brd-f);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, .08)
+        }
+
+        .inp::placeholder {
+            color: var(--txt4)
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(.65);
+            cursor: pointer
+        }
+
+        [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: none
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield
+        }
+
+        .bp {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            transition: transform .15s, box-shadow .15s
+        }
+
+        .bp:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, .25)
+        }
+
+        .bp:active {
+            transform: translateY(0)
+        }
+
+        .bs {
+            background: rgba(16, 185, 129, .08);
+            color: #10b981;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(16, 185, 129, .18);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            transition: background .15s
+        }
+
+        .bs:hover {
+            background: rgba(16, 185, 129, .13)
+        }
+
+        .bdd {
+            background: rgba(244, 63, 94, .08);
+            color: #f43f5e;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(244, 63, 94, .18);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            transition: background .15s
+        }
+
+        .bdd:hover {
+            background: rgba(244, 63, 94, .13)
+        }
+
+        .tb {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all .2s;
+            border: none;
+            font-family: 'DM Sans', sans-serif
+        }
+
+        .ta {
+            background: rgba(16, 185, 129, .13);
+            color: #10b981
+        }
+
+        .tn {
+            background: transparent;
+            color: var(--txt3)
+        }
+
+        .tn:hover {
+            color: var(--txt2)
+        }
+
+        .fi {
+            animation: fi .5s ease-out both
+        }
+
+        @keyframes fi {
+            from {
+                opacity: 0;
+                transform: translateY(12px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .mov {
+            position: fixed;
+            inset: 0;
+            background: var(--mover);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .mbx {
+            background: var(--card-s);
+            border: 1px solid var(--brd);
+            border-radius: 16px;
+            padding: 28px;
+            max-width: 540px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: background .35s
+        }
+
+        .tw {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch
+        }
+
+        .ib {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid var(--brd);
+            background: var(--card);
+            transition: all .2s;
+            color: var(--txt2);
+            font-size: 15px
+        }
+
+        .ib:hover {
+            border-color: var(--brd-h);
+            color: var(--txt)
+        }
+
+        .cblk {
+            background: var(--elevated);
+            border: 1px solid var(--brd);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 11.5px;
+            color: var(--txt2);
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.6;
+            max-height: 150px;
+            overflow-y: auto;
+            transition: background .35s
+        }
+
+        .sn {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(16, 185, 129, .12);
+            color: #10b981;
+            font-size: 11px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: .01ms !important;
+                transition-duration: .01ms !important
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="bg-grid"></div>
     <div class="bg-orb bg-orb-1"></div>
@@ -92,611 +540,714 @@
     <div id="root" style="position:relative;z-index:1"></div>
 
     <script type="text/babel">
-        const {useState,useEffect,useRef,useCallback,useMemo}=React;
+        const { useState, useEffect, useRef, useCallback, useMemo } = React;
 
         /* ═══════════ CONSTANTS ═══════════ */
-        const START=new Date(2026,2,30,12);
-        const DATES=Array.from({length:30},(_,i)=>{const d=new Date(START);d.setDate(d.getDate()+i);return d});
-        const SK='wiga_voter_data_v1',CK='wiga_config_v2';
-        const KN=['Kit 1','Kit 2','Kit 3'],KK=['kit1','kit2','kit3'];
-        const KC=['#10b981','#f59e0b','#f43f5e'],KCL=['rgba(16,185,129,.72)','rgba(245,158,11,.72)','rgba(244,63,94,.72)'];
-        const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const START = new Date(2026, 2, 30, 12);
+        const DATES = Array.from({ length: 30 }, (_, i) => { const d = new Date(START); d.setDate(d.getDate() + i); return d });
+        const SK = 'wiga_voter_data_v1', CK = 'wiga_config_v2';
+        const KN = ['Kit 1', 'Kit 2', 'Kit 3'], KK = ['kit1', 'kit2', 'kit3'];
+        const KC = ['#10b981', '#f59e0b', '#f43f5e'], KCL = ['rgba(16,185,129,.72)', 'rgba(245,158,11,.72)', 'rgba(244,63,94,.72)'];
+        const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-        /* FIX #5: Timezone-safe date formatting (Issue #5) */
-        const fmtD=d=>{const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');return `${y}-${m}-${day}`};
-        const fmtS=d=>d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
-        const fmtF=d=>d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+        /* Timezone-safe date formatting */
+        const fmtD = d => { const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0'); return y + '-' + m + '-' + day };
+        const fmtS = d => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+        const fmtF = d => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
-        /* Updated SQL — fixes #10: proper RLS policies */
-        const SQL=`DROP POLICY IF EXISTS "Public read" ON registrations;
-
-CREATE POLICY "Public read" ON registrations
-  FOR SELECT USING (true);
-
-CREATE POLICY "Admin write" ON registrations
-  FOR ALL USING (auth.uid() IS NOT NULL)
-  WITH CHECK (auth.uid() IS NOT NULL);`;
+        const SQL = 'DROP POLICY IF EXISTS "Public read" ON registrations;\n\nCREATE POLICY "Public read" ON registrations\n  FOR SELECT USING (true);\n\nCREATE POLICY "Admin write" ON registrations\n  FOR ALL USING (auth.uid() IS NOT NULL)\n  WITH CHECK (auth.uid() IS NOT NULL);';
 
         /* ═══════════ DATA HELPERS ═══════════ */
-        const empty=()=>{const o={};DATES.forEach(d=>o[fmtD(d)]={kit1:null,kit2:null,kit3:null});return o};
-        const loadLocal=()=>{try{const s=localStorage.getItem(SK);if(s)return{...empty(),...JSON.parse(s)}}catch(e){}return empty()};
-        const saveLocal=d=>{try{localStorage.setItem(SK,JSON.stringify(d))}catch(e){}};
-        const sbToLocal=rows=>{const d=empty();if(!rows)return d;rows.forEach(r=>{if(d.hasOwnProperty(r.date))d[r.date]={kit1:r.kit1,kit2:r.kit2,kit3:r.kit3}});return d};
-        const sampleCSV=()=>{let c='Date,Kit 1,Kit 2,Kit 3\n';DATES.forEach(d=>c+=fmtD(d)+',,\n');return c};
-        const exportCSV=data=>{let c='Date,Day,Kit 1,Kit 2,Kit 3,Total\n';DATES.forEach(d=>{const k=fmtD(d),e=data[k]||{};const t=[e.kit1,e.kit2,e.kit3].reduce((a,b)=>(a||0)+(b||0),0);c+=k+','+DAYS[d.getDay()]+','+(e.kit1??'')+','+(e.kit2??'')+','+(e.kit3??'')+','+(t||'')+'\n'});return c};
+        const empty = () => { const o = {}; DATES.forEach(d => o[fmtD(d)] = { kit1: null, kit2: null, kit3: null }); return o };
+        const loadLocal = () => { try { const s = localStorage.getItem(SK); if (s) return Object.assign(empty(), JSON.parse(s)) } catch (e) { } return empty() };
+        const saveLocal = d => { try { localStorage.setItem(SK, JSON.stringify(d)) } catch (e) { } };
+        const sbToLocal = rows => { const d = empty(); if (!rows) return d; rows.forEach(r => { if (d.hasOwnProperty(r.date)) d[r.date] = { kit1: r.kit1, kit2: r.kit2, kit3: r.kit3 } }); return d };
+        const sampleCSV = () => { let c = 'Date,Kit 1,Kit 2,Kit 3\n'; DATES.forEach(d => c += fmtD(d) + ',,\n'); return c };
+        const exportCSV = data => { let c = 'Date,Day,Kit 1,Kit 2,Kit 3,Total\n'; DATES.forEach(d => { const k = fmtD(d), e = data[k] || {}; const t = [e.kit1, e.kit2, e.kit3].reduce((a, b) => (a || 0) + (b || 0), 0); c += k + ',' + DAYS[d.getDay()] + ',' + (e.kit1 ?? '') + ',' + (e.kit2 ?? '') + ',' + (e.kit3 ?? '') + ',' + (t || '') + '\n' }); return c };
 
-        /* ═══════════ DATABASE (Fix #1: anon key only, Supabase Auth) ═══════════ */
-        const DB={
-            client:null,ready:false,
-            _onAuth:null,
+        /* ═══════════ DATABASE — anon key only, Supabase Auth ═══════════ */
+        const DB = {
+            client: null, ready: false, _onAuth: null,
 
-            /* FIX #1: Only anon key — service_role NEVER in frontend */
-            init(url,ak,onAuth){
-                try{
-                    if(typeof supabase==='undefined')return false;
-                    this.client=supabase.createClient(url,ak);
-                    this.ready=true;
-                    this._onAuth=onAuth;
-                    /* Listen for session changes (expiry, manual logout) */
-                    this.client.auth.onAuthStateChange((_ev,session)=>{
-                        if(this._onAuth)this._onAuth(!!session);
-                    });
+            init(url, ak, onAuth) {
+                try {
+                    if (typeof supabase === 'undefined') return false;
+                    this.client = supabase.createClient(url, ak);
+                    this.ready = true;
+                    this._onAuth = onAuth;
+                    this.client.auth.onAuthStateChange(function (_ev, session) {
+                        if (this._onAuth) this._onAuth(!!session);
+                    }.bind(this));
                     return true;
-                }catch(e){return false}
+                } catch (e) { return false }
             },
 
-            async fetchAll(){
-                if(!this.client||!this.ready)return null;
-                const{data,error}=await this.client.from('registrations').select('*').order('date',{ascending:true});
-                if(error){console.error('DB fetch:',error.message);return null}
-                return data;
+            async fetchAll() {
+                if (!this.client || !this.ready) return null;
+                var res = await this.client.from('registrations').select('*').order('date', { ascending: true });
+                if (res.error) { return { error: res.error.message } }
+                return res.data;
             },
 
-            /* These use anon key + auth JWT — RLS enforces auth.uid() check */
-            async upsert(date,kit1,kit2,kit3){
-                if(!this.client||!this.ready)return false;
-                const{error}=await this.client.from('registrations').upsert({date,kit1,kit2,kit3},{onConflict:'date'});
-                if(error){console.error('DB upsert:',error.message);return false}
-                return true;
+            async upsert(date, kit1, kit2, kit3) {
+                if (!this.client || !this.ready) return { error: 'Not connected' };
+                var res = await this.client.from('registrations').upsert({ date: date, kit1: kit1, kit2: kit2, kit3: kit3 }, { onConflict: 'date' });
+                if (res.error) return { error: res.error.message };
+                return {};
             },
 
-            /* FIX #8: Cleaner delete — targets actual date range */
-            async deleteAll(){
-                if(!this.client||!this.ready)return false;
-                const{error}=await this.client.from('registrations').delete().gte('date','2026-01-01');
-                if(error){console.error('DB delete:',error.message);return false}
-                return true;
+            async deleteAll() {
+                if (!this.client || !this.ready) return { error: 'Not connected' };
+                var res = await this.client.from('registrations').delete().gte('date', '2026-01-01');
+                if (res.error) return { error: res.error.message };
+                return {};
             },
 
-            /* Supabase Auth — replaces custom password hashing (Fix #1 + #6) */
-            async signIn(email,password){
-                const{data,error}=await this.client.auth.signInWithPassword({email,password});
-                if(error)return{ok:false,msg:error.message};
-                return{ok:true};
+            async signIn(email, password) {
+                var res = await this.client.auth.signInWithPassword({ email: email, password: password });
+                if (res.error) return { ok: false, msg: res.error.message };
+                return { ok: true };
             },
 
-            async signOut(){
+            async signOut() {
                 await this.client.auth.signOut();
             },
 
-            async getSession(){
-                const{data}=await this.client.auth.getSession();
-                return data.session;
+            async getSession() {
+                var res = await this.client.auth.getSession();
+                return res.data.session;
             },
 
-            /* Config stores ONLY url + anon key — no secrets (Fix #1) */
-            getConfig(){try{const c=JSON.parse(localStorage.getItem(CK));return c?{url:c.url,ak:c.ak}:null}catch(e){return null}},
-            saveConfig(c){localStorage.setItem(CK,JSON.stringify({url:c.url,ak:c.ak}))},
-            clearConfig(){localStorage.removeItem(CK)},
-            isConfigured(){return !!this.getConfig()}
+            getConfig() { try { var c = JSON.parse(localStorage.getItem(CK)); return c ? { url: c.url, ak: c.ak } : null } catch (e) { return null } },
+            saveConfig(c) { localStorage.setItem(CK, JSON.stringify({ url: c.url, ak: c.ak })) },
+            clearConfig() { localStorage.removeItem(CK) },
+            isConfigured() { return !!this.getConfig() }
         };
 
         /* ═══════════ CHART PLUGIN ═══════════ */
-        Chart.register({id:'ct',afterDraw(chart){
-            if(chart.config.type!=='doughnut')return;
-            if(!chart.chartArea)return; /* FIX #3: null safety */
-            const{ctx,chartArea:{top,bottom,left,right}}=chart;
-            const cx=(left+right)/2,cy=(top+bottom)/2,v=chart.data.datasets[0].data,ph=v.length===3&&v.every(x=>x<1);
-            const cs=getComputedStyle(document.documentElement);
-            ctx.save();ctx.textAlign='center';ctx.textBaseline='middle';
-            if(ph){ctx.font='500 13px "DM Sans"';ctx.fillStyle=cs.getPropertyValue('--txt3').trim();ctx.fillText('No data yet',cx,cy)}
-            else{const t=v.reduce((a,b)=>a+b,0);ctx.font='900 26px "Space Grotesk"';ctx.fillStyle=cs.getPropertyValue('--txt').trim();ctx.fillText(t.toLocaleString(),cx,cy-8);ctx.font='400 11px "DM Sans"';ctx.fillStyle=cs.getPropertyValue('--txt3').trim();ctx.fillText('Total',cx,cy+14)}
-            ctx.restore();
-        }});
+        Chart.register({
+            id: 'ct', afterDraw: function (chart) {
+                if (chart.config.type !== 'doughnut') return;
+                if (!chart.chartArea) return;
+                var ca = chart.chartArea, cx = (ca.left + ca.right) / 2, cy = (ca.top + ca.bottom) / 2;
+                var v = chart.data.datasets[0].data, ph = v.length === 3 && v.every(function (x) { return x < 1 });
+                var cs = getComputedStyle(document.documentElement);
+                var tc = cs.getPropertyValue('--txt').trim() || '#fff';
+                var tc3 = cs.getPropertyValue('--txt3').trim() || 'rgba(226,232,240,.3)';
+                var ctx = chart.ctx; ctx.save(); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                if (ph) { ctx.font = '500 13px "DM Sans"'; ctx.fillStyle = tc3; ctx.fillText('No data yet', cx, cy) }
+                else { var t = v.reduce(function (a, b) { return a + b }, 0); ctx.font = '900 26px "Space Grotesk"'; ctx.fillStyle = tc; ctx.fillText(t.toLocaleString(), cx, cy - 8); ctx.font = '400 11px "DM Sans"'; ctx.fillStyle = tc3; ctx.fillText('Total', cx, cy + 14) }
+                ctx.restore();
+            }
+        });
 
-        function cOpts(theme){
-            const dk=theme==='dark';
-            return{grid:dk?'rgba(16,185,129,.04)':'rgba(0,0,0,.06)',tick:dk?'rgba(226,232,240,.3)':'rgba(26,26,26,.4)',
-            tbg:dk?'#151e19':'#ffffff',tbrd:dk?'rgba(16,185,129,.15)':'rgba(0,0,0,.1)',tt:dk?'#e2e8f0':'#1a1a1a',tb:dk?'rgba(226,232,240,.65)':'rgba(26,26,26,.65)',
-            dbord:dk?'#0f1612':'#ffffff'}
+        function cOpts(theme) {
+            var dk = theme === 'dark';
+            return {
+                grid: dk ? 'rgba(16,185,129,.04)' : 'rgba(0,0,0,.06)', tick: dk ? 'rgba(226,232,240,.3)' : 'rgba(26,26,26,.4)',
+                tbg: dk ? '#151e19' : '#ffffff', tbrd: dk ? 'rgba(16,185,129,.15)' : 'rgba(0,0,0,.1)', tt: dk ? '#e2e8f0' : '#1a1a1a', tb: dk ? 'rgba(226,232,240,.65)' : 'rgba(26,26,26,.65)',
+                dbord: dk ? '#0f1612' : '#ffffff'
+            }
         }
 
         /* ═══════════ TOASTS ═══════════ */
-        let _tid=0;
-        function Toasts({list}){
-            return(<div style={{position:'fixed',top:20,right:20,zIndex:200,display:'flex',flexDirection:'column',gap:8}}>
-                {list.map(t=>(<div key={t.id} className={`gc ${t.out?'to':'ti'}`} style={{padding:'12px 18px',display:'flex',alignItems:'center',gap:10,minWidth:240,maxWidth:380,borderLeft:`3px solid ${t.type==='success'?'#10b981':t.type==='error'?'#f43f5e':'#f59e0b'}`}}>
-                    <i className={`fas ${t.type==='success'?'fa-circle-check':t.type==='error'?'fa-circle-exclamation':'fa-circle-info'}`} style={{color:t.type==='success'?'#10b981':t.type==='error'?'#f43f5e':'#f59e0b',fontSize:14,flexShrink:0}}/>
-                    <span style={{fontSize:13,color:'var(--txt)',lineHeight:1.4}}>{t.msg}</span>
-                </div>))}
-            </div>);
+        var _tid = 0;
+        function Toasts({ list }) {
+            return React.createElement('div', { style: { position: 'fixed', top: 20, right: 20, zIndex: 200, display: 'flex', flexDirection: 'column', gap: 8 } },
+                list.map(function (t) {
+                    var bc = t.type === 'success' ? '#10b981' : t.type === 'error' ? '#f43f5e' : '#f59e0b';
+                    var ic = t.type === 'success' ? 'fa-circle-check' : t.type === 'error' ? 'fa-circle-exclamation' : 'fa-circle-info';
+                    return React.createElement('div', { key: t.id, className: 'gc ' + (t.out ? 'to' : 'ti'), style: { padding: '12px 18px', display: 'flex', alignItems: 'center', gap: 10, minWidth: 240, maxWidth: 380, borderLeft: '3px solid ' + bc } },
+                        React.createElement('i', { className: 'fas ' + ic, style: { color: bc, fontSize: 14, flexShrink: 0 } }),
+                        React.createElement('span', { style: { fontSize: 13, color: 'var(--txt)', lineHeight: 1.4 } }, t.msg)
+                    );
+                })
+            );
         }
 
         /* ═══════════ ANIMATED NUMBER ═══════════ */
-        function ANum({value,dur=700}){
-            const[disp,setDisp]=useState(0);const prev=useRef(0);
-            useEffect(()=>{const s=prev.current,e=value;if(s===e)return;const t0=performance.now();
-            const run=now=>{const p=Math.min((now-t0)/dur,1);setDisp(Math.round(s+(e-s)*(1-Math.pow(1-p,3))));if(p<1)requestAnimationFrame(run);else prev.current=e};requestAnimationFrame(run)},[value,dur]);
-            return <span>{disp.toLocaleString()}</span>;
+        function ANum({ value, dur }) {
+            dur = dur || 700; var s = useRef({ v: 0, prev: 0 }); var st = useState(0); var disp = st[0]; var setDisp = st[1]; s.current.prev = s.current.v; s.current.v = value;
+            useEffect(function () {
+                var start = s.current.prev, end = s.current.v; if (start === end) return; var t0 = performance.now();
+                function run(now) { var p = Math.min((now - t0) / dur, 1); var ease = 1 - Math.pow(1 - p, 3); setDisp(Math.round(start + (end - start) * ease)); if (p < 1) requestAnimationFrame(run) } requestAnimationFrame(run)
+            }, [value, dur]);
+            return React.createElement('span', null, disp.toLocaleString())
         }
 
         /* ═══════════ SETUP MODAL ═══════════ */
-        function SetupModal({onDone,onSkip}){
-            const[url,setUrl]=useState('');const[ak,setAk]=useState('');
-            const[loading,setLoading]=useState(false);const[err,setErr]=useState('');const[copied,setCopied]=useState(false);
-            const cfg=DB.getConfig();
-            useEffect(()=>{if(cfg){setUrl(cfg.url||'');setAk(cfg.ak||'')}},[cfg]);
+        function SetupModal({ onDone, onSkip }) {
+            var s1 = useState(''); var url = s1[0]; var setUrl = s1[1];
+            var s2 = useState(''); var ak = s2[0]; var setAk = s2[1];
+            var s3 = useState(false); var loading = s3[0]; var setLoading = s3[1];
+            var s4 = useState(''); var err = s4[0]; var setErr = s4[1];
+            var s5 = useState(false); var copied = s5[0]; var setCopied = s5[1];
 
-            const copySQL=()=>{navigator.clipboard.writeText(SQL).then(()=>{setCopied(true);setTimeout(()=>setCopied(false),2000)})};
+            var cfg = DB.getConfig();
+            useEffect(function () { if (cfg) { setUrl(cfg.url || ''); setAk(cfg.ak || '') } }, []);
 
-            const connect=async()=>{
+            function copySQL() { navigator.clipboard.writeText(SQL).then(function () { setCopied(true); setTimeout(function () { setCopied(false) }, 2000) }) }
+
+            async function connect() {
                 setErr('');
-                if(!url||!ak){setErr('Both fields are required');return}
-                if(!url.includes('supabase.co')){setErr('URL should look like https://xxxxx.supabase.co');return}
+                if (!url || !ak) { setErr('Both fields are required'); return }
+                if (!url.includes('supabase.co')) { setErr('URL should look like https://xxxxx.supabase.co'); return }
                 setLoading(true);
-                const ok=DB.init(url,ak,()=>{});
-                if(!ok){setErr('Failed to initialize. Check if the Supabase library loaded.');setLoading(false);return}
-                /* FIX #9: Show actual error to user */
-                const rows=await DB.fetchAll();
-                if(rows===null){setErr('Connection failed — check your URL, anon key, and that the table exists.');DB.ready=false;DB.client=null;setLoading(false);return}
-                DB.saveConfig({url,ak});saveLocal(sbToLocal(rows));setLoading(false);onDone();
-            };
+                var ok = DB.init(url, ak, function () { });
+                if (!ok) { setErr('Failed to initialize. Check if the Supabase library loaded.'); setLoading(false); return }
+                var rows = await DB.fetchAll();
+                if (!Array.isArray(rows)) { setErr('Connection failed — ' + (rows.error || 'check your URL, anon key, and that the table exists.')); DB.ready = false; DB.client = null; setLoading(false); return }
+                DB.saveConfig({ url: url, ak: ak }); saveLocal(sbToLocal(rows)); setLoading(false); onDone();
+            }
 
-            return(<div className="mov" onClick={onSkip}>
-                <div className="mbx" onClick={e=>e.stopPropagation()}>
-                    <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:18}}>
-                        <div style={{width:40,height:40,borderRadius:10,background:'rgba(16,185,129,.1)',display:'flex',alignItems:'center',justifyContent:'center'}}><i className="fas fa-database" style={{color:'#10b981',fontSize:16}}/></div>
-                        <div><h3 className="font-display" style={{fontSize:18,fontWeight:700,color:'var(--txt)'}}>Connect to Supabase</h3><p style={{fontSize:12,color:'var(--txt3)'}}>Secure setup — only the public anon key is used</p></div>
-                    </div>
+            /* All cursor values use string quotes to avoid the ReferenceError */
+            var copyBtnStyle = { position: 'absolute', top: 6, right: 6, background: 'rgba(16,185,129,.12)', border: 'none', borderRadius: 6, padding: '3px 10px', cursor: 'pointer', fontSize: 11, color: '#10b981', fontFamily: 'DM Sans', fontWeight: '500' };
 
-                    <div style={{display:'flex',flexDirection:'column',gap:12,marginBottom:18}}>
-                        <div style={{display:'flex',gap:10,alignItems:'flex-start'}}>
-                            <div className="step-num">1</div>
-                            <div style={{flex:1}}>
-                                <p style={{fontSize:13,color:'var(--txt2)',lineHeight:1.5}}>Open your Supabase project's <strong style={{color:'var(--txt)'}}>SQL Editor</strong> and run this to set up secure RLS policies:</p>
-                                <div style={{position:'relative',marginTop:6}}>
-                                    <div className="cblk">{SQL}</div>
-                                    <button onClick={copySQL} style={{position:'absolute',top:6,right:6,background:'rgba(16,185,129,.12)',border:'none',borderRadius:6,padding:'3px 10px',cursor:pointer,fontSize:11,color:'#10b981',fontFamily:'DM Sans',fontWeight:500}}>
-                                        <i className={`fas ${copied?'fa-check':'fa-copy'}`} style={{marginRight:4}}/>{copied?'Copied':'Copy'}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <div style={{display:'flex',gap:10,alignItems:'flex-start'}}>
-                            <div className="step-num">2</div>
-                            <div style={{flex:1}}>
-                                <p style={{fontSize:13,color:'var(--txt2)',lineHeight:1.5}}>Go to <strong style={{color:'var(--txt)'}}>Authentication → Users → Add User</strong>. Create your admin account with an email and password.</p>
-                            </div>
-                        </div>
-                        <div style={{display:'flex',gap:10,alignItems:'flex-start'}}>
-                            <div className="step-num">3</div>
-                            <div style={{flex:1}}>
-                                <p style={{fontSize:13,color:'var(--txt2)',lineHeight:1.5}}>Go to <strong style={{color:'var(--txt)'}}>Authentication → Providers → Email</strong>. Turn <strong style={{color:'#f43f5e'}}>OFF</strong> "Enable email signups" to prevent others from creating accounts.</p>
-                            </div>
-                        </div>
-                        <div style={{display:'flex',gap:10,alignItems:'flex-start'}}>
-                            <div className="step-num">4</div>
-                            <div style={{flex:1}}>
-                                <p style={{fontSize:13,color:'var(--txt2)',lineHeight:1.5}}>Go to <strong style={{color:'var(--txt)'}}>Settings → API</strong>. Copy your <strong style={{color:'var(--txt)'}}>Project URL</strong> and <strong style={{color:'var(--txt)'}}>anon public</strong> key below.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:16}}>
-                        <div><label style={{fontSize:10,fontWeight:600,color:'var(--txt3)',textTransform:'uppercase',letterSpacing:'.06em',display:'block',marginBottom:4}}>Project URL</label><input className="inp" placeholder="https://xxxxx.supabase.co" value={url} onChange={e=>setUrl(e.target.value)}/></div>
-                        <div><label style={{fontSize:10,fontWeight:600,color:'var(--txt3)',textTransform:'uppercase',letterSpacing:'.06em',display:'block',marginBottom:4}}>Anon (Public) Key</label><input className="inp" placeholder="eyJhbGciOi..." value={ak} onChange={e=>setAk(e.target.value)}/></div>
-                    </div>
-
-                    {err&&<div style={{padding:'10px 14px',background:'rgba(244,63,94,.07)',borderRadius:8,border:'1px solid rgba(244,63,94,.15)',marginBottom:14,fontSize:12,color:'#f43f5e',lineHeight:1.5}}><i className="fas fa-circle-exclamation" style={{marginRight:6}}/>{err}</div>}
-
-                    <div style={{display:'flex',gap:10}}>
-                        <button className="bp" style={{flex:1}} onClick={connect} disabled={loading}>{loading?<><i className="fas fa-spinner fa-spin" style={{marginRight:8}}/>Connecting...</>:'Connect'}</button>
-                        <button className="bs" onClick={onSkip}>Use Local Mode</button>
-                    </div>
-                    <p style={{fontSize:10,color:'var(--txt4)',textAlign:'center',marginTop:12}}>No service_role key needed — security is handled by Supabase Auth + RLS</p>
-                </div>
-            </div>);
+            return React.createElement('div', { className: 'mov', onClick: onSkip },
+                React.createElement('div', { className: 'mbx', onClick: function (e) { e.stopPropagation() } },
+                    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 } },
+                        React.createElement('div', { style: { width: 40, height: 40, borderRadius: 10, background: 'rgba(16,185,129,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+                            React.createElement('i', { className: 'fas fa-database', style: { color: '#10b981', fontSize: 16 } })
+                        ),
+                        React.createElement('div', null,
+                            React.createElement('h3', { className: 'font-display', style: { fontSize: 18, fontWeight: 700, color: 'var(--txt)' } }, 'Connect to Supabase'),
+                            React.createElement('p', { style: { fontSize: 12, color: 'var(--txt3)' } }, 'Secure setup — only the public anon key is used')
+                        )
+                    ),
+                    React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 18 } },
+                        [/* Step 1 */
+                            React.createElement('div', { key: 's1', style: { display: 'flex', gap: 10, alignItems: 'flex-start' } },
+                                React.createElement('div', { className: 'sn' }, '1'),
+                                React.createElement('div', { style: { flex: 1 } },
+                                    React.createElement('p', { style: { fontSize: 13, color: 'var(--txt2)', lineHeight: 1.5 } }, 'Open your Supabase project\'s ', React.createElement('strong', { style: { color: 'var(--txt)' } }, 'SQL Editor'), ' and run this:'),
+                                    React.createElement('div', { style: { position: 'relative', marginTop: 6 } },
+                                        React.createElement('div', { className: 'cblk' }, SQL),
+                                        React.createElement('button', { onClick: copySQL, style: copyBtnStyle },
+                                            React.createElement('i', { className: 'fas ' + (copied ? 'fa-check' : 'fa-copy'), style: { marginRight: 4 } }), copied ? 'Copied' : 'Copy'
+                                        )
+                                    )
+                                )
+                            ),
+                            /* Step 2 */
+                            React.createElement('div', { key: 's2', style: { display: 'flex', gap: 10, alignItems: 'flex-start' } },
+                                React.createElement('div', { className: 'sn' }, '2'),
+                                React.createElement('div', { style: { flex: 1 } },
+                                    React.createElement('p', { style: { fontSize: 13, color: 'var(--txt2)', lineHeight: 1.5 } }, 'Go to ', React.createElement('strong', { style: { color: 'var(--txt)' } }, 'Authentication \u2192 Users \u2192 Add User'), '. Create your admin account.')
+                                )
+                            ),
+                            /* Step 3 */
+                            React.createElement('div', { key: 's3', style: { display: 'flex', gap: 10, alignItems: 'flex-start' } },
+                                React.createElement('div', { className: 'sn' }, '3'),
+                                React.createElement('div', { style: { flex: 1 } },
+                                    React.createElement('p', { style: { fontSize: 13, color: 'var(--txt2)', lineHeight: 1.5 } }, 'Go to ', React.createElement('strong', { style: { color: 'var(--txt)' } }, 'Authentication \u2192 Providers \u2192 Email'), '. Turn ', React.createElement('strong', { style: { color: '#f43f5e' } }, 'OFF'), ' "Enable email signups".')
+                                )
+                            ),
+                            /* Step 4 */
+                            React.createElement('div', { key: 's4', style: { display: 'flex', gap: 10, alignItems: 'flex-start' } },
+                                React.createElement('div', { className: 'sn' }, '4'),
+                                React.createElement('div', { style: { flex: 1 } },
+                                    React.createElement('p', { style: { fontSize: 13, color: 'var(--txt2)', lineHeight: 1.5 } }, 'Go to ', React.createElement('strong', { style: { color: 'var(--txt)' } }, 'Settings \u2192 API'), '. Copy your Project URL and anon public key below.')
+                                )
+                            )]
+                    ),
+                    React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 } },
+                        React.createElement('div', null,
+                            React.createElement('label', { style: { fontSize: 10, fontWeight: 600, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.06em', display: 'block', marginBottom: 4 } }, 'Project URL'),
+                            React.createElement('input', { className: 'inp', placeholder: 'https://xxxxx.supabase.co', value: url, onChange: function (e) { setUrl(e.target.value) } })
+                        ),
+                        React.createElement('div', null,
+                            React.createElement('label', { style: { fontSize: 10, fontWeight: 600, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.06em', display: 'block', marginBottom: 4 } }, 'Anon (Public) Key'),
+                            React.createElement('input', { className: 'inp', placeholder: 'eyJhbGciOi...', value: ak, onChange: function (e) { setAk(e.target.value) } })
+                        )
+                    ),
+                    err ? React.createElement('div', { style: { padding: '10px 14px', background: 'rgba(244,63,94,.07)', borderRadius: 8, border: '1px solid rgba(244,63,94,.15)', marginBottom: 14, fontSize: 12, color: '#f43f5e', lineHeight: 1.5 } },
+                        React.createElement('i', { className: 'fas fa-circle-exclamation', style: { marginRight: 6 } }), err
+                    ) : null,
+                    React.createElement('div', { style: { display: 'flex', gap: 10 } },
+                        React.createElement('button', { className: 'bp', style: { flex: 1 }, onClick: connect, disabled: loading }, loading ? React.createElement('span', null, React.createElement('i', { className: 'fas fa-spinner fa-spin', style: { marginRight: 8 } }), 'Connecting...') : 'Connect'),
+                        React.createElement('button', { className: 'bs', onClick: onSkip }, 'Use Local Mode')
+                    ),
+                    React.createElement('p', { style: { fontSize: 10, color: 'var(--txt4)', textAlign: 'center', marginTop: 12 } }, 'No service_role key needed \u2014 security via Supabase Auth + RLS')
+                )
+            );
         }
 
-        /* ═══════════ LOGIN MODAL (Fix #1+#6: Supabase Auth replaces custom password) ═══════════ */
-        function LoginModal({onOk,onCancel}){
-            const[email,setEmail]=useState('');const[pwd,setPwd]=useState('');const[err,setErr]=useState('');const[loading,setLoading]=useState(false);
-            const submit=async()=>{
-                if(!email||!pwd){setErr('Enter your email and password');return}
-                setLoading(true);setErr('');
-                const res=await DB.signIn(email,pwd);
+        /* ═══════════ LOGIN MODAL ═══════════ */
+        function LoginModal({ onOk, onCancel }) {
+            var s1 = useState(''); var email = s1[0]; var setEmail = s1[1];
+            var s2 = useState(''); var pwd = s2[0]; var setPwd = s2[1];
+            var s3 = useState(''); var err = s3[0]; var setErr = s3[1];
+            var s4 = useState(false); var loading = s4[0]; var setLoading = s4[1];
+
+            async function submit() {
+                if (!email || !pwd) { setErr('Enter your email and password'); return }
+                setLoading(true); setErr('');
+                var res = await DB.signIn(email, pwd);
                 setLoading(false);
-                if(res.ok)onOk();else setErr(res.msg);
-            };
-            return(<div className="mov" onClick={onCancel}>
-                <div className="mbx" onClick={e=>e.stopPropagation()} style={{maxWidth:400}}>
-                    <div style={{textAlign:'center',marginBottom:20}}>
-                        <div style={{width:48,height:48,borderRadius:12,background:'rgba(16,185,129,.1)',display:'flex',alignItems:'center',justifyContent:'center',margin:'0 auto 12px'}}><i className="fas fa-lock" style={{color:'#10b981',fontSize:18}}/></div>
-                        <h3 className="font-display" style={{fontSize:17,fontWeight:700,color:'var(--txt)'}}>Admin Sign In</h3>
-                        <p style={{fontSize:12,color:'var(--txt3)',marginTop:4}}>Sign in with your Supabase Auth account</p>
-                    </div>
-                    <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:10}}>
-                        <input className="inp" type="email" placeholder="Email" value={email} onChange={e=>{setEmail(e.target.value);setErr('')}}/>
-                        <input className="inp" type="password" placeholder="Password" value={pwd} onChange={e=>{setPwd(e.target.value);setErr('')}} onKeyDown={e=>{if(e.key==='Enter')submit()}} autoFocus/>
-                    </div>
-                    {err&&<p style={{fontSize:12,color:'#f43f5e',marginBottom:10}}><i className="fas fa-circle-exclamation" style={{marginRight:4}}/>{err}</p>}
-                    <div style={{display:'flex',gap:10}}>
-                        <button className="bp" style={{flex:1}} onClick={submit} disabled={loading}>{loading?'Signing in...':'Sign In'}</button>
-                        <button className="bs" onClick={onCancel}>Cancel</button>
-                    </div>
-                    <p style={{fontSize:10,color:'var(--txt4)',textAlign:'center',marginTop:14,lineHeight:1.5}}>No account? Create one in your Supabase Dashboard<br/>under Authentication → Users → Add User</p>
-                </div>
-            </div>);
+                if (res.ok) onOk(); else setErr(res.msg);
+            }
+
+            return React.createElement('div', { className: 'mov', onClick: onCancel },
+                React.createElement('div', { className: 'mbx', onClick: function (e) { e.stopPropagation() }, style: { maxWidth: 400 } },
+                    React.createElement('div', { style: { textAlign: 'center', marginBottom: 20 } },
+                        React.createElement('div', { style: { width: 48, height: 48, borderRadius: 12, background: 'rgba(16,185,129,.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' } },
+                            React.createElement('i', { className: 'fas fa-lock', style: { color: '#10b981', fontSize: 18 } })
+                        ),
+                        React.createElement('h3', { className: 'font-display', style: { fontSize: 17, fontWeight: 700, color: 'var(--txt)' } }, 'Admin Sign In'),
+                        React.createElement('p', { style: { fontSize: 12, color: 'var(--txt3)', marginTop: 4 } }, 'Sign in with your Supabase Auth account')
+                    ),
+                    React.createElement('div', { style: { display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 10 } },
+                        React.createElement('input', { className: 'inp', type: 'email', placeholder: 'Email', value: email, onChange: function (e) { setEmail(e.target.value); setErr('') } }),
+                        React.createElement('input', { className: 'inp', type: 'password', placeholder: 'Password', value: pwd, onChange: function (e) { setPwd(e.target.value); setErr('') }, onKeyDown: function (e) { if (e.key === 'Enter') submit() }, autoFocus: true })
+                    ),
+                    err ? React.createElement('p', { style: { fontSize: 12, color: '#f43f5e', marginBottom: 10 } }, React.createElement('i', { className: 'fas fa-circle-exclamation', style: { marginRight: 4 } }), err) : null,
+                    React.createElement('div', { style: { display: 'flex', gap: 10 } },
+                        React.createElement('button', { className: 'bp', style: { flex: 1 }, onClick: submit, disabled: loading }, loading ? 'Signing in...' : 'Sign In'),
+                        React.createElement('button', { className: 'bs', onClick: onCancel }, 'Cancel')
+                    ),
+                    React.createElement('p', { style: { fontSize: 10, color: 'var(--txt4)', textAlign: 'center', marginTop: 14, lineHeight: 1.5 } }, 'No account? Create one in Supabase Dashboard\u00A0under Authentication \u2192 Users \u2192 Add User')
+                )
+            );
         }
 
         /* ═══════════ CONFIRM MODAL ═══════════ */
-        function Modal({title,msg,onOk,onNo}){
-            return(<div className="mov" onClick={onNo}><div className="mbx" onClick={e=>e.stopPropagation()} style={{maxWidth:400}}>
-                <h3 className="font-display" style={{fontSize:17,fontWeight:700,color:'var(--txt)',marginBottom:8}}>{title}</h3>
-                <p style={{fontSize:13,color:'var(--txt2)',marginBottom:24,lineHeight:1.5}}>{msg}</p>
-                <div style={{display:'flex',gap:10,justifyContent:'flex-end'}}><button className="bs" onClick={onNo}>Cancel</button><button className="bd" onClick={onOk}>Confirm</button></div>
-            </div></div>);
+        function Modal({ title, msg, onOk, onNo }) {
+            return React.createElement('div', { className: 'mov', onClick: onNo },
+                React.createElement('div', { className: 'mbx', onClick: function (e) { e.stopPropagation() }, style: { maxWidth: 400 } },
+                    React.createElement('h3', { className: 'font-display', style: { fontSize: 17, fontWeight: 700, color: 'var(--txt)', marginBottom: 8 } }, title),
+                    React.createElement('p', { style: { fontSize: 13, color: 'var(--txt2)', marginBottom: 24, lineHeight: 1.5 } }, msg),
+                    React.createElement('div', { style: { display: 'flex', gap: 10, justifyContent: 'flex-end' } },
+                        React.createElement('button', { className: 'bs', onClick: onNo }, 'Cancel'),
+                        React.createElement('button', { className: 'bdd', onClick: onOk }, 'Confirm')
+                    )
+                )
+            );
         }
 
         /* ═══════════ HEADER ═══════════ */
-        function Header({done,theme,setTheme,isAdmin,setShowLogin,handleLogout,useDB,openSetup}){
-            const pct=Math.round(done/30*100);
-            return(<header style={{padding:'24px 0 16px',borderBottom:'1px solid var(--brd)',transition:'border-color .35s'}}>
-                <div style={{maxWidth:1280,margin:'0 auto',padding:'0 24px'}}>
-                    <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',flexWrap:'wrap',gap:14}}>
-                        <div>
-                            <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:6}}>
-                                <div className="pd"/><span style={{fontSize:11,fontWeight:600,letterSpacing:'.1em',textTransform:'uppercase',color:'#10b981'}}>Live Dashboard</span>
-                                {useDB&&<span style={{fontSize:10,color:'var(--txt4)',border:'1px solid var(--brd)',borderRadius:4,padding:'1px 6px'}}>Cloud</span>}
-                            </div>
-                            <h1 className="font-display" style={{fontSize:'clamp(26px,5vw,38px)',fontWeight:900,color:'var(--txt)',lineHeight:1.05,letterSpacing:'-.02em',transition:'color .35s'}}>Wiga Ward</h1>
-                            <p style={{fontSize:14,color:'var(--txt3)',marginTop:4,transition:'color .35s'}}>Voter Registration Daily Report</p>
-                            <p style={{fontSize:12,color:'var(--txt4)',marginTop:2}}>{fmtF(DATES[0])} — {fmtF(DATES[29])}</p>
-                        </div>
-                        <div style={{display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
-                            {isAdmin&&<span style={{fontSize:11,fontWeight:600,color:'#10b981',background:'rgba(16,185,129,.1)',borderRadius:6,padding:'4px 10px',display:'flex',alignItems:'center',gap:5}}><i className="fas fa-shield-halved" style={{fontSize:10}}/>Admin</span>}
-                            <button className="ib" onClick={()=>setTheme(theme==='dark'?'light':'dark')} title={`Switch to ${theme==='dark'?'light':'dark'} mode`}><i className={`fas ${theme==='dark'?'fa-sun':'fa-moon'}`}/></button>
-                            {isAdmin
-                                ?<button className="ib" onClick={handleLogout} title="Sign out" style={{borderColor:'rgba(16,185,129,.3)',color:'#10b981'}}><i className="fas fa-right-from-bracket"/></button>
-                                /* FIX #7: Use arrow function to prevent immediate execution */
-                                :<button className="ib" onClick={()=>setShowLogin(true)} title="Sign in as admin"><i className="fas fa-lock"/></button>
-                            }
-                            <button className="ib" onClick={openSetup} title="Connection settings"><i className="fas fa-gear"/></button>
-                        </div>
-                    </div>
-                    <div style={{display:'flex',alignItems:'center',gap:10,marginTop:14}}>
-                        <div className="ptk" style={{flex:1}}><div className="pfl" style={{width:pct+'%'}}/></div>
-                        <span style={{fontSize:11,color:'var(--txt3)',whiteSpace:'nowrap',transition:'color .35s'}}>{done}/30 days ({pct}%)</span>
-                    </div>
-                </div>
-            </header>);
+        function Header({ done, theme, setTheme, isAdmin, setShowLogin, handleLogout, useDB, openSetup }) {
+            var pct = Math.round(done / 30 * 100);
+            return React.createElement('header', { style: { padding: '24px 0 16px', borderBottom: '1px solid var(--brd)', transition: 'border-color .35s' } },
+                React.createElement('div', { style: { maxWidth: 1280, margin: '0 auto', padding: '0 24px' } },
+                    React.createElement('div', { style: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 14 } },
+                        React.createElement('div', null,
+                            React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 } },
+                                React.createElement('div', { className: 'pd' }),
+                                React.createElement('span', { style: { fontSize: 11, fontWeight: 600, letterSpacing: '.1em', textTransform: 'uppercase', color: '#10b981' } }, 'Live Dashboard'),
+                                useDB ? React.createElement('span', { style: { fontSize: 10, color: 'var(--txt4)', border: '1px solid var(--brd)', borderRadius: 4, padding: '1px 6px' } }, 'Cloud') : null
+                            ),
+                            React.createElement('h1', { className: 'font-display', style: { fontSize: 'clamp(26px,5vw,38px)', fontWeight: 900, color: 'var(--txt)', lineHeight: 1.05, letterSpacing: '-.02em', transition: 'color .35s' } }, 'Wiga Ward'),
+                            React.createElement('p', { style: { fontSize: 14, color: 'var(--txt3)', marginTop: 4, transition: 'color .35s' } }, 'Voter Registration Daily Report'),
+                            React.createElement('p', { style: { fontSize: 12, color: 'var(--txt4)', marginTop: 2 } }, fmtF(DATES[0]) + ' \u2014 ' + fmtF(DATES[29]))
+                        ),
+                        React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' } },
+                            isAdmin ? React.createElement('span', { style: { fontSize: 11, fontWeight: 600, color: '#10b981', background: 'rgba(16,185,129,.1)', borderRadius: 6, padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 5 } },
+                                React.createElement('i', { className: 'fas fa-shield-halved', style: { fontSize: 10 } }), 'Admin'
+                            ) : null,
+                            React.createElement('button', { className: 'ib', onClick: function () { setTheme(theme === 'dark' ? 'light' : 'dark') }, title: 'Switch theme' },
+                                React.createElement('i', { className: 'fas ' + (theme === 'dark' ? 'fa-sun' : 'fa-moon') })
+                            ),
+                            isAdmin
+                                ? React.createElement('button', { className: 'ib', onClick: handleLogout, title: 'Sign out', style: { borderColor: 'rgba(16,185,129,.3)', color: '#10b981' } }, React.createElement('i', { className: 'fas fa-right-from-bracket' }))
+                                : React.createElement('button', { className: 'ib', onClick: function () { setShowLogin(true) }, title: 'Sign in as admin' }, React.createElement('i', { className: 'fas fa-lock' }))
+                            ,
+                            React.createElement('button', { className: 'ib', onClick: openSetup, title: 'Connection settings' }, React.createElement('i', { className: 'fas fa-gear' }))
+                        )
+                    ),
+                    React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginTop: 14 } },
+                        React.createElement('div', { className: 'ptk', style: { flex: 1 } }, React.createElement('div', { className: 'pfl', style: { width: pct + '%' } })),
+                        React.createElement('span', { style: { fontSize: 11, color: 'var(--txt3)', whiteSpace: 'nowrap', transition: 'color .35s' } }, done + '/30 days (' + pct + '%)')
+                    )
+                )
+            );
         }
 
         /* ═══════════ BANNER ═══════════ */
-        function Banner({msg,icon,onAction,actionLabel}){
-            return(<div style={{padding:'10px 18px',background:'var(--inv-bg)',borderRadius:10,border:'1px solid var(--inv-brd)',display:'flex',alignItems:'center',gap:10,fontSize:13,color:'var(--inv-txt)',transition:'all .35s'}}>
-                <i className={`fas ${icon}`} style={{fontSize:13,flexShrink:0}}/><span style={{flex:1}}>{msg}</span>
-                {onAction&&<button onClick={onAction} style={{background:'none',border:'none',color:'var(--inv-txt)',cursor:pointer,fontWeight:600,fontSize:12,textDecoration:'underline',whiteSpace:'nowrap'}}>{actionLabel}</button>}
-            </div>);
+        function Banner({ msg, icon, onAction, actionLabel }) {
+            return React.createElement('div', { style: { padding: '10px 18px', background: 'var(--inv-bg)', borderRadius: 10, border: '1px solid var(--inv-brd)', display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, color: 'var(--inv-txt)', transition: 'all .35s' } },
+                React.createElement('i', { className: 'fas ' + icon, style: { fontSize: 13, flexShrink: 0 } }),
+                React.createElement('span', { style: { flex: 1 } }, msg),
+                onAction ? React.createElement('button', { onClick: onAction, style: { background: 'none', border: 'none', color: 'var(--inv-txt)', cursor: 'pointer', fontWeight: 600, fontSize: 12, textDecoration: 'underline', whiteSpace: 'nowrap' } }, actionLabel) : null
+            );
         }
 
         /* ═══════════ SUMMARY CARDS ═══════════ */
-        function Cards({data}){
-            let total=0,daysW=0,todayT=0;const kt=[0,0,0];const todayK=fmtD(new Date());
-            DATES.forEach(d=>{const e=data[fmtD(d)];if(!e)return;const v=[e.kit1,e.kit2,e.kit3];const dt=v.reduce((a,b)=>(a||0)+(b||0),0);
-            if(dt>0){daysW++;total+=dt;v.forEach((x,i)=>{kt[i]+=(x||0)})}if(fmtD(d)===todayK)todayT=dt});
-            const avg=daysW?Math.round(total/daysW):0;const topI=kt.indexOf(Math.max(...kt));
-            const cards=[
-                {label:'Total Registered',val:total,icon:'fa-users',clr:'#10b981',bg:'rgba(16,185,129,.07)',sub:`Across ${KN.length} kits`},
-                {label:"Today's Count",val:todayT,icon:'fa-calendar-day',clr:'#f59e0b',bg:'rgba(245,158,11,.07)',sub:todayT?'Registered today':'No data for today'},
-                {label:'Daily Average',val:avg,icon:'fa-chart-line',clr:'#06b6d4',bg:'rgba(6,182,212,.07)',sub:`Based on ${daysW} day${daysW!==1?'s':''}`},
-                {label:'Top Performer',val:null,txt:KN[topI],icon:'fa-trophy',clr:'#f43f5e',bg:'rgba(244,63,94,.07)',sub:kt[topI].toLocaleString()+' registrations'},
+        function Cards({ data }) {
+            var total = 0, daysW = 0, todayT = 0; var kt = [0, 0, 0]; var todayK = fmtD(new Date());
+            DATES.forEach(function (d) {
+                var e = data[fmtD(d)]; if (!e) return; var v = [e.kit1, e.kit2, e.kit3]; var dt = v.reduce(function (a, b) { return (a || 0) + (b || 0) }, 0);
+                if (dt > 0) { daysW++; total += dt; v.forEach(function (x, i) { kt[i] += (x || 0) }) } if (fmtD(d) === todayK) todayT = dt
+            });
+            var avg = daysW ? Math.round(total / daysW) : 0; var topI = kt.indexOf(Math.max.apply(null, kt));
+            var cards = [
+                { label: 'Total Registered', val: total, icon: 'fa-users', clr: '#10b981', bg: 'rgba(16,185,129,.07)', sub: 'Across ' + KN.length + ' kits' },
+                { label: "Today's Count", val: todayT, icon: 'fa-calendar-day', clr: '#f59e0b', bg: 'rgba(245,158,11,.07)', sub: todayT ? 'Registered today' : 'No data for today' },
+                { label: 'Daily Average', val: avg, icon: 'fa-chart-line', clr: '#06b6d4', bg: 'rgba(6,182,212,.07)', sub: 'Based on ' + daysW + ' day' + (daysW !== 1 ? 's' : '') },
+                { label: 'Top Performer', val: null, txt: KN[topI], icon: 'fa-trophy', clr: '#f43f5e', bg: 'rgba(244,63,94,.07)', sub: kt[topI].toLocaleString() + ' registrations' }
             ];
-            return(<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))',gap:14}}>
-                {cards.map((c,i)=>(<div key={i} className="gc fi" style={{padding:22,animationDelay:i*80+'ms'}}>
-                    <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:14}}>
-                        <span style={{fontSize:11,fontWeight:600,textTransform:'uppercase',letterSpacing:'.07em',color:'var(--txt3)',transition:'color .35s'}}>{c.label}</span>
-                        <div style={{width:34,height:34,borderRadius:9,background:c.bg,display:'flex',alignItems:'center',justifyContent:'center'}}><i className={`fas ${c.icon}`} style={{fontSize:13,color:c.clr}}/></div>
-                    </div>
-                    <div className="font-display" style={{fontSize:30,fontWeight:900,color:'var(--txt)',letterSpacing:'-.02em',transition:'color .35s'}}>{c.val!==null?<ANum value={c.val}/>:c.txt}</div>
-                    <p style={{fontSize:11,color:'var(--txt4)',marginTop:5,transition:'color .35s'}}>{c.sub}</p>
-                </div>))}
-            </div>);
+            return React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 } },
+                cards.map(function (c, i) {
+                    return React.createElement('div', { key: i, className: 'gc fi', style: { padding: 22, animationDelay: i * 80 + 'ms' } },
+                        React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 } },
+                            React.createElement('span', { style: { fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.07em', color: 'var(--txt3)', transition: 'color .35s' } }, c.label),
+                            React.createElement('div', { style: { width: 34, height: 34, borderRadius: 9, background: c.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, React.createElement('i', { className: 'fas ' + c.icon, style: { fontSize: 13, color: c.clr } }))
+                        ),
+                        React.createElement('div', { className: 'font-display', style: { fontSize: 30, fontWeight: 900, color: 'var(--txt)', letterSpacing: '-.02em', transition: 'color .35s' } }, c.val !== null ? React.createElement(ANum, { value: c.val }) : c.txt),
+                        React.createElement('p', { style: { fontSize: 11, color: 'var(--txt4)', marginTop: 5, transition: 'color .35s' } }, c.sub)
+                    );
+                })
+            );
         }
 
         /* ═══════════ UPDATE PANEL ═══════════ */
-        function Update({data,setData,toast,useDB}){
-            const[tab,setTab]=useState('quick');
-            const[fDate,setFDate]=useState('');
-            const[fVal,setFVal]=useState({kit1:'',kit2:'',kit3:''});
-            const[editing,setEditing]=useState(false);
-            const fRef=useRef(null);const[drag,setDrag]=useState(false);
-            const[confirmReset,setConfirmReset]=useState(false);
+        function Update({ data, setData, toast, useDB }) {
+            var s1 = useState('quick'); var tab = s1[0]; var setTab = s1[1];
+            var s2 = useState(''); var fDate = s2[0]; var setFDate = s2[1];
+            var s3 = useState({ kit1: '', kit2: '', kit3: '' }); var fVal = s3[0]; var setFVal = s3[1];
+            var s4 = useState(false); var editing = s4[0]; var setEditing = s4[1];
+            var fRef = useRef(null);
+            var s5 = useState(false); var drag = s5[0]; var setDrag = s5[1];
+            var s6 = useState(false); var confirmReset = s6[0]; var setConfirmReset = s6[1];
 
-            useEffect(()=>{const t=fmtD(new Date());const ok=DATES.some(d=>fmtD(d)===t);setFDate(ok?t:fmtD(DATES[0]))},[]);
-            useEffect(()=>{const e=data[fDate];if(e){const has=e.kit1!==null||e.kit2!==null||e.kit3!==null;
-            if(has){setFVal({kit1:e.kit1!==null?''+e.kit1:'',kit2:e.kit2!==null?''+e.kit2:'',kit3:e.kit3!==null?''+e.kit3:''});setEditing(true)}
-            else{setFVal({kit1:'',kit2:'',kit3:''});setEditing(false)}}},[fDate,data]);
+            useEffect(function () { var t = fmtD(new Date()); var ok = DATES.some(function (d) { return fmtD(d) === t }); setFDate(ok ? t : fmtD(DATES[0])) }, []);
+            useEffect(function () {
+                var e = data[fDate]; if (e) {
+                    var has = e.kit1 !== null || e.kit2 !== null || e.kit3 !== null;
+                    if (has) { setFVal({ kit1: e.kit1 !== null ? '' + e.kit1 : '', kit2: e.kit2 !== null ? '' + e.kit2 : '', kit3: e.kit3 !== null ? '' + e.kit3 : '' }); setEditing(true) }
+                    else { setFVal({ kit1: '', kit2: '', kit3: '' }); setEditing(false) }
+                }
+            }, [fDate, data]);
 
-            const submit=async()=>{
-                const vs=KK.map(k=>fVal[k].trim());
-                if(vs.every(v=>!v)){toast('Enter at least one kit value','error');return}
-                const nums=vs.map(v=>v?parseInt(v):null);
-                if(nums.some((n,i)=>vs[i]&&isNaN(n))){toast('Enter valid numbers','error');return}
-                if(nums.some(n=>n!==null&&n<0)){toast('Values cannot be negative','error');return}
-                if(!DATES.find(d=>fmtD(d)===fDate)){toast('Date outside registration period','error');return}
-                /* FIX #9: Show meaningful error if DB write fails */
-                let ok=true;
-                if(useDB)ok=await DB.upsert(fDate,nums[0],nums[1],nums[2]);
-                if(ok){const nd={...data};nd[fDate]={kit1:nums[0],kit2:nums[1],kit3:nums[2]};setData(nd);saveLocal(nd);
-                toast((editing?'Updated':'Added')+' data for '+fmtS(DATES.find(d=>fmtD(d)===fDate)),'success');
-                setFVal({kit1:'',kit2:'',kit3:''});setEditing(false);
-                const ci=DATES.findIndex(d=>fmtD(d)===fDate);if(ci<DATES.length-1)setFDate(fmtD(DATES[ci+1]))}
-                else toast(useDB?'Write failed — you may have been signed out. Try signing in again.':'Failed to save locally','error');
-            };
+            async function submit() {
+                var vs = KK.map(function (k) { return fVal[k].trim() });
+                if (vs.every(function (v) { return !v })) { toast('Enter at least one kit value', 'error'); return }
+                var nums = vs.map(function (v) { return v ? parseInt(v) : null });
+                if (nums.some(function (n, i) { return vs[i] && isNaN(n) })) { toast('Enter valid numbers', 'error'); return }
+                if (nums.some(function (n) { return n !== null && n < 0 })) { toast('Values cannot be negative', 'error'); return }
+                if (!DATES.find(function (d) { return fmtD(d) === fDate })) { toast('Date outside registration period', 'error'); return }
+                var res = {}; if (useDB) res = await DB.upsert(fDate, nums[0], nums[1], nums[2]);
+                if (!res.error) {
+                    var nd = Object.assign({}, data); nd[fDate] = { kit1: nums[0], kit2: nums[1], kit3: nums[2] }; setData(nd); saveLocal(nd);
+                    toast((editing ? 'Updated' : 'Added') + ' data for ' + fmtS(DATES.find(function (d) { return fmtD(d) === fDate })), 'success');
+                    setFVal({ kit1: '', kit2: '', kit3: '' }); setEditing(false);
+                    var ci = DATES.findIndex(function (d) { return fmtD(d) === fDate }); if (ci < DATES.length - 1) setFDate(fmtD(DATES[ci + 1]))
+                }
+                else toast(useDB ? 'Write failed \u2014 you may have been signed out' : 'Failed to save locally', 'error');
+            }
 
-            const parseCSV=file=>{if(!file)return;Papa.parse(file,{header:true,skipEmptyLines:true,complete:async r=>{
-                const nd={...data};let imp=0,skip=0;
-                r.data.forEach(row=>{
-                    /* FIX #4: Trim whitespace from CSV column keys */
-                    const dt=(row['Date']||row['date']||'').trim();
-                    if(!dt){skip++;return}
-                    if(!DATES.find(d=>fmtD(d)===dt)){skip++;return}
-                    const v1=(row['Kit 1']||row['kit1']||'').trim();
-                    const v2=(row['Kit 2']||row['kit2']||'').trim();
-                    const v3=(row['Kit 3']||row['kit3']||'').trim();
-                    nd[dt]={kit1:v1?parseInt(v1):null,kit2:v2?parseInt(v2):null,kit3:v3?parseInt(v3):null};imp++});
-                if(useDB){for(const[k,v]of Object.entries(nd)){const orig=data[k];if(orig.kit1!==v.kit1||orig.kit2!==v.kit2||orig.kit3!==v.kit3){if(!(await DB.upsert(k,v.kit1,v.kit2,v.kit3))){toast('Some entries failed to sync — check your connection','error');return}}}}
-                setData(nd);saveLocal(nd);toast('Imported '+imp+' entries'+(skip?', skipped '+skip:''),'success');if(fRef.current)fRef.current.value=''},
-            error:()=>toast('CSV parse error — check the file format','error')})};
+            function parseCSV(file) {
+                if (!file) return; Papa.parse(file, {
+                    header: true, skipEmptyLines: true, complete: function (r) {
+                        var nd = Object.assign({}, data); var imp = 0, skip = 0;
+                        r.data.forEach(function (row) {
+                            var dt = (row['Date'] || row['date'] || '').trim(); if (!dt) { skip++; return }
+                            if (!DATES.find(function (d) { return fmtD(d) === dt })) { skip++; return }
+                            var v1 = (row['Kit 1'] || row['kit1'] || '').trim(); var v2 = (row['Kit 2'] || row['kit2'] || '').trim(); var v3 = (row['Kit 3'] || row['kit3'] || '').trim();
+                            nd[dt] = { kit1: v1 ? parseInt(v1) : null, kit2: v2 ? parseInt(v2) : null, kit3: v3 ? parseInt(v3) : null }; imp++
+                        });
+                        setData(nd); saveLocal(nd); toast('Imported ' + imp + ' entries' + (skip ? ', skipped ' + skip : ''), 'success'); if (fRef.current) fRef.current.value = '';
+                    }, error: function () { toast('CSV parse error', 'error') }
+                })
+            }
 
-            const onDrop=e=>{e.preventDefault();setDrag(false);const f=e.dataTransfer.files[0];if(f&&f.name.endsWith('.csv'))parseCSV(f);else toast('Please upload a .csv file','error')};
-            const dlSample=()=>{const b=new Blob([sampleCSV()],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='wiga_sample_template.csv';a.click();toast('Template downloaded','info')};
-            const dlExport=()=>{const b=new Blob([exportCSV(data)],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='wiga_data_'+fmtD(new Date())+'.csv';a.click();toast('Data exported','success')};
+            function onDrop(e) { e.preventDefault(); setDrag(false); var f = e.dataTransfer.files[0]; if (f && f.name.endsWith('.csv')) parseCSV(f); else toast('Upload a .csv file', 'error') }
+            function dlSample() { var b = new Blob([sampleCSV()], { type: 'text/csv' }); var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'wiga_sample_template.csv'; a.click(); toast('Template downloaded', 'info') }
+            function dlExport() { var b = new Blob([exportCSV(data)], { type: 'text/csv' }); var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'wiga_data_' + fmtD(new Date()) + '.csv'; a.click(); toast('Data exported', 'success') }
 
-            const doReset=async()=>{const f=empty();if(useDB){const ok=await DB.deleteAll();if(!ok){toast('Failed to clear remote data','error');return}}setData(f);saveLocal(f);setConfirmReset(false);toast('All data cleared','success')};
+            async function doReset() { var f = empty(); if (useDB) { var r = await DB.deleteAll(); if (r.error) { toast('Failed to clear remote data', 'error'); return } } setData(f); saveLocal(f); setConfirmReset(false); toast('All data cleared', 'success') }
 
-            return(<div className="gc fi" style={{padding:0,animationDelay:'380ms'}}>
-                <div style={{display:'flex',gap:4,padding:'14px 18px 0'}}>
-                    {[['quick','fa-pen-to-square','Quick Entry'],['csv','fa-file-csv','CSV Upload'],['more','fa-ellipsis','More']].map(([k,ic,lb])=>
-                    <button key={k} className={`tb ${tab===k?'ta':'tn'}`} onClick={()=>setTab(k)}><i className={`fas ${ic}`} style={{marginRight:6}}/>{lb}</button>)}
-                </div>
-                <div style={{padding:18}}>
-                    {tab==='quick'&&(<div className="fi">
-                        {editing&&<div style={{marginBottom:14,padding:'9px 14px',background:'var(--inv-bg)',borderRadius:9,border:'1px solid var(--inv-brd)',transition:'all .35s'}}>
-                            <span style={{fontSize:12,color:'var(--inv-txt)'}}><i className="fas fa-pen" style={{marginRight:6}}/>Editing existing entry — submit to overwrite</span></div>}
-                        <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))',gap:10,alignItems:'end'}}>
-                            <div><label style={{fontSize:10,fontWeight:600,color:'var(--txt3)',textTransform:'uppercase',letterSpacing:'.06em',display:'block',marginBottom:5,transition:'color .35s'}}>Date</label>
-                            <input type="date" className="inp" value={fDate} min={fmtD(DATES[0])} max={fmtD(DATES[29])} onChange={e=>setFDate(e.target.value)}/></div>
-                            {KK.map((k,i)=>(<div key={k}><label style={{fontSize:10,fontWeight:600,color:KC[i],textTransform:'uppercase',letterSpacing:'.06em',display:'block',marginBottom:5}}>{KN[i]}</label>
-                            <input type="number" className="inp" placeholder="0" value={fVal[k]} min="0" onChange={e=>setFVal({...fVal,[k]:e.target.value})} style={{borderLeft:'3px solid '+KC[i]}} onKeyDown={e=>{if(e.key==='Enter')submit()}}/></div>))}
-                            <div><button className="bp" style={{width:'100%',height:42}} onClick={submit}><i className={`fas ${editing?'fa-save':'fa-plus'}`} style={{marginRight:8}}/>{editing?'Update':'Add'}</button></div>
-                        </div>
-                    </div>)}
-                    {tab==='csv'&&(<div className="fi">
-                        <div className={`dz ${drag?'dov':''}`} style={{padding:'36px 20px',textAlign:'center',borderRadius:12,marginBottom:14,cursor:'pointer'}}
-                            onDragOver={e=>{e.preventDefault();setDrag(true)}} onDragLeave={()=>setDrag(false)} onDrop={onDrop} onClick={()=>fRef.current?.click()}>
-                            <input ref={fRef} type="file" accept=".csv" style={{display:'none'}} onChange={e=>{if(e.target.files[0])parseCSV(e.target.files[0])}}/>
-                            <i className="fas fa-cloud-arrow-up" style={{fontSize:30,color:'rgba(16,185,129,.35)',marginBottom:10,display:'block'}}/>
-                            <p style={{fontSize:13,color:'var(--txt2)',marginBottom:3}}>Drag and drop your CSV file here</p>
-                            <p style={{fontSize:11,color:'var(--txt4)'}}>or click to browse</p>
-                        </div>
-                        <div style={{padding:'12px 14px',background:'var(--elevated)',borderRadius:9,border:'1px solid var(--brd)',transition:'all .35s'}}>
-                            <p style={{fontSize:11,color:'var(--txt3)',marginBottom:4}}><i className="fas fa-info-circle" style={{marginRight:5,color:'#10b981'}}/>Expected columns: Date, Kit 1, Kit 2, Kit 3</p>
-                            <code style={{fontSize:10,color:'var(--txt4)',fontFamily:'monospace'}}>2026-03-30,15,12,18</code>
-                        </div>
-                        <button className="bs" style={{marginTop:10,width:'100%'}} onClick={dlSample}><i className="fas fa-file-arrow-down" style={{marginRight:8}}/>Download Sample Template</button>
-                    </div>)}
-                    {tab==='more'&&(<div className="fi" style={{display:'grid',gap:10}}>
-                        <button className="bs" style={{width:'100%'}} onClick={dlExport}><i className="fas fa-file-export" style={{marginRight:8}}/>Export Data as CSV</button>
-                        <button className="bs" style={{width:'100%'}} onClick={dlSample}><i className="fas fa-file-arrow-down" style={{marginRight:8}}/>Download Empty Template</button>
-                        <button className="bd" style={{width:'100%'}} onClick={()=>setConfirmReset(true)}><i className="fas fa-trash-can" style={{marginRight:8}}/>Reset All Data</button>
-                    </div>)}
-                </div>
-                {confirmReset&&<Modal title="Reset All Data" msg="This will permanently erase every registration entry." onOk={doReset} onNo={()=>setConfirmReset(false)}/>}
-            </div>);
+            var tabs = [['quick', 'fa-pen-to-square', 'Quick Entry'], ['csv', 'fa-file-csv', 'CSV Upload'], ['more', 'fa-ellipsis', 'More']];
+
+            return React.createElement('div', { className: 'gc fi', style: { padding: 0, animationDelay: '380ms' } },
+                React.createElement('div', { style: { display: 'flex', gap: 4, padding: '14px 18px 0' } },
+                    tabs.map(function (t) { return React.createElement('button', { key: t[0], className: 'tb ' + (tab === t[0] ? 'ta' : 'tn'), onClick: function () { setTab(t[0]) } }, React.createElement('i', { className: 'fas ' + t[1], style: { marginRight: 6 } }), t[2]) })
+                ),
+                React.createElement('div', { style: { padding: 18 } },
+                    tab === 'quick' ? React.createElement('div', { className: 'fi' },
+                        editing ? React.createElement('div', { style: { marginBottom: 14, padding: '9px 14px', background: 'var(--inv-bg)', borderRadius: 9, border: '1px solid var(--inv-brd)', transition: 'all .35s' } },
+                            React.createElement('span', { style: { fontSize: 12, color: 'var(--inv-txt)' } }, React.createElement('i', { className: 'fas fa-pen', style: { marginRight: 6 } }), 'Editing existing entry \u2014 submit to overwrite')
+                        ) : null,
+                        React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 10, alignItems: 'end' } },
+                            React.createElement('div', null,
+                                React.createElement('label', { style: { fontSize: 10, fontWeight: 600, color: 'var(--txt3)', textTransform: 'uppercase', letterSpacing: '.06em', display: 'block', marginBottom: 5, transition: 'color .35s' } }, 'Date'),
+                                React.createElement('input', { className: 'inp', type: 'date', value: fDate, min: fmtD(DATES[0]), max: fmtD(DATES[29]), onChange: function (e) { setFDate(e.target.value) } })
+                            ),
+                            KK.map(function (k, i) {
+                                return React.createElement('div', { key: k },
+                                    React.createElement('label', { style: { fontSize: 10, fontWeight: 600, color: KC[i], textTransform: 'uppercase', letterSpacing: '.06em', display: 'block', marginBottom: 5 } }, KN[i]),
+                                    React.createElement('input', { className: 'inp', type: 'number', placeholder: '0', value: fVal[k], min: '0', onChange: function (e) { setFVal(Object.assign({}, fVal)); fVal[k] = e.target.value; setFVal(Object.assign({}, fVal)) }, style: { borderLeft: '3px solid ' + KC[i] }, onKeyDown: function (e) { if (e.key === 'Enter') submit() } })
+                                )
+                            }),
+                            React.createElement('div', null, React.createElement('button', { className: 'bp', style: { width: '100%', height: 42 }, onClick: submit }, React.createElement('i', { className: 'fas ' + (editing ? 'fa-save' : 'fa-plus'), style: { marginRight: 8 } }), editing ? 'Update' : 'Add'))
+                        )
+                    ) : null,
+                    tab === 'csv' ? React.createElement('div', { className: 'fi' },
+                        React.createElement('div', {
+                            className: 'dz ' + (drag ? 'dov' : ''), style: { padding: '36px 20px', textAlign: 'center', borderRadius: 12, marginBottom: 14, cursor: 'pointer' },
+                            onDragOver: function (e) { e.preventDefault(); setDrag(true) }, onDragLeave: function () { setDrag(false) }, onDrop: onDrop, onClick: function () { fRef.current && fRef.current.click() }
+                        },
+                            React.createElement('input', { ref: fRef, type: 'file', accept: '.csv', style: { display: 'none' }, onChange: function (e) { if (e.target.files[0]) parseCSV(e.target.files[0]) } }),
+                            React.createElement('i', { className: 'fas fa-cloud-arrow-up', style: { fontSize: 30, color: 'rgba(16,185,129,.35)', marginBottom: 10, display: 'block' } }),
+                            React.createElement('p', { style: { fontSize: 13, color: 'var(--txt2)', marginBottom: 3 } }, 'Drag and drop your CSV file here'),
+                            React.createElement('p', { style: { fontSize: 11, color: 'var(--txt4)' } }, 'or click to browse')
+                        ),
+                        React.createElement('div', { style: { padding: '12px 14px', background: 'var(--elevated)', borderRadius: 9, border: '1px solid var(--brd)', transition: 'all .35s' } },
+                            React.createElement('p', { style: { fontSize: 11, color: 'var(--txt3)', marginBottom: 4 } }, React.createElement('i', { className: 'fas fa-info-circle', style: { marginRight: 5, color: '#10b981' } }), 'Expected columns: Date, Kit 1, Kit 2, Kit 3'),
+                            React.createElement('code', { style: { fontSize: 10, color: 'var(--txt4)', fontFamily: 'monospace' } }, '2026-03-30,15,12,18')
+                        ),
+                        React.createElement('button', { className: 'bs', style: { marginTop: 10, width: '100%' }, onClick: dlSample }, React.createElement('i', { className: 'fas fa-file-arrow-down', style: { marginRight: 8 } }), 'Download Sample Template')
+                    ) : null,
+                    tab === 'more' ? React.createElement('div', { className: 'fi', style: { display: 'grid', gap: 10 } },
+                        React.createElement('button', { className: 'bs', style: { width: '100%' }, onClick: dlExport }, React.createElement('i', { className: 'fas fa-file-export', style: { marginRight: 8 } }), 'Export Data as CSV'),
+                        React.createElement('button', { className: 'bs', style: { width: '100%' }, onClick: dlSample }, React.createElement('i', { className: 'fas fa-file-arrow-down', style: { marginRight: 8 } }), 'Download Empty Template'),
+                        React.createElement('button', { className: 'bdd', style: { width: '100%' }, onClick: function () { setConfirmReset(true) } }, React.createElement('i', { className: 'fas fa-trash-can', style: { marginRight: 8 } }), 'Reset All Data')
+                    ) : null
+                ),
+                confirmReset ? React.createElement(Modal, { title: 'Reset All Data', msg: 'This will permanently erase every registration entry.', onOk: doReset, onNo: function () { setConfirmReset(false) } }) : null
+            );
         }
 
         /* ═══════════ BAR CHART ═══════════ */
-        function BarChart({data,theme}){
-            const cv=useRef(null);const ch=useRef(null);const o=cOpts(theme);
-            useEffect(()=>{
-                if(!cv.current)return; /* FIX #3: null safety before getContext */
-                if(ch.current)ch.current.destroy();
-                ch.current=new Chart(cv.current.getContext('2d'),{type:'bar',data:{labels:DATES.map(fmtS),datasets:KK.map((k,i)=>({
-                    label:KN[i],data:DATES.map(d=>{const e=data[fmtD(d)];return e&&e[k]!==null?e[k]:0}),
-                    backgroundColor:KCL[i],borderColor:KC[i],borderWidth:1,borderRadius:3,borderSkipped:false}))},
-                options:{responsive:true,maintainAspectRatio:false,interaction:{intersect:false,mode:'index'},
-                    plugins:{legend:{position:'top',labels:{color:o.tick,font:{family:'DM Sans',size:11},boxWidth:10,boxHeight:10,borderRadius:2,useBorderRadius:true,padding:14}},
-                    tooltip:{backgroundColor:o.tbg,borderColor:o.tbrd,borderWidth:1,titleColor:o.tt,bodyColor:o.tb,titleFont:{family:'DM Sans',weight:'600'},bodyFont:{family:'DM Sans'},padding:10,cornerRadius:8}},
-                    scales:{x:{stacked:true,grid:{color:o.grid},ticks:{color:o.tick,font:{family:'DM Sans',size:9},maxRotation:50},border:{color:o.grid}},
-                    y:{stacked:true,beginAtZero:true,grid:{color:o.grid},ticks:{color:o.tick,font:{family:'DM Sans',size:10}},border:{color:o.grid}}}}});
-                return()=>{if(ch.current)ch.current.destroy()}},[data,theme]);
-            return(<div className="gc fi" style={{padding:18,animationDelay:'480ms'}}>
-                <h3 className="font-display" style={{fontSize:15,fontWeight:700,color:'var(--txt)',marginBottom:14,transition:'color .35s'}}>Daily Registration Trend</h3>
-                <div style={{height:310}}><canvas ref={cv}/></div>
-            </div>);
+        function BarChart({ data, theme }) {
+            var cv = useRef(null); var ch = useRef(null); var o = cOpts(theme);
+            useEffect(function () {
+                if (!cv.current) return;
+                if (ch.current) ch.current.destroy();
+                ch.current = new Chart(cv.current.getContext('2d'), {
+                    type: 'bar', data: {
+                        labels: DATES.map(fmtS), datasets: KK.map(function (k, i) {
+                            return {
+                                label: KN[i], data: DATES.map(function (d) { var e = data[fmtD(d)]; return e && e[k] !== null ? e[k] : 0 }),
+                                backgroundColor: KCL[i], borderColor: KC[i], borderWidth: 1, borderRadius: 3, borderSkipped: false
+                            }
+                        })
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, interaction: { intersect: false, mode: 'index' },
+                        plugins: {
+                            legend: { position: 'top', labels: { color: o.tick, font: { family: 'DM Sans', size: 11 }, boxWidth: 10, boxHeight: 10, borderRadius: 2, useBorderRadius: true, padding: 14 } },
+                            tooltip: { backgroundColor: o.tbg, borderColor: o.tbrd, borderWidth: 1, titleColor: o.tt, bodyColor: o.tb, titleFont: { family: 'DM Sans', weight: '600' }, bodyFont: { family: 'DM Sans' }, padding: 10, cornerRadius: 8 }
+                        },
+                        scales: {
+                            x: { stacked: true, grid: { color: o.grid }, ticks: { color: o.tick, font: { family: 'DM Sans', size: 9 }, maxRotation: 50 }, border: { color: o.grid } },
+                            y: { stacked: true, beginAtZero: true, grid: { color: o.grid }, ticks: { color: o.tick, font: { family: 'DM Sans', size: 10 } }, border: { color: o.grid } }
+                        }
+                    }
+                });
+                return function () { if (ch.current) ch.current.destroy() }
+            }, [data, theme]);
+            return React.createElement('div', { className: 'gc fi', style: { padding: 18, animationDelay: '480ms' } },
+                React.createElement('h3', { className: 'font-display', style: { fontSize: 15, fontWeight: 700, color: 'var(--txt)', marginBottom: 14, transition: 'color .35s' } }, 'Daily Registration Trend'),
+                React.createElement('div', { style: { height: 310 } }, React.createElement('canvas', { ref: cv }))
+            );
         }
 
         /* ═══════════ DOUGHNUT CHART ═══════════ */
-        function DonutChart({data,theme}){
-            const cv=useRef(null);const ch=useRef(null);const o=cOpts(theme);
-            useEffect(()=>{
-                if(!cv.current)return; /* FIX #3: null safety */
-                if(ch.current)ch.current.destroy();
-                const totals=KK.map(k=>DATES.reduce((s,d)=>{const e=data[fmtD(d)];return s+(e&&e[k]!==null?e[k]:0)},0));
-                const has=totals.some(t=>t>0);
-                ch.current=new Chart(cv.current.getContext('2d'),{type:'doughnut',data:{labels:KN,datasets:[{data:has?totals:[.001,.001,.001],
-                backgroundColor:['rgba(16,185,129,.78)','rgba(245,158,11,.78)','rgba(244,63,94,.78)'],borderColor:o.dbord,borderWidth:3,hoverOffset:6}]},
-                options:{responsive:true,maintainAspectRatio:false,cutout:'66%',
-                    plugins:{legend:{position:'bottom',labels:{color:o.tick,font:{family:'DM Sans',size:11},boxWidth:10,boxHeight:10,borderRadius:2,useBorderRadius:true,padding:14}},
-                    tooltip:{backgroundColor:o.tbg,borderColor:o.tbrd,borderWidth:1,titleColor:o.tt,bodyColor:o.tb,titleFont:{family:'DM Sans',weight:'600'},bodyFont:{family:'DM Sans'},padding:10,cornerRadius:8,
-                    callbacks:{label:ctx=>{if(!has)return'No data';const tot=totals.reduce((a,b)=>a+b,0);return ctx.label+': '+ctx.raw.toLocaleString()+' ('+((ctx.raw/tot)*100).toFixed(1)+'%)'}}}}}});
-                return()=>{if(ch.current)ch.current.destroy()}},[data,theme]);
-            return(<div className="gc fi" style={{padding:18,animationDelay:'560ms'}}>
-                <h3 className="font-display" style={{fontSize:15,fontWeight:700,color:'var(--txt)',marginBottom:14,transition:'color .35s'}}>Kit Performance</h3>
-                <div style={{height:310,display:'flex',alignItems:'center',justifyContent:'center'}}><canvas ref={cv}/></div>
-            </div>);
+        function DonutChart({ data, theme }) {
+            var cv = useRef(null); var ch = useRef(null); var o = cOpts(theme);
+            useEffect(function () {
+                if (!cv.current) return;
+                if (ch.current) ch.current.destroy();
+                var totals = KK.map(function (k) { return DATES.reduce(function (s, d) { var e = data[fmtD(d)]; return s + (e && e[k] !== null ? e[k] : 0) }, 0) });
+                var has = totals.some(function (t) { return t > 0 });
+                ch.current = new Chart(cv.current.getContext('2d'), {
+                    type: 'doughnut', data: {
+                        labels: KN, datasets: [{
+                            data: has ? totals : [.001, .001, .001],
+                            backgroundColor: ['rgba(16,185,129,.78)', 'rgba(245,158,11,.78)', 'rgba(244,63,94,.78)'], borderColor: o.dbord, borderWidth: 3, hoverOffset: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '66%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: o.tick, font: { family: 'DM Sans', size: 11 }, boxWidth: 10, boxHeight: 10, borderRadius: 2, useBorderRadius: true, padding: 14 } },
+                            tooltip: {
+                                backgroundColor: o.tbg, borderColor: o.tbrd, borderWidth: 1, titleColor: o.tt, bodyColor: o.tb, titleFont: { family: 'DM Sans', weight: '600' }, bodyFont: { family: 'DM Sans' }, padding: 10, cornerRadius: 8,
+                                callbacks: { label: function (ctx) { if (!has) return 'No data'; var tot = totals.reduce(function (a, b) { return a + b }, 0); return ctx.label + ': ' + ctx.raw.toLocaleString() + ' (' + ((ctx.raw / tot) * 100).toFixed(1) + '%)' } }
+                            }
+                        }
+                    }
+                });
+                return function () { if (ch.current) ch.current.destroy() }
+            }, [data, theme]);
+            return React.createElement('div', { className: 'gc fi', style: { padding: 18, animationDelay: '560ms' } },
+                React.createElement('h3', { className: 'font-display', style: { fontSize: 15, fontWeight: 700, color: 'var(--txt)', marginBottom: 14, transition: 'color .35s' } }, 'Kit Performance'),
+                React.createElement('div', { style: { height: 310, display: 'flex', alignItems: 'center', justifyContent: 'center' } }, React.createElement('canvas', { ref: cv }))
+            );
         }
 
         /* ═══════════ DATA TABLE ═══════════ */
-        function Table({data,setData,toast,isAdmin,useDB}){
-            const[editK,setEditK]=useState(null);const[ev,setEv]=useState({kit1:'',kit2:'',kit3:''});
-            let cum=0;
-            const rows=DATES.map((d,i)=>{const k=fmtD(d);const e=data[k]||{};const dt=[e.kit1,e.kit2,e.kit3].reduce((a,b)=>(a||0)+(b||0),0);cum+=dt;
-            return{i:i+1,d,k,e,dt,cum,has:dt>0,today:k===fmtD(new Date())}});
+        function Table({ data, setData, toast, isAdmin, useDB }) {
+            var s1 = useState(null); var editK = s1[0]; var setEditK = s1[1];
+            var s2 = useState({ kit1: '', kit2: '', kit3: '' }); var ev = s2[0]; var setEv = s2[1];
+            var cum = 0;
+            var rows = DATES.map(function (d, i) {
+                var k = fmtD(d); var e = data[k] || {}; var dt = [e.kit1, e.kit2, e.kit3].reduce(function (a, b) { return (a || 0) + (b || 0) }, 0); cum += dt;
+                return { i: i + 1, d: d, k: k, e: e, dt: dt, cum: cum, has: dt > 0, today: k === fmtD(new Date()) }
+            });
 
-            const startEdit=r=>{if(!isAdmin)return;setEditK(r.k);setEv({kit1:r.e.kit1!==null?''+r.e.kit1:'',kit2:r.e.kit2!==null?''+r.e.kit2:'',kit3:r.e.kit3!==null?''+r.e.kit3:''})};
-            const saveRow=async()=>{
-                const nd={...data};nd[editK]={kit1:ev.kit1!==''?parseInt(ev.kit1):null,kit2:ev.kit2!==''?parseInt(ev.kit2):null,kit3:ev.kit3!==''?parseInt(ev.kit3):null};
-                let ok=true;if(useDB)ok=await DB.upsert(editK,nd[editK].kit1,nd[editK].kit2,nd[editK].kit3);
-                if(ok){setData(nd);saveLocal(nd);setEditK(null);toast('Entry updated','success')}
-                else toast('Failed to save — you may have been signed out','error');
-            };
+            function startEdit(r) { if (!isAdmin) return; setEditK(r.k); setEv({ kit1: r.e.kit1 !== null ? '' + r.e.kit1 : '', kit2: r.e.kit2 !== null ? '' + r.e.kit2 : '', kit3: r.e.kit3 !== null ? '' + r.e.kit3 : '' }) }
 
-            return(<div className="gc fi" style={{padding:0,animationDelay:'640ms'}}>
-                <div style={{padding:'18px 18px 14px',borderBottom:'1px solid var(--brd)',transition:'border-color .35s'}}>
-                    <h3 className="font-display" style={{fontSize:15,fontWeight:700,color:'var(--txt)',transition:'color .35s'}}>Detailed Records</h3>
-                    <p style={{fontSize:11,color:'var(--txt4)',marginTop:2,transition:'color .35s'}}>{isAdmin?'Click any row to edit inline':'Read-only view'}</p>
-                </div>
-                <div className="tw" style={{maxHeight:500,overflowY:'auto'}}>
-                    <table className="dth" style={{width:'100%',borderCollapse:'collapse',fontSize:13}}>
-                        <thead><tr>
-                            {['#','Date','Day',...KN,'Daily','Cumulative'].map((h,hi)=>(
-                            <th key={hi} style={{padding:'11px 14px',textAlign:hi>=3?'right':'left',fontSize:10,fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em',color:hi>=3&&hi<6?KC[hi-3]:'var(--txt3)',borderBottom:'1px solid var(--brd)',transition:'all .35s'}}>{h}</th>
-                            ))}
-                        </tr></thead>
-                        <tbody>{rows.map((r,idx)=>{
-                            const isEd=editK===r.k;
-                            return(<tr key={r.k} onClick={()=>!isEd&&startEdit(r)} style={{cursor:isAdmin?'pointer':'default',background:r.today?'var(--today)':idx%2?'var(--ralt)':'transparent',borderBottom:'1px solid var(--brd)',transition:'background .12s'}}
-                                onMouseEnter={e=>{if(isAdmin&&!isEd)e.currentTarget.style.background='var(--rhov)'}}
-                                onMouseLeave={e=>{e.currentTarget.style.background=r.today?'var(--today)':idx%2?'var(--ralt)':'transparent'}}>
-                                <td style={{padding:'9px 14px',color:'var(--txt4)',fontSize:11,transition:'color .35s'}}>{r.i}</td>
-                                <td style={{padding:'9px 14px',color:r.today?'#10b981':'var(--txt2)',fontWeight:r.today?600:400,whiteSpace:'nowrap',transition:'color .35s'}}>
-                                    {fmtS(r.d)}{r.today&&<span style={{fontSize:9,color:'#10b981',marginLeft:5,fontWeight:500,border:'1px solid rgba(16,185,129,.2)',borderRadius:4,padding:'1px 5px'}}>TODAY</span>}
-                                </td>
-                                <td style={{padding:'9px 14px',color:'var(--txt3)',fontSize:11,transition:'color .35s'}}>{DAYS[r.d.getDay()]}</td>
-                                {isEd?KK.map(k=>(<td key={k} style={{padding:'5px 6px'}}>
-                                    <input type="number" className="inp" style={{padding:'5px 7px',fontSize:12,textAlign:'right',width:66}} value={ev[k]} min="0"
-                                    onChange={e=>setEv({...ev,[k]:e.target.value})} onClick={e=>e.stopPropagation()} onKeyDown={e=>{if(e.key==='Enter')saveRow();if(e.key==='Escape')setEditK(null)}} autoFocus/>
-                                </td>)):KK.map((k,ki)=>(<td key={k} style={{padding:'9px 14px',textAlign:'right',color:r.e[k]!==null?KC[ki]:'var(--txt4)',fontWeight:r.e[k]!==null?600:400,transition:'color .35s'}}>
-                                    {r.e[k]!==null?r.e[k].toLocaleString():'\u2014'}
-                                </td>))}
-                                {isEd?<>
-                                    <td style={{padding:'9px 14px',textAlign:'right'}}><button className="bp" style={{padding:'4px 12px',fontSize:11,marginRight:4}} onClick={e=>{e.stopPropagation();saveRow()}}>Save</button><button className="bs" style={{padding:'4px 12px',fontSize:11}} onClick={e=>{e.stopPropagation();setEditK(null)}}>Cancel</button></td>
-                                    <td></td>
-                                </>:<>
-                                    <td style={{padding:'9px 14px',textAlign:'right',color:r.dt>0?'var(--txt)':'var(--txt4)',fontWeight:r.dt>0?700:400,transition:'color .35s'}}>{r.dt>0?r.dt.toLocaleString():'\u2014'}</td>
-                                    <td style={{padding:'9px 14px',textAlign:'right',color:r.cum>0?'var(--txt2)':'var(--txt4)',fontWeight:500,transition:'color .35s'}}>{r.cum>0?r.cum.toLocaleString():'\u2014'}</td>
-                                </>}
-                            </tr>)})}</tbody>
-                    </table>
-                </div>
-            </div>);
+            async function saveRow() {
+                var nd = Object.assign({}, data); nd[editK] = { kit1: ev.kit1 !== '' ? parseInt(ev.kit1) : null, kit2: ev.kit2 !== '' ? parseInt(ev.kit2) : null, kit3: ev.kit3 !== '' ? parseInt(ev.kit3) : null };
+                var res = {}; if (useDB) res = await DB.upsert(editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3);
+                if (!res.error) { setData(nd); saveLocal(nd); setEditK(null); toast('Entry updated', 'success') }
+                else toast('Failed to save \u2014 you may have been signed out', 'error');
+            }
+
+            var headers = ['#', 'Date', 'Day', KN[0], KN[1], KN[2], 'Daily', 'Cumulative'];
+
+            return React.createElement('div', { className: 'gc fi', style: { padding: 0, animationDelay: '640ms' } },
+                React.createElement('div', { style: { padding: '18px 18px 14px', borderBottom: '1px solid var(--brd)', transition: 'border-color .35s' } },
+                    React.createElement('h3', { className: 'font-display', style: { fontSize: 15, fontWeight: 700, color: 'var(--txt)', transition: 'color .35s' } }, 'Detailed Records'),
+                    React.createElement('p', { style: { fontSize: 11, color: 'var(--txt4)', marginTop: 2, transition: 'color .35s' } }, isAdmin ? 'Click any row to edit inline' : 'Read-only view')
+                ),
+                React.createElement('div', { className: 'tw', style: { maxHeight: 500, overflowY: 'auto' } },
+                    React.createElement('table', { className: 'dth', style: { width: '100%', borderCollapse: 'collapse', fontSize: 13 } },
+                        React.createElement('thead', null,
+                            React.createElement('tr', null,
+                                headers.map(function (h, hi) {
+                                    return React.createElement('th', { key: hi, style: { padding: '11px 14px', textAlign: hi >= 3 ? 'right' : 'left', fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: hi >= 3 && hi < 6 ? KC[hi - 3] : 'var(--txt3)', borderBottom: '1px solid var(--brd)', transition: 'all .35s' } }, h);
+                                })
+                            )
+                        ),
+                        React.createElement('tbody', null,
+                            rows.map(function (r, idx) {
+                                var isEd = editK === r.k;
+                                return React.createElement('tr', {
+                                    key: r.k, onClick: function () { if (!isEd) startEdit(r) }, style: { cursor: isAdmin ? 'pointer' : 'default', background: r.today ? 'var(--today)' : idx % 2 ? 'var(--ralt)' : 'transparent', borderBottom: '1px solid var(--brd)', transition: 'background .12s' },
+                                    onMouseEnter: function (e) { if (isAdmin && !isEd) e.currentTarget.style.background = 'var(--rhov)' },
+                                    onMouseLeave: function (e) { e.currentTarget.style.background = r.today ? 'var(--today)' : idx % 2 ? 'var(--ralt)' : 'transparent' }
+                                },
+                                    React.createElement('td', { style: { padding: '9px 14px', color: 'var(--txt4)', fontSize: 11, transition: 'color .35s' } }, r.i),
+                                    React.createElement('td', { style: { padding: '9px 14px', color: r.today ? '#10b981' : 'var(--txt2)', fontWeight: r.today ? 600 : 400, whiteSpace: 'nowrap', transition: 'color .35s' } },
+                                        fmtS(r.d),
+                                        r.today ? React.createElement('span', { style: { fontSize: 9, color: '#10b981', marginLeft: 5, fontWeight: 500, border: '1px solid rgba(16,185,129,.2)', borderRadius: 4, padding: '1px 5px' } }, 'TODAY') : null
+                                    ),
+                                    React.createElement('td', { style: { padding: '9px 14px', color: 'var(--txt3)', fontSize: 11, transition: 'color .35s' } }, DAYS[r.d.getDay()]),
+                                    isEd ? KK.map(function (k) {
+                                        return React.createElement('td', { key: k, style: { padding: '5px 6px' } },
+                                            React.createElement('input', {
+                                                className: 'inp', type: 'number', style: { padding: '5px 7px', fontSize: 12, textAlign: 'right', width: 66 }, value: ev[k], min: '0',
+                                                onChange: function (e) { var nv = Object.assign({}, ev); nv[k] = e.target.value; setEv(nv) }, onClick: function (e) { e.stopPropagation() }, onKeyDown: function (e) { if (e.key === 'Enter') saveRow(); if (e.key === 'Escape') setEditK(null) }, autoFocus: true
+                                            })
+                                        )
+                                    }) : KK.map(function (k, ki) { return React.createElement('td', { key: k, style: { padding: '9px 14px', textAlign: 'right', color: r.e[k] !== null ? KC[ki] : 'var(--txt4)', fontWeight: r.e[k] !== null ? 600 : 400, transition: 'color .35s' } }, r.e[k] !== null ? r.e[k].toLocaleString() : '\u2014') }),
+                                    isEd ? React.createElement(React.Fragment, null,
+                                        React.createElement('td', { style: { padding: '9px 14px', textAlign: 'right' } },
+
+
+                                            React.createElement('button', {
+                                                className: 'bp',
+                                                style: { padding: '4px 12px', fontSize: 11, marginRight: 4 },
+                                                onClick: function (e) { e.stopPropagation(); saveRow() }
+                                            }, 'Save'),
+
+
+                                            React.createElement('button', { className: 'bs', style: { padding: '4px 12px', fontSize: 11 }, onClick: function (e) { e.stopPropagation(); setEditK(null) } }, 'Cancel')
+                                        ),
+                                        React.createElement('td', null)
+                                    ) : React.createElement(React.Fragment, null,
+                                        React.createElement('td', { style: { padding: '9px 14px', textAlign: 'right', color: r.dt > 0 ? 'var(--txt)' : 'var(--txt4)', fontWeight: r.dt > 0 ? 700 : 400, transition: 'color .35s' } }, r.dt > 0 ? r.dt.toLocaleString() : '\u2014'),
+                                        React.createElement('td', { style: { padding: '9px 14px', textAlign: 'right', color: r.cum > 0 ? 'var(--txt2)' : 'var(--txt4)', fontWeight: 500, transition: 'color .35s' } }, r.cum > 0 ? r.cum.toLocaleString() : '\u2014')
+                                    )
+                                );
+                            })
+                        )
+                    )
+                )
+            );
         }
 
         /* ═══════════ APP ═══════════ */
-        function App(){
-            const[data,setData]=useState(empty);
-            const[toasts,setToasts]=useState([]);
-            const[theme,setThemeState]=useState(localStorage.getItem('wiga_theme')||'dark');
-            const[isAdmin,setIsAdmin]=useState(false);
-            const[showLogin,setShowLogin]=useState(false);
-            const[showSetup,setShowSetup]=useState(false);
-            const[fetching,setFetching]=useState(true);
-            const[useDB,setUseDB]=useState(false);
-            const[fetchErr,setFetchErr]=useState(false);
+        function App() {
+            var s1 = useState(empty); var data = s1[0]; var setData = s1[1];
+            var s2 = useState([]); var toasts = s2[0]; var setToasts = s2[1];
+            var s3 = useState(localStorage.getItem('wiga_theme') || 'dark'); var theme = s3[0]; var setThemeState = s3[1];
+            var s4 = useState(false); var isAdmin = s4[0]; var setIsAdmin = s4[1];
+            var s5 = useState(false); var showLogin = s5[0]; var setShowLogin = s5[1];
+            var s6 = useState(false); var showSetup = s6[0]; var setShowSetup = s6[1];
+            var s7 = useState(true); var fetching = s7[0]; var setFetching = s7[1];
+            var s8 = useState(false); var useDB = s8[0]; var setUseDB = s8[1];
+            var s9 = useState(false); var fetchErr = s9[0]; var setFetchErr = s9[1];
 
-            const setTheme=t=>{document.documentElement.setAttribute('data-theme',t);localStorage.setItem('wiga_theme',t);setThemeState(t)};
+            function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('wiga_theme', t); setThemeState(t) }
 
-            const toast=useCallback((msg,type='success')=>{const id=++_tid;setToasts(p=>[...p,{id,msg,type,out:false}]);
-                setTimeout(()=>{setToasts(p=>p.map(t=>t.id===id?{...t,out:true}:t));setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),300)},3500)},[]);
+            var toast = useCallback(function (msg, type) {
+                type = type || 'success'; var id = ++_tid; setToasts(function (p) { return p.concat([{ id: id, msg: msg, type: type, out: false }]) });
+                setTimeout(function () { setToasts(function (p) { return p.map(function (t) { return t.id === id ? Object.assign({}, t, { out: true }) : t }) }); setTimeout(function () { setToasts(function (p) { return p.filter(function (t) { return t.id !== id }) }) }, 300) }, 3500)
+            }, []);
 
-            /* Auth state change callback — handles session expiry gracefully */
-            const onAuthChange=useCallback((authed)=>{
+            var onAuthChange = useCallback(function (authed) {
                 setIsAdmin(authed);
-                if(!authed)toast('Session ended','info');
-            },[toast]);
+                if (!authed) toast('Session ended', 'info');
+            }, [toast]);
 
-            /* Initialization */
-            useEffect(()=>{
-                const cfg=DB.getConfig();
-                if(cfg&&cfg.url&&cfg.ak){
-                    const ok=DB.init(cfg.url,cfg.ak,onAuthChange);
-                    if(ok){
-                        /* Check for existing session */
-                        DB.getSession().then(session=>{
+            useEffect(function () {
+                var cfg = DB.getConfig();
+                if (cfg && cfg.url && cfg.ak) {
+                    var ok = DB.init(cfg.url, cfg.ak, onAuthChange);
+                    if (ok) {
+                        DB.getSession().then(function (session) {
                             setIsAdmin(!!session);
-                            /* Fetch data */
                             return DB.fetchAll();
-                        }).then(rows=>{
-                            if(rows!==null){setData(sbToLocal(rows));setUseDB(true)}
-                            else{setData(loadLocal());setFetchErr(true)}
+                        }).then(function (rows) {
+                            if (Array.isArray(rows)) { setData(sbToLocal(rows)); setUseDB(true) }
+                            else { setData(loadLocal()); setFetchErr(true) }
                             setFetching(false);
-                        }).catch(()=>{
-                            setData(loadLocal());setFetchErr(true);setFetching(false);
+                        }).catch(function () {
+                            setData(loadLocal()); setFetchErr(true); setFetching(false);
                         });
-                    }else{setData(loadLocal());setFetching(false);setFetchErr(true)}
-                }else{setData(loadLocal());setFetching(false);setShowSetup(true)}
-            },[onAuthChange]);
+                    } else { setData(loadLocal()); setFetching(false); setFetchErr(true) }
+                } else { setData(loadLocal()); setFetching(false); setShowSetup(true) }
+            }, [onAuthChange]);
 
-            /* Auto-refresh data every 60 seconds when connected */
-            useEffect(()=>{
-                if(!useDB||!DB.ready)return;
-                const iv=setInterval(async()=>{
-                    const rows=await DB.fetchAll();
-                    if(rows!==null){setData(sbToLocal(rows));if(fetchErr)setFetchErr(false)}
-                },60000);
-                return()=>clearInterval(iv);
-            },[useDB,fetchErr]);
+            useEffect(function () {
+                if (!useDB || !DB.ready) return;
+                var iv = setInterval(function () {
+                    DB.fetchAll().then(function (rows) { if (Array.isArray(rows)) { setData(sbToLocal(rows)); if (fetchErr) setFetchErr(false) } });
+                }, 60000);
+                return function () { clearInterval(iv) };
+            }, [useDB, fetchErr]);
 
-            const onSetupDone=()=>{setShowSetup(false);setUseDB(true);setFetching(false)};
-            const handleLogin=()=>{setIsAdmin(true);setShowLogin(false);toast('Signed in as admin','success')};
-            const handleLogout=async()=>{await DB.signOut();setIsAdmin(false);toast('Signed out','info')};
+            function onSetupDone() { setShowSetup(false); setUseDB(true); setFetching(false) }
+            function handleLogin() { setIsAdmin(true); setShowLogin(false); toast('Signed in as admin', 'success') }
+            function handleLogout() { DB.signOut(); setIsAdmin(false); toast('Signed out', 'info') }
 
-            const done=useMemo(()=>DATES.filter(d=>{const e=data[fmtD(d)];return e&&[e.kit1,e.kit2,e.kit3].some(v=>v!==null&&v>0)}).length,[data]);
+            var done = useMemo(function () { return DATES.filter(function (d) { var e = data[fmtD(d)]; return e && [e.kit1, e.kit2, e.kit3].some(function (v) { return v !== null && v > 0 }) }).length }, [data]);
 
-            if(fetching)return(<div style={{display:'flex',alignItems:'center',justifyContent:'center',minHeight:'100vh',flexDirection:'column',gap:14}}>
-                <div style={{width:36,height:36,border:'3px solid var(--brd)',borderTopColor:'#10b981',borderRadius:'50%',animation:'spin 1s linear infinite'}}/>
-                <p style={{fontSize:13,color:'var(--txt3)'}}>Loading dashboard...</p>
-            </div>);
+            if (fetching) return React.createElement('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 14 } },
+                React.createElement('div', { style: { width: 36, height: 36, border: '3px solid var(--brd)', borderTopColor: '#10b981', borderRadius: '50%', animation: 'spin 1s linear infinite' } }),
+                React.createElement('p', { style: { fontSize: 13, color: 'var(--txt3)' } }, 'Loading dashboard...')
+            );
 
-            return(<div style={{minHeight:'100vh'}}>
-                <Toasts list={toasts}/>
-                {showSetup&&<SetupModal onDone={onSetupDone} onSkip={()=>setShowSetup(false)}/>}
-                {showLogin&&<LoginModal onOk={handleLogin} onCancel={()=>setShowLogin(false)}/>}
-                <Header done={done} theme={theme} setTheme={setTheme} isAdmin={isAdmin} setShowLogin={setShowLogin} handleLogout={handleLogout} useDB={useDB} openSetup={()=>setShowSetup(true)}/>
-                <main style={{maxWidth:1280,margin:'0 auto',padding:'22px 24px',display:'flex',flexDirection:'column',gap:20}}>
-                    {!useDB&&!showSetup&&<Banner msg="Running in local mode — data is only stored in this browser." icon="fa-circle-info" onAction={()=>setShowSetup(true)} actionLabel="Connect to Supabase"/>}
-                    {fetchErr&&useDB&&<Banner msg="Failed to reach Supabase. Showing cached local data." icon="fa-triangle-exclamation" onAction={()=>setShowSetup(true)} actionLabel="Reconfigure"/>}
-                    <Cards data={data}/>
-                    {isAdmin
-                        ?<Update data={data} setData={setData} toast={toast} useDB={useDB}/>
-                        :<Banner msg="This is a read-only view. Admin sign-in is required to add or edit data." icon="fa-lock" onAction={()=>setShowLogin(true)} actionLabel="Sign In"/>
-                    }
-                    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,380px),1fr))',gap:14}}>
-                        <BarChart data={data} theme={theme}/>
-                        <DonutChart data={data} theme={theme}/>
-                    </div>
-                    <Table data={data} setData={setData} toast={toast} isAdmin={isAdmin} useDB={useDB}/>
-                </main>
-                <footer style={{textAlign:'center',padding:'28px 24px',borderTop:'1px solid var(--brd)',marginTop:16,transition:'border-color .35s'}}>
-                    <p style={{fontSize:11,color:'var(--txt4)',transition:'color .35s'}}>Wiga Ward Voter Registration Dashboard{useDB?' — Synced via Supabase':' — Local mode'}</p>
-                </footer>
-            </div>);
+            return React.createElement('div', { style: { minHeight: '100vh' } },
+                React.createElement(Toasts, { list: toasts }),
+                showSetup ? React.createElement(SetupModal, { onDone: onSetupDone, onSkip: function () { setShowSetup(false) } }) : null,
+                showLogin ? React.createElement(LoginModal, { onOk: handleLogin, onCancel: function () { setShowLogin(false) } }) : null,
+                React.createElement(Header, { done: done, theme: theme, setTheme: setTheme, isAdmin: isAdmin, setShowLogin: function () { setShowLogin(true) }, handleLogout: handleLogout, useDB: useDB, openSetup: function () { setShowSetup(true) } }),
+                React.createElement('main', { style: { maxWidth: 1280, margin: '0 auto', padding: '22px 24px', display: 'flex', flexDirection: 'column', gap: 20 } },
+                    !useDB && !showSetup ? React.createElement(Banner, { msg: 'Running in local mode \u2014 data only in this browser.', icon: 'fa-circle-info', onAction: function () { setShowSetup(true) }, actionLabel: 'Connect to Supabase' }) : null,
+                    fetchErr && useDB ? React.createElement(Banner, { msg: 'Failed to reach Supabase. Showing cached data.', icon: 'fa-triangle-exclamation', onAction: function () { setShowSetup(true) }, actionLabel: 'Reconfigure' }) : null,
+                    React.createElement(Cards, { data: data }),
+                    isAdmin
+                        ? React.createElement(Update, { data: data, setData: setData, toast: toast, useDB: useDB })
+                        : React.createElement(Banner, { msg: 'Read-only view. Admin sign-in required to edit.', icon: 'fa-lock', onAction: function () { setShowLogin(true) }, actionLabel: 'Sign In' })
+                    ,
+                    React.createElement('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,380px),1fr))', gap: 14 } },
+                        React.createElement(BarChart, { data: data, theme: theme }),
+                        React.createElement(DonutChart, { data: data, theme: theme })
+                    ),
+                    React.createElement(Table, { data: data, setData: setData, toast: toast, isAdmin: isAdmin, useDB: useDB })
+                ),
+                React.createElement('footer', { style: { textAlign: 'center', padding: '28px 24px', borderTop: '1px solid var(--brd)', marginTop: 16, transition: 'border-color .35s' } },
+                    React.createElement('p', { style: { fontSize: 11, color: 'var(--txt4)', transition: 'color .35s' } }, 'Wiga Ward Voter Registration Dashboard' + (useDB ? ' \u2014 Synced via Supabase' : ' \u2014 Local mode'))
+                )
+            );
         }
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+        ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
     </script>
 </body>
+
 </html>
