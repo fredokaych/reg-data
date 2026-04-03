@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-GB" data-theme="dark">
+<html lang="en" data-theme="dark">
 
 <head>
     <meta charset="UTF-8">
@@ -122,7 +122,7 @@
         .bs:hover { background: rgba(16,185,129,.13) }
         .bdd { background: rgba(244,63,94,.08); color: #f43f5e; font-weight: 700; padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(244,63,94,.18); cursor: pointer; font-family: Maiandra, 'Maiandra GD', sans-serif; font-size: 15px; transition: background .15s; min-height: 46px }
         .bdd:hover { background: rgba(244,63,94,.13) }
-        .tb { padding: 8px 16px; border-radius: 8px; font-size: 14px; fontWeight: 700; cursor: pointer; transition: all .2s; border: none; font-family: Maiandra, 'Maiandra GD', sans-serif; min-height: 40px }
+        .tb { padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; border: none; font-family: Maiandra, 'Maiandra GD', sans-serif; min-height: 40px }
         .ta { background: rgba(16,185,129,.13); color: #10b981 }
         .tn { background: transparent; color: var(--txt3) }
         .tn:hover { color: var(--txt2) }
@@ -489,7 +489,7 @@
                                 stacked:true, 
                                 beginAtZero:true, 
                                 grid:{ color:o.grid }, 
-                                ticks:{ color:o.tick, font:{ family:FF, size:11, weight:'700' } },
+                                ticks:{ color:o.tick, font:{ family:FF, size:11, weight:'700' } }, // Removed invalid nested 'border'
                                 border:{ color:o.grid } 
                             } 
                         } 
@@ -534,10 +534,7 @@
             const rows = DATES.map((d,i) => { const k=fmtD(d), e=data[k]||{}, dt=[e.kit1,e.kit2,e.kit3].reduce((a,b)=>(a||0)+(b||0),0); cum += dt; return { i:i+1, d, k, e, dt, cum, has:dt>0, today:k===fmtD(new Date()) }; });
             function startEdit(r) { if (!isAdmin) return; setEditK(r.k); setEv({ kit1:r.e.kit1!==null?''+r.e.kit1:'', kit2:r.e.kit2!==null?''+r.e.kit2:'', kit3:r.e.kit3!==null?''+r.e.kit3:'' }) }
             async function saveRow() { const nd = { ...data, [editK]:{ kit1:ev.kit1!==''?parseInt(ev.kit1):null, kit2:ev.kit2!==''?parseInt(ev.kit2):null, kit3:ev.kit3!==''?parseInt(ev.kit3):null } }; const res = await DB.upsert(editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3); if (!res.error) { setData(nd); setEditK(null); toast('Entry updated', 'success') } else toast('Failed to save — you may have been signed out', 'error'); }
-            
-            // Updated headers to include 'Daily' on mobile
-            var headers = mobile ? ['#','Date (Day)',KN[0],KN[1],KN[2],'Daily','Cum.'] : ['#','Date','Day',KN[0],KN[1],KN[2],'Daily','Cumulative'];
-            
+            var headers = mobile ? ['#','Date (Day)',KN[0],KN[1],KN[2],'Cum.'] : ['#','Date','Day',KN[0],KN[1],KN[2],'Daily','Cumulative'];
             function kitHi(hi) { return mobile ? hi-2 : hi-3 }
             var thStyle = (hi) => ({ padding: mobile ? '8px 8px' : '10px 12px', textAlign: (mobile ? hi>=2 : hi>=3) ? 'right' : 'left', fontSize: mobile ? '9px' : '10px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.05em', color: (mobile ? hi>=2&&hi<5 : hi>=3&&hi<6) ? KC[kitHi(hi)] : 'var(--txt3)', borderBottom: '1px solid var(--brd)', transition: 'all .35s', whiteSpace: 'nowrap' });
             var dateTd = (r) => { var s = { padding: mobile ? '8px 6px' : '10px 12px', fontWeight: r.today ? 700 : 600, whiteSpace: 'nowrap' }; if (mobile) { s.color = r.today ? '#10b981' : 'var(--txt2)'; s.fontSize = '12px'; s.borderLeft = r.today ? '3px solid #10b981' : 'none'; s.paddingLeft = r.today ? '7px' : '6px'; } else { s.color = r.today ? '#10b981' : 'var(--txt2)'; s.fontSize = '13px'; } return s };
@@ -545,9 +542,6 @@
             var numTd = (ki, r) => ({ padding: mobile ? '8px 6px' : '10px 12px', textAlign: 'right', fontSize: '13px', fontWeight: r.e[ki]!==null ? 600 : 500, color: r.e[ki]!==null ? KC[ki] : 'var(--txt4)' });
             var idxTd = () => ({ padding: mobile ? '8px 6px' : '10px 12px', color: 'var(--txt4)', fontSize: mobile ? '11px' : '12px', fontWeight: 700 });
             
-            // Style for Daily column (visible on mobile)
-            var dailyTdStyle = { padding: mobile ? '8px 6px' : '10px 12px', textAlign: 'right', color:'var(--txt)', fontWeight:700, fontSize: '13px' };
-
             var lastTd = (r, isEd) => ({ 
                 padding: mobile ? '8px 6px' : '10px 12px', 
                 textAlign: 'right', 
@@ -570,11 +564,9 @@
                                 React.createElement('td', { style:idxTd() }, r.i),
                                 React.createElement('td', { style:dateTd(r) }, mobile ? fmtDateDay(r.d) : fmtS(r.d), !mobile && r.today ? React.createElement('span', { style:{ fontSize:9, color:'#10b981', marginLeft:5, fontWeight:700, border:'1px solid rgba(16,185,129,.2)', borderRadius:4, padding:'1px 5px' } }, 'TODAY') : null),
                                 React.createElement('td', { style:dayTd() }, DAYS[r.d.getDay()]),
-                                // Updated autoFocus logic: only first kit gets focus
-                                isEd ? KK.map(function(k, i){ return React.createElement('td', { key:k, style:{ padding:'4px 4px' } }, React.createElement('input', { className:'inp', type:'number', style:{ padding:'5px 6px', fontSize:16, textAlign:'right', width:mobile?52:68, minHeight:36 }, value:ev[k], min:'0', onChange:function(e){ var nv=Object.assign({},ev); nv[k]=e.target.value; setEv(nv) }, onClick:function(e){ e.stopPropagation() }, onKeyDown:function(e){ if(e.key==='Enter') saveRow(); if(e.key==='Escape') setEditK(null) }, autoFocus: i === 0 })) })
+                                isEd ? KK.map(function(k){ return React.createElement('td', { key:k, style:{ padding:'4px 4px' } }, React.createElement('input', { className:'inp', type:'number', style:{ padding:'5px 6px', fontSize:16, textAlign:'right', width:mobile?52:68, minHeight:36 }, value:ev[k], min:'0', onChange:function(e){ var nv=Object.assign({},ev); nv[k]=e.target.value; setEv(nv) }, onClick:function(e){ e.stopPropagation() }, onKeyDown:function(e){ if(e.key==='Enter') saveRow(); if(e.key==='Escape') setEditK(null) }, autoFocus:true })) })
                                   : KK.map(function(k,ki){ return React.createElement('td', { key:k, style:numTd(ki,r) }, r.e[k]!==null?r.e[k].toLocaleString():'—')}),
-                                // Added Daily column, now visible on mobile
-                                React.createElement('td', { style:dailyTdStyle }, r.dt>0?r.dt.toLocaleString():'—'),
+                                React.createElement('td', { style:{ padding:mobile?'0':'10px 12px', textAlign:'right', color:r.dt>0?'var(--txt)':'var(--txt4)', fontWeight:r.dt>0?800:500, fontSize:'13px', display:mobile?'none':'table-cell' } }, r.dt>0?r.dt.toLocaleString():'—'),
                                 React.createElement('td', { style:lastTd(r, isEd) }, 
                                     isEd 
                                         ? React.createElement(React.Fragment, null, 
