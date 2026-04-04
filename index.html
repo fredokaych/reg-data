@@ -134,9 +134,8 @@
         .ib { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--brd); background: var(--card); transition: all .2s; color: var(--txt2); font-size: 16px; flex-shrink: 0 }
         .ib:hover { border-color: var(--brd-h); color: var(--txt) }
         
-        /* Ward Tab Styles */
-        .ward-nav-container { display: flex; gap: 8px; padding: '10px 0'; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
-        .ward-nav-container::-webkit-scrollbar { display: none; }
+        /* UPDATED: Ward Tab Styles for Mobile Wrap */
+        .ward-nav-container { display: flex; flex-wrap: wrap; gap: 8px; padding: '10px 0'; justify-content: flex-start; }
         .ward-pill { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .25s; border: 1px solid var(--brd); background: var(--card); color: var(--txt3); white-space: nowrap; font-family: Maiandra, 'Maiandra GD', sans-serif; display: flex; align-items: center; gap: 8px; }
         .ward-pill:hover { border-color: var(--brd-h); color: var(--txt); background: var(--elevated) }
         .ward-pill.active { background: linear-gradient(135deg,#10b981,#059669); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(16,185,129,.3); }
@@ -145,7 +144,11 @@
         .comp-table { width: 100%; border-collapse: collapse; }
         .comp-table th, .comp-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--brd); }
 
-        @media(max-width:480px){ .mbx { padding: 20px; border-radius: 14px } .inp { font-size: 16px } .ward-pill { padding: 6px 14px; font-size: 12px } }
+        @media(max-width:480px){ 
+            .mbx { padding: 20px; border-radius: 14px } 
+            .inp { font-size: 16px } 
+            .ward-pill { padding: 6px 12px; font-size: 12px; flex: 1 1 45%; justify-content: center; } /* 2 columns on very small screens */
+        }
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
         @keyframes spin { to{transform:rotate(360deg)} }
     </style>
@@ -181,7 +184,7 @@
 
         // Navigation Items (Includes Overview)
         const NAV_ITEMS = [
-            { key: 'overview', name: 'Constituency Overview', icon: 'fa-globe' },
+            { key: 'overview', name: 'Overview', icon: 'fa-globe' },
             ...WARDS
         ];
 
@@ -240,7 +243,6 @@
             async fetchAll() { if (!this.client || !this.ready) return null; const res = await this.client.from('registrations').select('*').order('date', { ascending: true }); if (res.error) return { error: res.error.message }; return res.data },
             async upsert(ward, date, kit1, kit2, kit3) { 
                 if (!this.client || !this.ready) return { error: 'Not connected' }; 
-                // Uses unique constraint on (date, ward)
                 const res = await this.client.from('registrations').upsert({ ward, date, kit1, kit2, kit3 }, { onConflict: 'date,ward' }); 
                 if (res.error) return { error: res.error.message }; 
                 return {} 
@@ -399,17 +401,73 @@
             );
         }
 
-        function Cards({ data, label }) {
-            let total = 0, daysW = 0, todayT = 0; const kt = [0,0,0]; const todayK = fmtD(new Date());
-            DATES.forEach(d => { const e = data[fmtD(d)]; if (!e) return; const v = [e.kit1, e.kit2, e.kit3]; const dt = v.reduce((a,b) => (a||0)+(b||0), 0); if (dt > 0) { daysW++; total += dt; v.forEach((x,i) => kt[i] += (x||0)) } if (fmtD(d) === todayK) todayT = dt });
+        // UPDATED: Cards logic to handle Overview Top Performer
+        function Cards({ data, label, isOverview, allData }) {
+            let total = 0, daysW = 0, todayT = 0; 
+            const kt = [0,0,0]; 
+            const todayK = fmtD(new Date());
+            
+            DATES.forEach(d => { 
+                const e = data[fmtD(d)]; 
+                if (!e) return; 
+                const v = [e.kit1, e.kit2, e.kit3]; 
+                const dt = v.reduce((a,b) => (a||0)+(b||0), 0); 
+                if (dt > 0) { daysW++; total += dt; v.forEach((x,i) => kt[i] += (x||0)) } 
+                if (fmtD(d) === todayK) todayT = dt 
+            });
+            
             const avg = daysW ? Math.round(total/daysW) : 0;
-            const topI = kt.indexOf(Math.max(...kt));
+            
+            // Determine Top Performer
+            let topTxt = '';
+            let topVal = null;
+            let topSub = '';
+
+            if (isOverview && allData) {
+                // Logic for Constituency Overview: Find single best kit across all wards
+                let maxCount = -1;
+                let topWardName = '';
+                let topKitName = '';
+                let topKitColor = KC[0];
+
+                WARDS.forEach(w => {
+                    const wData = allData[w.key];
+                    KK.forEach((k, i) => {
+                        let sum = 0;
+                        DATES.forEach(d => {
+                            const val = wData[fmtD(d)]?.[k];
+                            if(val) sum += val;
+                        });
+                        if (sum > maxCount) {
+                            maxCount = sum;
+                            topWardName = w.name;
+                            topKitName = KN[i];
+                            topKitColor = KC[i];
+                        }
+                    });
+                });
+
+                if (maxCount > 0) {
+                    topTxt = topKitName + ' (' + topWardName + ')';
+                    topSub = maxCount.toLocaleString() + ' registrations';
+                } else {
+                    topTxt = 'No Data';
+                    topSub = 'Awaiting entries';
+                }
+            } else {
+                // Logic for Single Ward
+                const topI = kt.indexOf(Math.max(...kt));
+                topTxt = KN[topI];
+                topSub = kt[topI].toLocaleString()+' registrations';
+            }
+
             const cards = [
                 { label:'Total Registered', val:total, icon:'fa-users', clr:'#10b981', bg:'rgba(16,185,129,.07)', sub: label },
                 { label:"Today's Count", val:todayT, icon:'fa-calendar-day', clr:'#f59e0b', bg:'rgba(245,158,11,.07)', sub:todayT?'Registered today':'No data for today' },
                 { label:'Daily Average', val:avg, icon:'fa-chart-line', clr:'#06b6d4', bg:'rgba(6,182,212,.07)', sub:'Based on '+daysW+' day'+(daysW!==1?'s':'') },
-                { label:'Top Performer', val:null, txt:KN[topI], icon:'fa-trophy', clr:'#f43f5e', bg:'rgba(244,63,94,.07)', sub:kt[topI].toLocaleString()+' registrations' }
+                { label:'Top Performer', val:topVal, txt:topTxt, icon:'fa-trophy', clr:'#f43f5e', bg:'rgba(244,63,94,.07)', sub: topSub }
             ];
+
             return React.createElement('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,240px),1fr))', gap:14 } },
                 cards.map((c,i) => React.createElement('div', { key:i, className:'gc fi', style:{ padding:'clamp(16px,3vw,22px)', animationDelay:i*80+'ms' } },
                     React.createElement('div', { style:{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:14 } },
@@ -764,7 +822,12 @@
                         React.createElement('span', { style:{ fontSize:12, fontWeight:700, color:'var(--txt3)', whiteSpace:'nowrap' } }, done+'/30 days')
                     ),
 
-                    React.createElement(Cards, { data: currentWardData, label: isOverview ? 'All 4 Wards' : (currentWardInfo?.name + ' Ward') }),
+                    React.createElement(Cards, { 
+                        data: currentWardData, 
+                        label: isOverview ? 'All 4 Wards' : (currentWardInfo?.name + ' Ward'),
+                        isOverview: isOverview,
+                        allData: allData
+                    }),
                     
                     isOverview ? null : (isAdmin ? React.createElement(Update, { data: currentWardData, setData: setWardData, toast, activeWard }) : React.createElement(Banner, { msg:'Read-only view. Admin sign-in required.', icon:'fa-lock', onAction:() => setShowLogin(true), actionLabel:'Sign In' })),
                     
