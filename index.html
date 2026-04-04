@@ -174,7 +174,7 @@
 
         const DB = {
             client: null, ready: false,
-            init(url, ak, onAuth) { try { if (typeof supabase === 'undefined') return false; this.client = supabase.createClient(url, ak); this.ready = true; this.client.auth.onAuthStateChange(function(_ev, session) { if (onAuth) onAuth(!!session); }); return true } catch(e) { return false } },
+            init(url, ak, onAuth) { try { if (typeof supabase === 'undefined') return false; this.client = supabase.createClient(url, ak); this.ready = true; this.client.auth.onAuthStateChange(function(ev, session) { if (onAuth) onAuth(!!session, ev); }); return true } catch(e) { return false } },
             async fetchAll() { if (!this.client || !this.ready) return null; const res = await this.client.from('registrations').select('*').order('date', { ascending: true }); if (res.error) return { error: res.error.message }; return res.data },
             async upsert(date, kit1, kit2, kit3) { if (!this.client || !this.ready) return { error: 'Not connected' }; const res = await this.client.from('registrations').upsert({ date, kit1, kit2, kit3 }, { onConflict: 'date' }); if (res.error) return { error: res.error.message }; return {} },
             async deleteAll() { if (!this.client || !this.ready) return { error: 'Not connected' }; const res = await this.client.from('registrations').delete().gte('date', '2026-01-01'); if (res.error) return { error: res.error.message }; return {} },
@@ -568,11 +568,20 @@
             const [fetchErr, setFetchErr] = useState(false);
             function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('wiga_theme', t); setThemeState(t) }
             const toast = useCallback((msg, type) => { type=type||'success'; const id = ++_tid; setToasts(p => [...p, { id, msg, type, out:false }]); setTimeout(() => { setToasts(p => p.map(t => t.id===id ? {...t, out:true} : t)); setTimeout(() => setToasts(p => p.filter(t => t.id!==id)), 300); }, 3500); }, []);
-            const onAuthChange = useCallback((authed) => { setIsAdmin(authed); if (!authed) toast('Session ended', 'info'); }, [toast]);
+            
+            // FIX: Added 'event' argument to check specifically for 'SIGNED_OUT'
+            const onAuthChange = useCallback((authed, event) => { 
+                setIsAdmin(authed); 
+                if (event === 'SIGNED_OUT') toast('Session ended', 'info'); 
+            }, [toast]);
+            
             useEffect(() => { if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) { setFetching(false); setFetchErr(true); return } const ok = DB.init(SB_URL, SB_KEY, onAuthChange); if (!ok) { setFetching(false); setFetchErr(true); return } DB.getSession().then(session => { setIsAdmin(!!session); return DB.fetchAll(); }).then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } else setFetchErr(true); setFetching(false); }).catch(() => { setFetchErr(true); setFetching(false); }); }, [onAuthChange]);
             useEffect(() => { if (!DB.ready) return; const iv = setInterval(() => { DB.fetchAll().then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } }); }, 60000); return () => clearInterval(iv); }, []);
             function handleLogin() { setIsAdmin(true); setShowLogin(false); toast('Signed in as admin', 'success'); }
-            function handleLogout() { DB.signOut(); setIsAdmin(false); toast(' signed out', 'info'); }
+            
+            // FIX: Removed manual toast from handleLogout to prevent duplicates; listener handles it
+            function handleLogout() { DB.signOut(); setIsAdmin(false); }
+            
             const done = useMemo(() => DATES.filter(d => { const e = data[fmtD(d)]; return e && [e.kit1,e.kit2,e.kit3].some(v => v!==null && v>0) }).length, [data]);
             if (fetching) return React.createElement('div', { style:{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', flexDirection:'column', gap:14 } },
                 React.createElement('div', { style:{ width:36, height:36, border:'3px solid var(--brd)', borderTopColor:'#10b981', borderRadius:'50%', animation:'spin 1s linear infinite' } }),
