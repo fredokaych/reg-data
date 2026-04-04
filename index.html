@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wiga Ward — Voter Registration Dashboard</title>
+    <title>Suna West Constituency — Voter Registration Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -134,8 +134,16 @@
         .ib { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--brd); background: var(--card); transition: all .2s; color: var(--txt2); font-size: 16px; flex-shrink: 0 }
         .ib:hover { border-color: var(--brd-h); color: var(--txt) }
         .cblk { background: var(--elevated); border: 1px solid var(--brd); border-radius: 8px; padding: 12px; font-family: 'Courier New',monospace; font-size: 11px; color: var(--txt2); white-space: pre-wrap; word-break: break-all; line-height: 1.6; max-height: 120px; overflow-y: auto; transition: background .35s }
-        .sn { width: 22px; height: 22px; border-radius: 50%; background: rgba(16,185,129,.12); color: #10b981; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0 }
-        @media(max-width:480px){ .mbx { padding: 20px; border-radius: 14px } .inp { font-size: 16px } }
+        .sn { width: 22px; height: 22px; border-radius: 50%; background: rgba(16,185,129,.12); color: #10b981; font-size: 11px; font-weight: 700; display: flex; alignItems: center; justifyContent: center; flex-shrink: 0 }
+        
+        /* Ward Tab Styles */
+        .ward-nav-container { display: flex; gap: 8px; padding: '10px 0'; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; }
+        .ward-nav-container::-webkit-scrollbar { display: none; }
+        .ward-pill { padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .25s; border: 1px solid var(--brd); background: var(--card); color: var(--txt3); white-space: nowrap; font-family: Maiandra, 'Maiandra GD', sans-serif; }
+        .ward-pill:hover { border-color: var(--brd-h); color: var(--txt); background: var(--elevated) }
+        .ward-pill.active { background: linear-gradient(135deg,#10b981,#059669); color: #fff; border-color: transparent; box-shadow: 0 4px 12px rgba(16,185,129,.3); }
+
+        @media(max-width:480px){ .mbx { padding: 20px; border-radius: 14px } .inp { font-size: 16px } .ward-pill { padding: 6px 14px; font-size: 12px } }
         @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
         @keyframes spin { to{transform:rotate(360deg)} }
     </style>
@@ -159,6 +167,15 @@
 
         const START = new Date(2026, 2, 30, 12);
         const DATES = Array.from({ length: 30 }, (_, i) => { const d = new Date(START); d.setDate(d.getDate() + i); return d });
+        
+        // Expanded Ward Configuration
+        const WARDS = [
+            { key: 'wiga', name: 'Wiga' },
+            { key: 'wasweta_2', name: 'Wasweta II' },
+            { key: 'wasimbete', name: 'Wasimbete' },
+            { key: 'oruba', name: 'Oruba Ragana' }
+        ];
+
         const KN = ['Kit 1', 'Kit 2', 'Kit 3'], KK = ['kit1', 'kit2', 'kit3'];
         const KC = ['#10b981', '#f59e0b', '#f43f5e'], KCL = ['rgba(16,185,129,.72)', 'rgba(245,158,11,.72)', 'rgba(244,63,94,.72)'];
         const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -167,17 +184,43 @@
         const fmtS = d => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
         const fmtF = d => d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
 
-        const empty = () => { const o = {}; DATES.forEach(d => o[fmtD(d)] = { kit1: null, kit2: null, kit3: null }); return o };
-        const sbToLocal = rows => { const d = empty(); if (!rows) return d; rows.forEach(r => { if (d.hasOwnProperty(r.date)) d[r.date] = { kit1: r.kit1, kit2: r.kit2, kit3: r.kit3 } }); return d };
-        const sampleCSV = () => { let c = 'Date,Kit 1,Kit 2,Kit 3\n'; DATES.forEach(d => c += fmtD(d) + ',,\n'); return c };
-        const exportCSV = data => { let c = 'Date,Day,Kit 1,Kit 2,Kit 3,Total\n'; DATES.forEach(d => { const k = fmtD(d), e = data[k] || {}; const t = [e.kit1, e.kit2, e.kit3].reduce((a,b) => (a||0)+(b||0), 0); c += k+','+DAYS[d.getDay()]+','+(e.kit1 ?? '')+','+(e.kit2 ?? '')+','+(e.kit3 ?? '')+','+(t||'')+'\n' }); return c };
+        // Generate empty structure for a single ward
+        const emptyWardData = () => { const o = {}; DATES.forEach(d => o[fmtD(d)] = { kit1: null, kit2: null, kit3: null }); return o };
+        
+        // Generate full state for all wards
+        const emptyState = () => {
+            const s = {};
+            WARDS.forEach(w => s[w.key] = emptyWardData());
+            return s;
+        };
+
+        // Transform DB rows into ward-separated state
+        const processDbData = rows => { 
+            const state = emptyState(); 
+            if (!rows) return state;
+            rows.forEach(r => {
+                // Determine ward key: use DB value, or default to 'wiga' for legacy data
+                let wKey = r.ward || 'wiga'; 
+                // Normalize keys just in case (e.g. spaces)
+                const wardInfo = WARDS.find(w => w.key === wKey || w.name === wKey);
+                if (wardInfo) wKey = wardInfo.key;
+                else return; // Skip if ward not recognized
+
+                if (state[wKey] && state[wKey][r.date]) {
+                    state[wKey][r.date] = { kit1: r.kit1, kit2: r.kit2, kit3: r.kit3 };
+                }
+            });
+            return state;
+        };
 
         const DB = {
             client: null, ready: false,
             init(url, ak, onAuth) { try { if (typeof supabase === 'undefined') return false; this.client = supabase.createClient(url, ak); this.ready = true; this.client.auth.onAuthStateChange(function(ev, session) { if (onAuth) onAuth(!!session, ev); }); return true } catch(e) { return false } },
             async fetchAll() { if (!this.client || !this.ready) return null; const res = await this.client.from('registrations').select('*').order('date', { ascending: true }); if (res.error) return { error: res.error.message }; return res.data },
-            async upsert(date, kit1, kit2, kit3) { if (!this.client || !this.ready) return { error: 'Not connected' }; const res = await this.client.from('registrations').upsert({ date, kit1, kit2, kit3 }, { onConflict: 'date' }); if (res.error) return { error: res.error.message }; return {} },
-            async deleteAll() { if (!this.client || !this.ready) return { error: 'Not connected' }; const res = await this.client.from('registrations').delete().gte('date', '2026-01-01'); if (res.error) return { error: res.error.message }; return {} },
+            // Upsert now includes ward
+            async upsert(ward, date, kit1, kit2, kit3) { if (!this.client || !this.ready) return { error: 'Not connected' }; const res = await this.client.from('registrations').upsert({ ward, date, kit1, kit2, kit3 }, { onConflict: 'date,ward' }); if (res.error) return { error: res.error.message }; return {} },
+            // Delete now filters by ward
+            async deleteAll(ward) { if (!this.client || !this.ready) return { error: 'Not connected' }; const res = await this.client.from('registrations').delete().eq('ward', ward); if (res.error) return { error: res.error.message }; return {} },
             async signIn(email, password) { const res = await this.client.auth.signInWithPassword({ email, password }); if (res.error) return { ok: false, msg: res.error.message }; return { ok: true } },
             async signOut() { await this.client.auth.signOut() },
             async getSession() { const res = await this.client.auth.getSession(); return res.data.session }
@@ -258,8 +301,7 @@
                     React.createElement('div', { style:{ display:'flex', gap:10 } },
                         React.createElement('button', { className:'bp', style:{ flex:1 }, onClick:submit, disabled:loading }, loading ? 'Signing in…' : 'Sign In'),
                         React.createElement('button', { className:'bs', onClick:onCancel }, 'Cancel')
-                    ),
-                    React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt4)', textAlign:'center', marginTop:16, lineHeight:1.5 } }, 'No account? Create one in Supabase Dashboard under Authentication → Users → Add User')
+                    )
                 )
             );
         }
@@ -277,8 +319,7 @@
             );
         }
 
-        function Header({ done, theme, setTheme, isAdmin, setShowLogin, handleLogout }) {
-            const pct = Math.round(done / 30 * 100);
+        function Header({ theme, setTheme, isAdmin, setShowLogin, handleLogout }) {
             return React.createElement('header', { style:{ padding:'clamp(16px,3vw,24px) 0 clamp(12px,2vw,16px)', borderBottom:'1px solid var(--brd)', transition:'border-color .35s' } },
                 React.createElement('div', { style:{ maxWidth:1280, margin:'0 auto', padding:'0 clamp(14px,4vw,24px)' } },
                     React.createElement('div', { style:{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', flexWrap:'wrap', gap:12 } },
@@ -288,8 +329,8 @@
                                 React.createElement('span', { style:{ fontSize:11, fontWeight:700, letterSpacing:'.1em', textTransform:'uppercase', color:'#10b981' } }, 'Live Dashboard'),
                                 React.createElement('span', { style:{ fontSize:10, fontWeight:700, color:'var(--txt4)', border:'1px solid var(--brd)', borderRadius:4, padding:'1px 6px' } }, 'Cloud')
                             ),
-                            React.createElement('h1', { style:{ fontSize:'clamp(24px,6vw,38px)', fontWeight:900, color:'var(--txt)', lineHeight:1.05, letterSpacing:'-.02em', transition:'color .35s' } }, 'Wiga Ward'),
-                            React.createElement('p', { style:{ fontSize:14, fontWeight:600, color:'var(--txt3)', marginTop:3, transition:'color .35s' } }, 'Voter Registration Daily Report'),
+                            React.createElement('h1', { style:{ fontSize:'clamp(24px,6vw,38px)', fontWeight:900, color:'var(--txt)', lineHeight:1.05, letterSpacing:'-.02em', transition:'color .35s' } }, 'Suna West'),
+                            React.createElement('p', { style:{ fontSize:14, fontWeight:600, color:'var(--txt3)', marginTop:3, transition:'color .35s' } }, 'Constituency Voter Registration'),
                             React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt4)', marginTop:2 } }, fmtF(DATES[0]) + ' — ' + fmtF(DATES[29]))
                         ),
                         React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:8 } },
@@ -303,11 +344,19 @@
                                 ? React.createElement('button', { className:'ib', onClick:handleLogout, title:'Sign out', style:{ borderColor:'rgba(16,185,129,.3)', color:'#10b981' } }, React.createElement('i', { className:'fas fa-right-from-bracket' }))
                                 : React.createElement('button', { className:'ib', onClick:() => setShowLogin(true), title:'Admin sign in' }, React.createElement('i', { className:'fas fa-lock' }))
                         )
-                    ),
-                    React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:10, marginTop:12 } },
-                        React.createElement('div', { className:'ptk', style:{ flex:1 } }, React.createElement('div', { className:'pfl', style:{ width:pct+'%' } })),
-                        React.createElement('span', { style:{ fontSize:12, fontWeight:700, color:'var(--txt3)', whiteSpace:'nowrap', transition:'color .35s' } }, done+'/30 days ('+pct+'%)')
                     )
+                )
+            );
+        }
+
+        function WardNav({ active, setActive }) {
+            return React.createElement('div', { className: 'ward-nav-container', style: { maxWidth:1280, margin: '0 auto', padding: '16px clamp(14px,4vw,24px) 4px' } },
+                WARDS.map(w => 
+                    React.createElement('button', {
+                        key: w.key,
+                        className: 'ward-pill ' + (active === w.key ? 'active' : ''),
+                        onClick: () => setActive(w.key)
+                    }, w.name)
                 )
             );
         }
@@ -320,13 +369,13 @@
             );
         }
 
-        function Cards({ data }) {
+        function Cards({ data, wardName }) {
             let total = 0, daysW = 0, todayT = 0; const kt = [0,0,0]; const todayK = fmtD(new Date());
             DATES.forEach(d => { const e = data[fmtD(d)]; if (!e) return; const v = [e.kit1, e.kit2, e.kit3]; const dt = v.reduce((a,b) => (a||0)+(b||0), 0); if (dt > 0) { daysW++; total += dt; v.forEach((x,i) => kt[i] += (x||0)) } if (fmtD(d) === todayK) todayT = dt });
             const avg = daysW ? Math.round(total/daysW) : 0;
             const topI = kt.indexOf(Math.max(...kt));
             const cards = [
-                { label:'Total Registered', val:total, icon:'fa-users', clr:'#10b981', bg:'rgba(16,185,129,.07)', sub:'Across '+KN.length+' kits' },
+                { label:'Total Registered', val:total, icon:'fa-users', clr:'#10b981', bg:'rgba(16,185,129,.07)', sub: wardName + ' Ward' },
                 { label:"Today's Count", val:todayT, icon:'fa-calendar-day', clr:'#f59e0b', bg:'rgba(245,158,11,.07)', sub:todayT?'Registered today':'No data for today' },
                 { label:'Daily Average', val:avg, icon:'fa-chart-line', clr:'#06b6d4', bg:'rgba(6,182,212,.07)', sub:'Based on '+daysW+' day'+(daysW!==1?'s':'') },
                 { label:'Top Performer', val:null, txt:KN[topI], icon:'fa-trophy', clr:'#f43f5e', bg:'rgba(244,63,94,.07)', sub:kt[topI].toLocaleString()+' registrations' }
@@ -343,7 +392,7 @@
             );
         }
 
-        function Update({ data, setData, toast }) {
+        function Update({ data, setData, toast, activeWard }) {
             const [tab, setTab] = useState('quick');
             const [fDate, setFDate] = useState('');
             const [fVal, setFVal] = useState({ kit1:'', kit2:'', kit3:'' });
@@ -351,22 +400,43 @@
             const fRef = useRef(null);
             const [drag, setDrag] = useState(false);
             const [confirmReset, setConfirmReset] = useState(false);
+            
             useEffect(() => { const t = fmtD(new Date()); const ok = DATES.some(d => fmtD(d) === t); setFDate(ok ? t : fmtD(DATES[0])) }, []);
             useEffect(() => { const e = data[fDate]; if (e) { const has = e.kit1 !== null || e.kit2 !== null || e.kit3 !== null; if (has) { setFVal({ kit1: e.kit1!==null?''+e.kit1:'', kit2: e.kit2!==null?''+e.kit2:'', kit3: e.kit3!==null?''+e.kit3:'' }); setEditing(true) } else { setFVal({ kit1:'', kit2:'', kit3:'' }); setEditing(false) } } }, [fDate, data]);
+            
             async function submit() {
                 const vs = KK.map(k => fVal[k].trim()); if (vs.every(v => !v)) { toast('Enter at least one kit value', 'error'); return }
                 const nums = vs.map(v => v ? parseInt(v) : null); if (nums.some((n,i) => vs[i] && isNaN(n))) { toast('Enter valid numbers', 'error'); return }
                 if (nums.some(n => n !== null && n < 0)) { toast('Values cannot be negative', 'error'); return }
                 if (!DATES.find(d => fmtD(d) === fDate)) { toast('Date outside registration period', 'error'); return }
-                const res = await DB.upsert(fDate, nums[0], nums[1], nums[2]);
-                if (!res.error) { const nd = { ...data, [fDate]: { kit1:nums[0], kit2:nums[1], kit3:nums[2] } }; setData(nd); toast((editing?'Updated':'Added')+' data for '+fmtS(DATES.find(d => fmtD(d)===fDate)), 'success'); setFVal({ kit1:'', kit2:'', kit3:'' }); setEditing(false); const ci = DATES.findIndex(d => fmtD(d)===fDate); if (ci < DATES.length-1) setFDate(fmtD(DATES[ci+1])); }
+                
+                // Pass activeWard to upsert
+                const res = await DB.upsert(activeWard, fDate, nums[0], nums[1], nums[2]);
+                if (!res.error) { 
+                    const nd = { ...data, [fDate]: { kit1:nums[0], kit2:nums[1], kit3:nums[2] } }; 
+                    setData(nd); 
+                    toast((editing?'Updated':'Added')+' data for '+fmtS(DATES.find(d => fmtD(d)===fDate)), 'success'); 
+                    setFVal({ kit1:'', kit2:'', kit3:'' }); setEditing(false); 
+                    const ci = DATES.findIndex(d => fmtD(d)===fDate); if (ci < DATES.length-1) setFDate(fmtD(DATES[ci+1])); 
+                }
                 else toast('Write failed — you may have been signed out', 'error');
             }
-            function parseCSV(file) { if (!file) return; Papa.parse(file, { header:true, skipEmptyLines:true, complete: r => { const nd = { ...data }; let imp=0, skip=0; r.data.forEach(row => { const dt = (row['Date']||row['date']||'').trim(); if (!dt) { skip++; return } if (!DATES.find(d => fmtD(d)===dt)) { skip++; return } const v1=(row['Kit 1']||row['kit1']||'').trim(), v2=(row['Kit 2']||row['kit2']||'').trim(), v3=(row['Kit 3']||row['kit3']||'').trim(); nd[dt] = { kit1:v1?parseInt(v1):null, kit2:v2?parseInt(v2):null, kit3:v3?parseInt(v3):null }; imp++ }); Promise.all(DATES.map(d => { const k = fmtD(d), e = nd[k]; if (e && (e.kit1!==null||e.kit2!==null||e.kit3!==null)) return DB.upsert(k,e.kit1,e.kit2,e.kit3); return Promise.resolve({}) })).then(() => {}); setData(nd); toast('Imported '+imp+' entries'+(skip?', skipped '+skip:''), 'success'); if (fRef.current) fRef.current.value = ''; }, error: () => toast('CSV parse error', 'error') }); }
+
+            function parseCSV(file) { if (!file) return; Papa.parse(file, { header:true, skipEmptyLines:true, complete: r => { const nd = { ...data }; let imp=0, skip=0; r.data.forEach(row => { const dt = (row['Date']||row['date']||'').trim(); if (!dt) { skip++; return } if (!DATES.find(d => fmtD(d)===dt)) { skip++; return } const v1=(row['Kit 1']||row['kit1']||'').trim(), v2=(row['Kit 2']||row['kit2']||'').trim(), v3=(row['Kit 3']||row['kit3']||'').trim(); nd[dt] = { kit1:v1?parseInt(v1):null, kit2:v2?parseInt(v2):null, kit3:v3?parseInt(v3):null }; imp++ }); 
+                // Batch upsert with ward info
+                Promise.all(DATES.map(d => { const k = fmtD(d), e = nd[k]; if (e && (e.kit1!==null||e.kit2!==null||e.kit3!==null)) return DB.upsert(activeWard, k,e.kit1,e.kit2,e.kit3); return Promise.resolve({}) })).then(() => {}); 
+                setData(nd); toast('Imported '+imp+' entries'+(skip?', skipped '+skip:''), 'success'); if (fRef.current) fRef.current.value = ''; }, error: () => toast('CSV parse error', 'error') }); }
+            
             function onDrop(e) { e.preventDefault(); setDrag(false); const f = e.dataTransfer.files[0]; if (f && f.name.endsWith('.csv')) parseCSV(f); else toast('Upload a .csv file', 'error') }
-            function dlSample() { const b = new Blob([sampleCSV()],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='wiga_sample_template.csv'; a.click(); toast('Template downloaded','info') }
-            function dlExport() { const b = new Blob([exportCSV(data)],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download='wiga_data_'+fmtD(new Date())+'.csv'; a.click(); toast('Data exported','success') }
-            async function doReset() { const r = await DB.deleteAll(); if (r.error) { toast('Failed to clear data', 'error'); return } setData(empty()); setConfirmReset(false); toast('All data cleared', 'success'); }
+            function dlSample() { const b = new Blob(['Date,Kit 1,Kit 2,Kit 3\n' + DATES.map(d => fmtD(d) + ',,\n').join('')],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download=activeWard+'_template.csv'; a.click(); toast('Template downloaded','info') }
+            function dlExport() { let c = 'Date,Day,Kit 1,Kit 2,Kit 3,Total\n'; DATES.forEach(d => { const k = fmtD(d), e = data[k] || {}; const t = [e.kit1, e.kit2, e.kit3].reduce((a,b) => (a||0)+(b||0), 0); c += k+','+DAYS[d.getDay()]+','+(e.kit1 ?? '')+','+(e.kit2 ?? '')+','+(e.kit3 ?? '')+','+(t||'')+'\n' }); const b = new Blob([c],{type:'text/csv'}); const a = document.createElement('a'); a.href=URL.createObjectURL(b); a.download=activeWard+'_data_'+fmtD(new Date())+'.csv'; a.click(); toast('Data exported','success') }
+            
+            async function doReset() { 
+                const r = await DB.deleteAll(activeWard); 
+                if (r.error) { toast('Failed to clear data', 'error'); return } 
+                setData(emptyWardData()); setConfirmReset(false); toast('All data cleared for ' + activeWard, 'success'); 
+            }
+            
             const tabs = [['quick','fa-pen-to-square','Quick Entry'],['csv','fa-file-csv','CSV Upload'],['more','fa-ellipsis','More']];
             const lblStyle = { fontSize:11, fontWeight:700, textTransform:'uppercase', letterSpacing:'.06em', display:'block', marginBottom:6, transition:'color .35s' };
             return React.createElement('div', { className:'gc fi', style:{ padding:0, animationDelay:'380ms' } },
@@ -395,10 +465,10 @@
                     tab==='more' ? React.createElement('div', { className:'fi', style:{ display:'grid', gap:10 } },
                         React.createElement('button', { className:'bs', style:{ width:'100%' }, onClick:dlExport }, React.createElement('i', { className:'fas fa-file-export', style:{ marginRight:8 } }), 'Export Data as CSV'),
                         React.createElement('button', { className:'bs', style:{ width:'100%' }, onClick:dlSample }, React.createElement('i', { className:'fas fa-file-arrow-down', style:{ marginRight:8 } }), 'Download Empty Template'),
-                        React.createElement('button', { className:'bdd', style:{ width:'100%' }, onClick:() => setConfirmReset(true) }, React.createElement('i', { className:'fas fa-trash-can', style:{ marginRight:8 } }), 'Reset All Data')
+                        React.createElement('button', { className:'bdd', style:{ width:'100%' }, onClick:() => setConfirmReset(true) }, React.createElement('i', { className:'fas fa-trash-can', style:{ marginRight:8 } }), 'Reset Ward Data')
                     ) : null
                 ),
-                confirmReset ? React.createElement(Modal, { title:'Reset All Data', msg:'This will permanently erase every registration entry from Supabase.', onOk:doReset, onNo:() => setConfirmReset(false) }) : null
+                confirmReset ? React.createElement(Modal, { title:'Reset Ward Data', msg:'This will permanently erase every registration entry for ' + activeWard + '.', onOk:doReset, onNo:() => setConfirmReset(false) }) : null
             );
         }
 
@@ -471,14 +541,13 @@
 
         function fmtDateDay(d) { return fmtS(d) + ' (' + DAYS[d.getDay()] + ')'; }
 
-        function Table({ data, setData, toast, isAdmin }) {
+        function Table({ data, setData, toast, isAdmin, activeWard }) {
             const mobile = useMobile(640);
             const [editK, setEditK] = useState(null);
             const [ev, setEv] = useState({ kit1:'', kit2:'', kit3:'' });
             let cum = 0;
             const rows = DATES.map((d,i) => { const k=fmtD(d), e=data[k]||{}, dt=[e.kit1,e.kit2,e.kit3].reduce((a,b)=>(a||0)+(b||0),0); cum += dt; return { i:i+1, d, k, e, dt, cum, has:dt>0, today:k===fmtD(new Date()) }; });
             
-            // Calculate Totals for Footer
             const kitTotals = [0, 0, 0];
             let totalDailySum = 0;
             rows.forEach(r => {
@@ -490,7 +559,7 @@
             const totalCum = rows.length > 0 ? rows[rows.length - 1].cum : 0;
 
             function startEdit(r) { if (!isAdmin) return; setEditK(r.k); setEv({ kit1:r.e.kit1!==null?''+r.e.kit1:'', kit2:r.e.kit2!==null?''+r.e.kit2:'', kit3:r.e.kit3!==null?''+r.e.kit3:'' }) }
-            async function saveRow() { const nd = { ...data, [editK]:{ kit1:ev.kit1!==''?parseInt(ev.kit1):null, kit2:ev.kit2!==''?parseInt(ev.kit2):null, kit3:ev.kit3!==''?parseInt(ev.kit3):null } }; const res = await DB.upsert(editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3); if (!res.error) { setData(nd); setEditK(null); toast('Entry updated', 'success') } else toast('Failed to save — you may have been signed out', 'error'); }
+            async function saveRow() { const nd = { ...data, [editK]:{ kit1:ev.kit1!==''?parseInt(ev.kit1):null, kit2:ev.kit2!==''?parseInt(ev.kit2):null, kit3:ev.kit3!==''?parseInt(ev.kit3):null } }; const res = await DB.upsert(activeWard, editK, nd[editK].kit1, nd[editK].kit2, nd[editK].kit3); if (!res.error) { setData(nd); setEditK(null); toast('Entry updated', 'success') } else toast('Failed to save — you may have been signed out', 'error'); }
             
             var headers = mobile ? ['#','Date (Day)',KN[0],KN[1],KN[2],'Daily','Cum.'] : ['#','Date','Day',KN[0],KN[1],KN[2],'Daily','Cumulative'];
             
@@ -511,7 +580,6 @@
                 fontSize: '13px' 
             });
 
-            // Footer Styles
             var tFootStyle = { position: 'sticky', bottom: 0, background: 'var(--thbg)', fontWeight: 800, borderTop: '2px solid var(--brd)', zIndex: 5 };
             var tFootTd = { padding: mobile ? '10px 6px' : '12px 12px', textAlign: 'right', fontSize: '13px' };
 
@@ -542,7 +610,6 @@
                                 )
                             );
                         })),
-                        // Footer for Totals
                         React.createElement('tfoot', null, 
                             React.createElement('tr', { style: tFootStyle },
                                 React.createElement('td', { style: { ...tFootTd, textAlign: 'left', color: 'var(--txt)' } }, ''),
@@ -559,50 +626,81 @@
         }
 
         function App() {
-            const [data, setData] = useState(empty);
+            const [allData, setAllData] = useState(emptyState); // State now holds data for ALL wards
+            const [activeWard, setActiveWard] = useState('wiga'); // Current active ward key
+            
             const [toasts, setToasts] = useState([]);
             const [theme, setThemeState] = useState(localStorage.getItem('wiga_theme') || 'dark');
             const [isAdmin, setIsAdmin] = useState(false);
             const [showLogin, setShowLogin] = useState(false);
             const [fetching, setFetching] = useState(true);
             const [fetchErr, setFetchErr] = useState(false);
+            
             function setTheme(t) { document.documentElement.setAttribute('data-theme', t); localStorage.setItem('wiga_theme', t); setThemeState(t) }
             const toast = useCallback((msg, type) => { type=type||'success'; const id = ++_tid; setToasts(p => [...p, { id, msg, type, out:false }]); setTimeout(() => { setToasts(p => p.map(t => t.id===id ? {...t, out:true} : t)); setTimeout(() => setToasts(p => p.filter(t => t.id!==id)), 300); }, 3500); }, []);
             
-            // FIX: Added 'event' argument to check specifically for 'SIGNED_OUT'
-            const onAuthChange = useCallback((authed, event) => { 
-                setIsAdmin(authed); 
-                if (event === 'SIGNED_OUT') toast('Session ended', 'info'); 
-            }, [toast]);
+            const onAuthChange = useCallback((authed, event) => { setIsAdmin(authed); if (event === 'SIGNED_OUT') toast('Session ended', 'info'); }, [toast]);
             
-            useEffect(() => { if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) { setFetching(false); setFetchErr(true); return } const ok = DB.init(SB_URL, SB_KEY, onAuthChange); if (!ok) { setFetching(false); setFetchErr(true); return } DB.getSession().then(session => { setIsAdmin(!!session); return DB.fetchAll(); }).then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } else setFetchErr(true); setFetching(false); }).catch(() => { setFetchErr(true); setFetching(false); }); }, [onAuthChange]);
-            useEffect(() => { if (!DB.ready) return; const iv = setInterval(() => { DB.fetchAll().then(rows => { if (Array.isArray(rows)) { setData(sbToLocal(rows)); setFetchErr(false) } }); }, 60000); return () => clearInterval(iv); }, []);
+            useEffect(() => { 
+                if (!SB_URL || SB_URL.includes('PASTE') || !SB_KEY || SB_KEY.includes('PASTE')) { setFetching(false); setFetchErr(true); return } 
+                const ok = DB.init(SB_URL, SB_KEY, onAuthChange); 
+                if (!ok) { setFetching(false); setFetchErr(true); return } 
+                DB.getSession().then(session => { setIsAdmin(!!session); return DB.fetchAll(); }).then(rows => { 
+                    if (Array.isArray(rows)) { setAllData(processDbData(rows)); setFetchErr(false) } else setFetchErr(true); setFetching(false); 
+                }).catch(() => { setFetchErr(true); setFetching(false); }); 
+            }, [onAuthChange]);
+            
+            useEffect(() => { if (!DB.ready) return; const iv = setInterval(() => { DB.fetchAll().then(rows => { if (Array.isArray(rows)) { setAllData(processDbData(rows)); setFetchErr(false) } }); }, 60000); return () => clearInterval(iv); }, []);
+            
             function handleLogin() { setIsAdmin(true); setShowLogin(false); toast('Signed in as admin', 'success'); }
-            
-            // FIX: Removed manual toast from handleLogout to prevent duplicates; listener handles it
             function handleLogout() { DB.signOut(); setIsAdmin(false); }
             
-            const done = useMemo(() => DATES.filter(d => { const e = data[fmtD(d)]; return e && [e.kit1,e.kit2,e.kit3].some(v => v!==null && v>0) }).length, [data]);
+            // Extract data for the currently active ward
+            const currentWardData = allData[activeWard] || emptyWardData();
+            const currentWardInfo = WARDS.find(w => w.key === activeWard);
+            
+            // Calculate progress for active ward
+            const done = useMemo(() => DATES.filter(d => { const e = currentWardData[fmtD(d)]; return e && [e.kit1,e.kit2,e.kit3].some(v => v!==null && v>0) }).length, [currentWardData]);
+            
+            // Setter specifically for the active ward (to pass to child components)
+            const setWardData = useCallback((newWardData) => {
+                setAllData(prev => ({ ...prev, [activeWard]: newWardData }));
+            }, [activeWard]);
+
             if (fetching) return React.createElement('div', { style:{ display:'flex', alignItems:'center', justifyContent:'center', minHeight:'100vh', flexDirection:'column', gap:14 } },
                 React.createElement('div', { style:{ width:36, height:36, border:'3px solid var(--brd)', borderTopColor:'#10b981', borderRadius:'50%', animation:'spin 1s linear infinite' } }),
-                React.createElement('p', { style:{ fontSize:14, fontWeight:600, color:'var(--txt3)' } }, 'Loading dashboard…')
+                React.createElement('p', { style:{ fontSize:14, fontWeight:600, color:'var(--txt3)' } }, 'Loading Suna West Dashboard…')
             );
+
             return React.createElement('div', { style:{ minHeight:'100vh' } },
                 React.createElement(Toasts, { list:toasts }),
                 showLogin ? React.createElement(LoginModal, { onOk:handleLogin, onCancel:() => setShowLogin(false) }) : null,
-                React.createElement(Header, { done, theme, setTheme, isAdmin, setShowLogin, handleLogout }),
+                React.createElement(Header, { theme, setTheme, isAdmin, setShowLogin, handleLogout }),
+                
+                // Ward Navigation
+                React.createElement(WardNav, { active: activeWard, setActive: setActiveWard }),
+                
                 React.createElement('main', { style:{ maxWidth:1280, margin:'0 auto', padding:'clamp(14px,4vw,22px) clamp(14px,4vw,24px)', display:'flex', flexDirection:'column', gap:16 } },
-                    fetchErr ? React.createElement(Banner, { msg:'Could not connect to Supabase. Check credentials in the HTML file.', icon:'fa-triangle-exclamation' }) : null,
-                    React.createElement(Cards, { data }),
-                    isAdmin ? React.createElement(Update, { data, setData, toast }) : React.createElement(Banner, { msg:'Read-only view. Admin sign-in required to add or edit data.', icon:'fa-lock', onAction:() => setShowLogin(true), actionLabel:'Sign In' }),
-                    React.createElement('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap:14 } },
-                        React.createElement(BarChart, { data, theme }),
-                        React.createElement(DonutChart, { data, theme })
+                    fetchErr ? React.createElement(Banner, { msg:'Could not connect to Supabase. Check credentials.', icon:'fa-triangle-exclamation' }) : null,
+                    
+                    // Progress bar for active ward
+                    React.createElement('div', { style:{ display:'flex', alignItems:'center', gap:10 } },
+                        React.createElement('div', { className:'ptk', style:{ flex:1 } }, React.createElement('div', { className:'pfl', style:{ width:Math.round(done/30*100)+'%' } })),
+                        React.createElement('span', { style:{ fontSize:12, fontWeight:700, color:'var(--txt3)', whiteSpace:'nowrap', transition:'color .35s' } }, done+'/30 days')
                     ),
-                    React.createElement(Table, { data, setData, toast, isAdmin })
+
+                    React.createElement(Cards, { data: currentWardData, wardName: currentWardInfo?.name }),
+                    
+                    isAdmin ? React.createElement(Update, { data: currentWardData, setData: setWardData, toast, activeWard }) : React.createElement(Banner, { msg:'Read-only view. Admin sign-in required.', icon:'fa-lock', onAction:() => setShowLogin(true), actionLabel:'Sign In' }),
+                    
+                    React.createElement('div', { style:{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(min(100%,280px),1fr))', gap:14 } },
+                        React.createElement(BarChart, { data: currentWardData, theme }),
+                        React.createElement(DonutChart, { data: currentWardData, theme })
+                    ),
+                    React.createElement(Table, { data: currentWardData, setData: setWardData, toast, isAdmin, activeWard })
                 ),
                 React.createElement('footer', { style:{ textAlign:'center', padding:'clamp(20px,4vw,28px) clamp(14px,4vw,24px)', borderTop:'1px solid var(--brd)', marginTop:16, transition:'border-color .35s' } },
-                    React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt4)', transition:'color .35s' } }, 'Wiga Ward Voter Registration Dashboard')
+                    React.createElement('p', { style:{ fontSize:12, fontWeight:600, color:'var(--txt4)', transition:'color .35s' } }, 'Suna West Constituency Voter Registration Dashboard')
                 )
             );
         }
